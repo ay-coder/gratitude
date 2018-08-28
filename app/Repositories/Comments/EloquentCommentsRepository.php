@@ -34,8 +34,9 @@ class EloquentCommentsRepository extends DbRepository
     public $tableHeaders = [
         'id'        => 'Id',
 'user_id'        => 'User_id',
-'post_id'        => 'Post_id',
+'feed_id'        => 'Feed_id',
 'comment'        => 'Comment',
+'status'        => 'Status',
 'created_at'        => 'Created_at',
 'updated_at'        => 'Updated_at',
 "actions"         => "Actions"
@@ -59,15 +60,21 @@ class EloquentCommentsRepository extends DbRepository
                 'searchable'    => true,
                 'sortable'      => true
             ],
-		'post_id' =>   [
-                'data'          => 'post_id',
-                'name'          => 'post_id',
+		'feed_id' =>   [
+                'data'          => 'feed_id',
+                'name'          => 'feed_id',
                 'searchable'    => true,
                 'sortable'      => true
             ],
 		'comment' =>   [
                 'data'          => 'comment',
                 'name'          => 'comment',
+                'searchable'    => true,
+                'sortable'      => true
+            ],
+		'status' =>   [
+                'data'          => 'status',
+                'name'          => 'status',
                 'searchable'    => true,
                 'sortable'      => true
             ],

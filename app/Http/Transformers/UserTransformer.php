@@ -32,18 +32,10 @@ class UserTransformer extends Transformer
     public function userInfo($data)
     {
         $data = (object) $data;
-        $postCount         = isset($data->user_posts) ? count($data->user_posts) : 0;
-        $notificationCount = isset($data->notifications) ? count($data->notifications) : 0;
-        $myConnections     = isset($data->my_connections) ? count($data->my_connections) : 0;
-
-        $accConnections     = isset($data->accepted_connections) ? count($data->accepted_connections) : 0;
-
-        $postRequestCount  = isset($data->post_requests) ? count($data->post_requests) : 0;
-        
-        $connectionCount =  $myConnections + $accConnections;
         
         return [
             'user_id'       => $data->id,
+            'username'      => $data->username,
             'token'         => isset($data->token) ? $this->nulltoBlank($data->token) : '',
             'device_token'  => $data->device_token,
             'name'          => $this->nulltoBlank($data->name),
@@ -51,17 +43,11 @@ class UserTransformer extends Transformer
             'phone'         => $this->nulltoBlank($data->phone),
             'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
             'dob'           => $this->nulltoBlank($data->dob),
-            'gender'        => $this->nulltoBlank($data->gender),
             'bio'           => $this->nulltoBlank($data->bio),
-            'description'   => 'Lorem Ipusm Lorem Ipsum description',
-            'connectionCount'   => (int) $connectionCount, 
-            'postCount'             => (int) $postCount, 
-            'notification_count' => (int) $notificationCount,
-            'postRequestCount'  => (int) $postRequestCount,
-            'is_connected'      => $data->is_connected,
-            'is_same_user'      => $data->is_same_user,
-            'is_requested'      => $data->is_connected == 1 ? 0 : $data->is_requested,
-            'show_connect_btn'  => $data->show_connect_btn
+            'description'   => $this->nulltoBlank($data->description),
+            'address'       => $this->nulltoBlank($data->address),
+            'city'          => $this->nulltoBlank($data->city),
+            'zip'           => $this->nulltoBlank($data->zip),
         ];
     }
 

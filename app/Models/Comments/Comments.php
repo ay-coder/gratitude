@@ -17,14 +17,14 @@ class Comments extends BaseModel
      * Database Table
      *
      */
-    protected $table = "data_comments";
+    protected $table = "data_feed_comments";
 
     /**
      * Fillable Database Fields
      *
      */
     protected $fillable = [
-        "id", "user_id", "post_id", "comment", "created_at", "updated_at", 
+        "id", "user_id", "feed_id", "comment", "status", "created_at", "updated_at", 
     ];
 
     /**

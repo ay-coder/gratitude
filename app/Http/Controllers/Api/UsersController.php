@@ -298,46 +298,9 @@ class UsersController extends BaseApiController
                 'posts', 'post_requests', 'user_posts', 'connections', 'user_notifications', 'my_connections', 'accepted_connections'
             ])->find($request->get('user_id'));
             $userInfo       = $this->getAuthenticatedUser();
-            $sameUser       = 0;
-            $connections    = [];
-            $isConnected        = 0;
-            $showConnectionBtn  = 1;
-
-            if($userInfo->id == $request->get('user_id'))
-            {
-                $sameUser           = 1;
-                $showConnectionBtn  = 0;
-            }
-            else
-            {
-                $myConnectionList       = $connectionModel->where('is_accepted', 1)->where('user_id', $user->id)->pluck('other_user_id')->toArray();
-                $otherConnectionList    = $connectionModel->where('is_accepted', 1)->where('other_user_id', $user->id)->pluck('requested_user_id')->toArray();
-                $allConnections = array_merge($myConnectionList, $otherConnectionList);
-                if(in_array($userInfo->id, $allConnections))
-                {
-                    $isConnected        = 1;
-                    $showConnectionBtn  = 0;
-                }
-            }
-
-            $userRequestIds = $connectionModel->where([
-                'other_user_id'       => $user->id,
-                'is_accepted'   => 0
-            ])->pluck('user_id')->toArray();
             
-            $isRequested = in_array($userInfo->id, $userRequestIds) ? 1 : 0;
-
             if($user)
             {
-                 $data = [
-                    'is_connected'      => $isConnected,
-                    'is_same_user'      => $sameUser,
-                    'show_connect_btn'  => $showConnectionBtn,
-                    'is_requested'      => $isRequested
-                ];
-
-                $user = $user->toArray();
-                $user = array_merge($user, $data);
                 $responseData = $this->userTransformer->userInfo($user);
                 
                 return $this->successResponse($responseData);
@@ -422,6 +385,48 @@ class UsersController extends BaseApiController
             'reason' => 'Invalid Inputs'
         ], 'Something went wrong !');     
     }*/
+
+    /**
+     * Change Password
+     * 
+     * @param Request $request
+     * @return string
+     */
+    public function changePassword(Request $request)
+    {
+        if($request->has('password') && $request->has('old_password'))
+        {   
+            $userInfo = $this->getAuthenticatedUser();
+            $credentials = [
+                'email'     => $userInfo->email,
+                'password'  => $request->get('old_password')
+            ];
+
+            if(! Auth::attempt($credentials))
+            {
+                return $this->setStatusCode(200)->failureResponse([
+                    'reason' => 'Invalid Old Password'
+                ], 'Invalid Old Password !');
+            }
+
+            $userInfo->password = bcrypt($request->get('password'));
+
+            if ($userInfo->save()) 
+            {
+                event(new UserPasswordChanged($userInfo));
+
+                $successResponse = [
+                    'message' => 'Password Updated successfully.'
+                ];
+            
+                return $this->successResponse($successResponse);
+            }
+        }
+
+        return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'Invalid Inputs'
+        ], 'Something went wrong !');
+    }
 
     public function updageUserPassword(Request $request)
     {
@@ -514,7 +519,7 @@ class UsersController extends BaseApiController
 
             if($user)
             {
-                $responseData = $this->userTransformer->updateUser($user);
+                $responseData = $this->userTransformer->userInfo($user);
                 
                 return $this->successResponse($responseData);
             }

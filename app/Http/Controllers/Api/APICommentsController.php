@@ -5,12 +5,8 @@ use Illuminate\Http\Request;
 use App\Http\Transformers\CommentsTransformer;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\Comments\EloquentCommentsRepository;
-use Illuminate\Support\Facades\Validator;
-use App\Models\Blocked\Blocked;
-use App\Library\Push\PushNotification;
-use App\Models\Notifications\Notifications;
-use App\Models\Posts\Posts;
-use App\Models\Access\User\User;
+use App\Models\ReportComments\ReportComments;
+use URL;
 
 class APICommentsController extends BaseApiController
 {
@@ -33,7 +29,7 @@ class APICommentsController extends BaseApiController
      *
      * @var string
      */
-    protected $primaryKey = 'comment_id';
+    protected $primaryKey = 'commentsId';
 
     /**
      * __construct
@@ -71,6 +67,38 @@ class APICommentsController extends BaseApiController
     }
 
     /**
+     * List of All Comments
+     *
+     * @param Request $request
+     * @return json
+     */
+    public function getList(Request $request)
+    {
+        if($request->has('feed_id'))
+        {
+            $items = $this->repository->model->with([
+                'user'
+            ])
+            ->where([
+                'feed_id' => $request->get('feed_id') 
+            ])
+            ->orderBy('id')
+            ->get();
+        }
+        
+        if(isset($items) && count($items))
+        {
+            $itemsOutput = $this->commentsTransformer->transformFeedComments($items);
+
+            return $this->successResponse($itemsOutput);
+        }
+
+        return $this->setStatusCode(400)->failureResponse([
+            'message' => 'Unable to find Comments!'
+            ], 'No Comments Found !');
+    }
+
+    /**
      * Create
      *
      * @param Request $request
@@ -78,58 +106,145 @@ class APICommentsController extends BaseApiController
      */
     public function create(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'post_id'   => 'required',
-            'comment'   => 'required'
-        ]);
-
-        if($validator->fails()) 
+        if($request->has('feed_id'))
         {
-            $messageData = '';
-
-            foreach($validator->messages()->toArray() as $message)
-            {
-                $messageData = $message[0];
-            }
-            return $this->failureResponse($validator->messages(), $messageData);
-        }
-
-        $userInfo   = $this->getAuthenticatedUser();
-        $postInfo   = Posts::where('id', $request->get('post_id'))->first();
-        $tagUser    = User::where('id', $postInfo->tag_user_id)->first();
-        $input      = array_merge($request->all(), ['user_id' => $userInfo->id]);
-        $model      = $this->repository->create($input);
-
-        if($model)
-        {
-            $text       = $userInfo->name . '  has commented on your post';
-            $payload    = [
-                'mtitle'    => '',
-                'mdesc'     => $text,
-                'post_id'   => $model->post_id,
-                'comment_id' => $model->id,
-                'mtype'      => 'NEW_COMMENT'
-            ];
-            
-            Notifications::create([
-                'user_id'           => $tagUser->id,
-                'to_user_id'        => $userInfo->id,
-                'description'       => $text,
-                'post_id'           => $model->post_id,
-                'comment_id'        => $model->id,
-                'notification_type' => 'NEW_POST'
+            $userInfo   = $this->getAuthenticatedUser();
+            $model      = $this->repository->model->create([
+                'user_id'       => (int) $userInfo->id,
+                'feed_id'       => (int) $request->get('feed_id'),
+                'comment'       => $request->get('comment')
             ]);
 
-            if(isset($tagUser->device_token))
+            if($model)
             {
-                PushNotification::iOS($payload, $tagUser->device_token);
+                $response = [
+                    'comment_id' => $model->id,
+                    'feed_id'    => $model->feed_id,
+                    'user_id'    => $userInfo->id,
+                    'comment'    => $request->get('comment'),
+                    'username'   => $model->user->name,
+                    'profile_pic'   =>  URL::to('/').'/uploads/user/' . $userInfo->profile_pic,
+                    'create_at'  => date('m/d/Y h:i:s', strtotime($model->created_at))
+                ];
+
+                return $this->successResponse($response, 'Comments is Created Successfully');
             }
-
-            return $this->successResponse(['message' => 'Comment Created Successfully!'], 'Comments is Created Successfully');
         }
-
+        
         return $this->setStatusCode(400)->failureResponse([
             'reason' => 'Invalid Inputs'
+            ], 'Something went wrong !');
+    }
+
+    /**
+     * Create
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function sendcomment(Request $request)
+    {
+        if($request->has('feed_id'))
+        {
+            $userInfo   = $this->getAuthenticatedUser();
+            $model      = $this->repository->model->create([
+                'user_id'       => $userInfo->id,
+                'feed_id'       => $request->get('feed_id'),
+                'comment'       => $request->get('comment')
+            ]);
+
+            if($model)
+            {
+                $response = [
+                    'comment_id' => (int) $model->id,
+                    'feed_id'    => (int) $model->feed_id,
+                    'user_id'    => (int) $userInfo->id,
+                    'comment'    => $request->get('comment'),
+                    'profile_pic'   =>  URL::to('/').'/uploads/user/' . $userInfo->profile_pic,
+                    'create_at'  => date('m/d/Y h:i:s', strtotime($model->created_at))
+                ];
+
+                return $this->successResponse($response, 'Comments is Created Successfully');
+            }
+        }
+        
+        return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'Invalid Inputs'
+            ], 'Something went wrong !');
+    }
+
+    /**
+     * Create
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function deletecomment(Request $request)
+    {
+        if($request->has('comment_id'))
+        {
+            $userInfo   = $this->getAuthenticatedUser();
+            $model      = $this->repository->model->where([
+                'user_id'   => $userInfo->id,
+                'id'        => $request->get('comment_id'),
+            ])->first();
+
+            if(isset($model) && isset($model->id))
+            {
+                if($model->delete())
+                {
+                    $message = [
+                        'message' => 'Comment Deleted successfully'
+                    ];
+                    return $this->successResponse($message, 'Comments is Created Successfully');
+                }
+            }
+        }
+        
+        return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'No Comment Found or Invalid Input'
+            ], 'Something went wrong !');
+    }
+
+    /**
+     * Create
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function reportcomment(Request $request)
+    {
+        if($request->has('comment_id'))
+        {
+            $userInfo   = $this->getAuthenticatedUser();
+            $model      = $this->repository->model->where([
+                'id' => $request->get('comment_id'),
+            ])->first();
+
+            if(isset($model) && isset($model->id))
+            {
+                if($model->delete())
+                {
+                    $reportData = [
+                        'user_id'       => $model->user_id,
+                        'feed_id'       => $model->feed_id,
+                        'reporter_id'   => $userInfo->id,
+                        'comment'       => $model->comment,
+                        'comment_id'    => $request->get('comment_id')
+                    ];
+                    
+                    ReportComments::create($reportData);
+                    
+                    $message = [
+                        'message' => 'Comment Reported successfully'
+                    ];
+                    return $this->successResponse($message, 'Reported Successfully');
+                }
+            }
+        }
+        
+        return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'No Comment Found or Invalid Input'
             ], 'Something went wrong !');
     }
 
@@ -196,91 +311,17 @@ class APICommentsController extends BaseApiController
      */
     public function delete(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'comment_id'   => 'required'
-        ]);
+        $itemId = (int) hasher()->decode($request->get($this->primaryKey));
 
-        if($validator->fails()) 
+        if($itemId)
         {
-            $messageData = '';
+            $status = $this->repository->destroy($itemId);
 
-            foreach($validator->messages()->toArray() as $message)
+            if($status)
             {
-                $messageData = $message[0];
-            }
-            return $this->failureResponse($validator->messages(), $messageData);
-        }
-
-        if($request->has('comment_id'))
-        {
-            $itemId     = $request->get('comment_id');
-            $comment    = $this->repository->model->find($itemId);
-            $userInfo   = $this->getAuthenticatedUser();
-
-            if($comment->user_id == $userInfo->id || $userInfo->posts()->where('post_id', $comment->post_id))
-            {
-                $status = $this->repository->destroy($itemId);
-
-                if($status)
-                {
-                    return $this->successResponse([
-                        'success' => 'Comments Deleted'
-                    ], 'Comments is Deleted Successfully');
-                }
-            }
-        }
-
-        return $this->setStatusCode(404)->failureResponse([
-            'reason' => 'Invalid Inputs'
-        ], 'Something went wrong !');
-    }
-
-    /**
-     * Blocked
-     *
-     * @param Request $request
-     * @return string
-     */
-    public function blocked(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'comment_id'   => 'required'
-        ]);
-
-        if($validator->fails()) 
-        {
-            $messageData = '';
-
-            foreach($validator->messages()->toArray() as $message)
-            {
-                $messageData = $message[0];
-            }
-            return $this->failureResponse($validator->messages(), $messageData);
-        }
-
-        if($request->has('comment_id'))
-        {
-            $itemId     = $request->get('comment_id');
-            $comment    = $this->repository->model->find($itemId);
-            $userInfo   = $this->getAuthenticatedUser();
-
-            if(isset($comment->id))
-            {
-                Blocked::create([
-                    'blocked_by'    => $userInfo->id,
-                    'user_id'       => $comment->user_id,
-                    'post_id'       => $comment->post_id,
-                    'comment'       => $comment->comment
-                ]);
-
-                $status = $this->repository->destroy($itemId);
-
-                if($status)
-                {
-                    return $this->successResponse([
-                        'success' => 'Comments Blocked'
-                    ], 'Comments is Blocked Successfully');
-                }
+                return $this->successResponse([
+                    'success' => 'Comments Deleted'
+                ], 'Comments is Deleted Successfully');
             }
         }
 

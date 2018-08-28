@@ -45,6 +45,9 @@ class User extends Authenticatable
     'device_token',
     'dob',
     'bio',
+    'address',
+    'city',
+    'zip',
      'email', 'password', 'status', 'confirmation_code', 'confirmed'];
 
     /**
