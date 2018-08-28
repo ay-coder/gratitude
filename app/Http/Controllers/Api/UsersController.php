@@ -260,12 +260,12 @@ class UsersController extends BaseApiController
 
                     // More headers
                     $headers .= 'From: <info@spottrmedia.com>' . "\r\n";
-                    if(mail($to, $subject, $message, $headers))
+                    /*if(mail($to, $subject, $message, $headers))
                     {
                         $successResponse = [
                             'message' => 'Reset Password Mail send successfully.'
                         ];
-                    }
+                    }*/
                 }
 
                 return $this->successResponse($successResponse);

@@ -230,4 +230,144 @@ class APIUserGroupsController extends BaseApiController
             'reason' => 'Invalid Inputs'
         ], 'Something went wrong !');
     }
+
+    /**
+     * Add Member
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function addMember(Request $request)
+    {
+        if($request->has('group_id') && $request->has('member_id'))
+        {
+            $userInfo   = $this->getAuthenticatedUser();
+            $model      = $this->repository->model->with('group_members')->where([
+                'user_id'   => $userInfo->id,
+                'id'        => $request->get('group_id')
+            ])->first();
+
+            if(count($model) == 0 )
+            {
+                return $this->setStatusCode(404)->failureResponse([
+                    'reason' => 'No Group Exists!'
+                ], 'No Group Exists!');
+            }
+
+            $memberId = $request->get('member_id');
+            $isExist  = $model->group_members->where('member_id', $memberId)->first();
+
+            if($isExist)
+            {
+                return $this->setStatusCode(404)->failureResponse([
+                    'reason' => 'Member already Exists!'
+                ], 'Member already Exists!');
+            }
+
+            $status = $model->group_members()->create([
+                'group_id'  => $request->get('group_id'),
+                'user_id'   => $userInfo->id,
+                'member_id' => $memberId
+            ]);
+
+            if($status)
+            {
+                return $this->successResponse([
+                    'success' => 'Member added Successfully'
+                ], 'Member added Successfully');
+            }
+        }
+        
+        return $this->setStatusCode(404)->failureResponse([
+            'reason' => 'Invalid Inputs'
+        ], 'Something went wrong !');
+    }
+
+    /**
+     * Remove Member
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function removeMember(Request $request)
+    {
+        if($request->has('group_id') && $request->has('member_id'))
+        {
+            $userInfo   = $this->getAuthenticatedUser();
+            $model      = $this->repository->model->with('group_members')->where([
+                'user_id'   => $userInfo->id,
+                'id'        => $request->get('group_id')
+            ])->first();
+
+            if(count($model) == 0 )
+            {
+                return $this->setStatusCode(404)->failureResponse([
+                    'reason' => 'No Group Exists!'
+                ], 'No Group Exists!');
+            }
+
+            $memberId = $request->get('member_id');
+            $isExist  = $model->group_members->where('member_id', $memberId)->first();
+
+            if(!$isExist)
+            {
+                return $this->setStatusCode(404)->failureResponse([
+                    'reason' => 'Member already left the Group!'
+                ], 'Member already left the Group!');
+            }
+
+            $status = $model->group_members()->where([
+                'group_id'  => $request->get('group_id'),
+                'member_id' => $memberId
+            ])->delete();
+
+            if($status)
+            {
+                return $this->successResponse([
+                    'success' => 'Member removed Successfully'
+                ], 'Member removed Successfully');
+            }
+        }
+        
+        return $this->setStatusCode(404)->failureResponse([
+            'reason' => 'Invalid Inputs'
+        ], 'Something went wrong !');
+    }
+
+    /**
+     * left Group
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function leftGroup(Request $request)
+    {
+        if($request->has('group_id'))
+        {
+            $userInfo   = $this->getAuthenticatedUser();
+            $model      = UserGroupMembers::where([
+                'member_id'   => $userInfo->id,
+                'id'          => $request->get('group_id')
+            ])->first();
+
+            if(count($model) == 0 )
+            {
+                return $this->setStatusCode(404)->failureResponse([
+                    'reason' => 'No Group Exists!'
+                ], 'No Group Exists!');
+            }
+
+            if($model->delete())
+            {
+                return $this->successResponse([
+                    'success' => 'Group Left Successfully'
+                ], 'Group Left Successfully');
+            }
+        }
+        
+        return $this->setStatusCode(404)->failureResponse([
+            'reason' => 'Invalid Inputs'
+        ], 'Something went wrong !');
+    }
+    
 }
