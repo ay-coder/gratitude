@@ -107,6 +107,131 @@ class UsersController extends BaseApiController
     }
 
     /**
+     * socialCreate
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function socialCreate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name'          => 'required',
+            'social_token'  => 'required|unique:users|max:255'
+        ]);
+
+        if($validator->fails())
+        {
+            $messageData = '';
+            foreach($validator->messages()->toArray() as $message)
+            {
+                $messageData = $message[0];
+            }
+            return $this->failureResponse($validator->messages(), $messageData);
+        }
+
+        $user = User::where([
+            'social_token' => $request->get('social_token')
+        ])->first();
+
+        if(isset($user) && $user->id)
+        {
+            return $this->socialLogin($request);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name'          => 'required',
+            'social_token'  => 'required|unique:users|max:255'
+        ]);
+
+        if($validator->fails())
+        {
+            $messageData = '';
+            foreach($validator->messages()->toArray() as $message)
+            {
+                $messageData = $message[0];
+            }
+            return $this->failureResponse($validator->messages(), $messageData);
+        }
+
+        $status = $this->socialLogin($request);
+
+        $repository = new UserRepository;
+        $input      = $request->all();
+        $input      = array_merge($input, ['profile_pic' => 'default.png']);
+        
+
+        $user = $repository->createSocialUserStub($input);
+        if($user)
+        {
+            Auth::loginUsingId($user->id, true);
+
+            $user           = Auth::user()->toArray();
+            $token          = JWTAuth::fromUser(Auth::user());
+            $userData       = array_merge($user, ['token' => $token]);
+            $responseData   = $this->userTransformer->transform((object)$userData);
+            return $this->successResponse($responseData);
+        }
+        return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'Invalid Inputs'
+            ], 'Something went wrong !');
+    }
+
+    /**
+     * Login request
+     *
+     * @param Request $request
+     * @return type
+     */
+    public function socialLogin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'social_token'      => 'required'
+        ]);
+
+        if($validator->fails())
+        {
+            $messageData = '';
+            foreach($validator->messages()->toArray() as $message)
+            {
+                $messageData = $message[0];
+            }
+            return $this->failureResponse($validator->messages(), $messageData);
+        }
+
+
+        $user = User::where([
+            'social_token'=> $request->get('social_token')
+        ])->first();
+
+        if(isset($user) && $user->id)
+        {
+            Auth::loginUsingId($user->id, true);
+
+            if($request->get('device_token') && $request->get('device_type'))
+            {
+                $user = Auth::user();
+                $user->device_type  = $request->get('device_type');
+                $user->device_token = $request->get('device_token');
+                $user->save();
+            }
+
+            $user       = Auth::user()->toArray();
+            $token      = JWTAuth::fromUser(Auth::user());
+            $userData   = array_merge($user, ['token' => $token]);
+            $responseData = $this->userTransformer->transform((object)$userData);
+
+            return $this->successResponse($responseData);
+        }
+
+        return response()->json([
+            'error'     => 'Invalid Credentials',
+            'message'   => 'No User Found for given details',
+            'status'    => false,
+            ], 401);
+    }
+
+
+    /**
      * Config
      * 
      * @param  Request $request [description]
@@ -131,7 +256,6 @@ class UsersController extends BaseApiController
         }
         $successResponse = [
             'support_number'        => '110001010',
-            'post_categories'       => $categoryData,
             'rateus_url'            => route('frontend.privacy-policy'),
             'privacy_policy_url'    => route('frontend.privacy-policy'),
             'about_us_url'          => route('frontend.about-us'),
@@ -229,7 +353,7 @@ class UsersController extends BaseApiController
             {
                 $password       = str_random(6);
                 $user->password = bcrypt($password);
-                if ($user->save()) 
+                if($user->save() && 1 == 2 )  
                 {
                     $to = $user->email;
                     $subject = "Reset Password - Gratitude";
@@ -260,14 +384,18 @@ class UsersController extends BaseApiController
 
                     // More headers
                     $headers .= 'From: <info@spottrmedia.com>' . "\r\n";
-                    /*if(mail($to, $subject, $message, $headers))
+                    if(mail($to, $subject, $message, $headers))
                     {
                         $successResponse = [
                             'message' => 'Reset Password Mail send successfully.'
                         ];
-                    }*/
+                    }
                 }
 
+                // Need to Remove
+                $successResponse = [
+                    'message' => 'Reset Password Mail send successfully.'
+                ];
                 return $this->successResponse($successResponse);
             }
 

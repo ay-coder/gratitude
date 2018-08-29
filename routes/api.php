@@ -21,6 +21,11 @@ Route::group(['namespace' => 'Api',], function ()
 {
     Route::post('login', 'UsersController@login')->name('api.login');
     Route::post('register', 'UsersController@create')->name('api.register');
+
+    Route::post('social-register', 'UsersController@socialCreate')->name('api.social-register');
+
+    Route::post('social-login', 'UsersController@socialLogin')->name('api.login');
+
     Route::post('validate-user', 'UsersController@validateUser')->name('api.validate-user');
     Route::post('forgotpassword', 'UsersController@forgotPassword')->name('api.forgotPassword');
     Route::post('user-profile', 'UsersController@getUserProfile')->name('api.user-profile');

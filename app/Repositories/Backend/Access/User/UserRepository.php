@@ -353,10 +353,11 @@ class UserRepository extends BaseRepository
             'status'        => 1,
             'confirmed'     => 1,
             'device_token'  => isset($input['device_token']) ? $input['device_token']: '',
+            'device_type'  => isset($input['device_type']) ? $input['device_type']: 1,
             'phone'         => isset($input['phone']) ? $input['phone']: '',
             'profile_pic'   => isset($input['profile_pic']) ? $input['profile_pic']: 'default.png',
             'gender'        => isset($input['gender']) ? $input['gender']: '',
-            'description'   => isset($input['description']) ? $input['description']: '',
+            'bio'   => isset($input['bio']) ? $input['bio']: '',
         ];
         
         $user = User::create($userData);
@@ -391,5 +392,34 @@ class UserRepository extends BaseRepository
         }
 
         return false;
+    }
+
+    /**
+     * @param  $input
+     *
+     * @return mixed
+     */
+    public function createSocialUserStub($input)
+    {
+        $userData = [
+            'name'              => isset($input['name']) ? $input['name'] : '',
+            'username'         => isset($input['social_token']) ? $input['social_token'] : '',
+            'email'             => isset($input['email']) ? $input['email'] : '',
+            'social_token'   => $input['social_token'],
+            'password'      => isset($input['password']) ? bcrypt($input['password']) : bcrypt($input['name']),
+            'status'        => 1,
+            'confirmed'     => 1,
+            'device_token'  => isset($input['device_token']) ? $input['device_token']: '',
+            'phone'        => isset($input['phone']) ? $input['phone']: '',
+            'device_type'   => isset($input['device_type']) ? $input['device_type']: 2,
+            'profile_pic'   => 'default.png',
+            'address'       => isset($input['address']) ? $input['address']: '',
+            'city'          => isset($input['city']) ? $input['city']: '',
+            'state'         => isset($input['state']) ? $input['state']: '',
+            'zip'           => isset($input['zip']) ? $input['zip']: ''
+        ];
+        
+        $user = User::create($userData);
+        return $user;
     }
 }

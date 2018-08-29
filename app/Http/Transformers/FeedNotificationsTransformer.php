@@ -36,6 +36,7 @@ class FeedNotificationsTransformer extends Transformer
                     'notification_id'   => (int) $item->id,
                     'user_id'           => (int) $item->user_id,
                     'from_user_id'      => (int) $item->from_user_id,
+                    'feed_id'           => (int) $item->feed_id,
                     'notification_type' => $item->notification_type,
                     'description'       => $item->description,
                     'icon'              => URL::to('/').'/uploads/notifications/' . $item->icon,
