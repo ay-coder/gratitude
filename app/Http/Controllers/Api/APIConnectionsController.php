@@ -53,8 +53,16 @@ class APIConnectionsController extends BaseApiController
      */
     public function index(Request $request)
     {
-        $userInfo               = $this->getAuthenticatedUser();
+        $loginUser              = $this->getAuthenticatedUser();
         $userModel              = new User;   
+        $userId                 = $request->has('user_id') ? $request->get('user_id') : $loginUser->id;
+        $userInfo               = User::where('id', $userId)->first();
+        if(! $userInfo)
+        {
+            return $this->setStatusCode(400)->failureResponse([
+            'message' => 'Invalid User Id!'
+            ], 'Invalid Input !');
+        }
         $connectionModel        = new Connections;
         $myConnectionList       = $connectionModel->where('is_accepted', 1)->where('user_id', $userInfo->id)->pluck('other_user_id')->toArray();
         $otherConnectionList    = $connectionModel->where('is_accepted', 1)->where('other_user_id', $userInfo->id)->pluck('requested_user_id')->toArray();
@@ -117,8 +125,14 @@ class APIConnectionsController extends BaseApiController
     {
         $userInfo               = $this->getAuthenticatedUser();
         $connectionModel        = new Connections;
-        $myConnectionList       = $connectionModel->where('user_id', $userInfo->id)->pluck('other_user_id')->toArray();
-        $otherConnectionList    = $connectionModel->where('other_user_id', $userInfo->id)->pluck('requested_user_id')->toArray();
+        $myConnectionList       = $connectionModel->where([
+            'user_id'       => $userInfo->id,
+            'is_accepted'   => 1
+        ])->pluck('other_user_id')->toArray();
+        $otherConnectionList    = $connectionModel->where([
+            'other_user_id' => $userInfo->id,
+            'is_accepted'   => 1
+        ])->pluck('requested_user_id')->toArray();
         $userModel              = new User;   
         $allConnections         = array_merge($myConnectionList, $otherConnectionList);
         $allConnections         = array_unique($allConnections);
@@ -179,8 +193,13 @@ class APIConnectionsController extends BaseApiController
         }
 
 
-
         $userInfo   = $this->getAuthenticatedUser();
+        if($request->get('user_id') == $userInfo->id)
+        {
+            return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'Invalid Input'
+            ], 'Invalid Input!');
+        }
 
         $inConnection = $this->connectionModel->where([
             'other_user_id' => $userInfo->id,
@@ -255,7 +274,9 @@ class APIConnectionsController extends BaseApiController
         $userInfo               = $this->getAuthenticatedUser();
         $connectionModel        = new Connections;
        
-        $allRequests = $connectionModel->with('user')->where(['other_user_id' => $userInfo->id, 'is_accepted' => 0 ])->get();
+        $allRequests = $connectionModel->with('user')->where(['other_user_id' => $userInfo->id,
+            'is_accepted' => 0
+        ])->get();
 
         if($allRequests)
         {

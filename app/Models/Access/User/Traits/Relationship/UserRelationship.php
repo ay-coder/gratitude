@@ -8,6 +8,7 @@ use App\Models\Access\User\SocialLogin;
 use App\Models\Connections\Connections;
 use App\Models\Posts\Posts;
 use App\Models\Notifications\Notifications;
+use App\Models\Followers\Followers;
 
 /**
  * Class UserRelationship.
@@ -122,5 +123,25 @@ trait UserRelationship
     public function user_notifications()
     {
         return $this->hasMany(Notifications::class, 'user_id');
-    }    
+    } 
+
+    /**
+     * Followers description
+     * 
+     * @return array
+     */
+    public function followers()   
+    {
+        return $this->hasMany(Followers::class, 'follower_id');
+    }
+
+    /**
+     * Followers description
+     * 
+     * @return array
+     */
+    public function followings()   
+    {
+        return $this->hasMany(Followers::class, 'user_id');
+    }
 }

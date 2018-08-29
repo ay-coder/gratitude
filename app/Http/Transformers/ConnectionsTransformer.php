@@ -47,6 +47,12 @@ class ConnectionsTransformer extends Transformer
         return $response;
     }
 
+    /**
+     * Connection Transform
+     * 
+     * @param object $items
+     * @return array
+     */
     public function connectionTransform($items)
     {
         $response = [];
@@ -61,8 +67,7 @@ class ConnectionsTransformer extends Transformer
                     'email'         => $this->nulltoBlank($data->email),
                     'phone'         => $this->nulltoBlank($data->phone),
                     'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
-                    'dob'           => $this->nulltoBlank($data->dob),
-                    'gender'        => $this->nulltoBlank($data->gender)
+                    'bio'           => $this->nulltoBlank($data->bio),
                 ];
             }
         }

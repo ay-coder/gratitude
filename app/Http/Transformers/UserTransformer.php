@@ -19,6 +19,7 @@ class UserTransformer extends Transformer
             'email'         => $this->nulltoBlank($data->email),
             'bio'           => $this->nulltoBlank($data->bio),
             'is_archive'    => (int) $data->is_archive,
+            'signup_by'     => (int) $data->signup_by,
             'phone'         => $this->nulltoBlank($data->phone),
             'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
         ];
@@ -38,6 +39,7 @@ class UserTransformer extends Transformer
             'email'         => $this->nulltoBlank($data->email),
             'bio'           => $this->nulltoBlank($data->bio),
             'is_archive'    => (int) $data->is_archive,
+            'signup_by'     => (int) $data->signup_by,
             'phone'         => $this->nulltoBlank($data->phone),
             'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
             'address'       => $this->nulltoBlank($data->address),

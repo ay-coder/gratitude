@@ -33,7 +33,7 @@
             ]); ?>
         </script>
     </head>
-    <body id="app-layout">
+    <body id="app-layout" style="background-color: white;">
         <div id="app">
             <div class="container">
                 @include('includes.partials.messages')
