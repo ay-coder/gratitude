@@ -72,6 +72,72 @@ class APIFeedsController extends BaseApiController
     }
 
     /**
+     * List of All Feeds
+     *
+     * @param Request $request
+     * @return json
+     */
+    public function myTextFeeds(Request $request)
+    {
+        $userInfo   = $this->getAuthenticatedUser();
+        $offset     = $request->has('offset') ? $request->get('offset') : 0;
+        $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
+        $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
+        $order      = $request->get('order') ? $request->get('order') : 'DESC';
+        $items      = $this->repository->model->with([
+            'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
+        ])
+        ->where('feed_type', 1)
+        ->offset($offset)
+        ->limit($perPage)
+        ->get();
+
+        if(isset($items) && count($items))
+        {
+            $itemsOutput = $this->feedsTransformer->showAllFeeds($items);
+
+            return $this->successResponse($itemsOutput);
+        }
+
+        return $this->setStatusCode(400)->failureResponse([
+            'message' => 'Unable to find Feeds!'
+            ], 'No Feeds Found !');
+    }
+
+    /**
+     * List of All Feeds
+     *
+     * @param Request $request
+     * @return json
+     */
+    public function myImageFeeds(Request $request)
+    {
+        $userInfo   = $this->getAuthenticatedUser();
+        $offset     = $request->has('offset') ? $request->get('offset') : 0;
+        $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
+        $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
+        $order      = $request->get('order') ? $request->get('order') : 'DESC';
+        $items      = $this->repository->model->with([
+            'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
+        ])
+        ->where('feed_type', 2)
+        ->offset($offset)
+        ->limit($perPage)
+        ->get();
+
+        if(isset($items) && count($items))
+        {
+            $itemsOutput = $this->feedsTransformer->showAllFeeds($items);
+
+            return $this->successResponse($itemsOutput);
+        }
+
+        return $this->setStatusCode(400)->failureResponse([
+            'message' => 'Unable to find Feeds!'
+            ], 'No Feeds Found !');
+    }
+
+    /**
      * Create
      *
      * @param Request $request
