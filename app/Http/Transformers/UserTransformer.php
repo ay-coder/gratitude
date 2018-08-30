@@ -12,6 +12,7 @@ class UserTransformer extends Transformer
         $postRequestCount  = isset($data->post_requests) ? count($data->post_requests) : 0;
         return [
             'user_id'       => $data->id,
+            'username'      => $data->username,
             'token'         => $this->nulltoBlank($data->token),
             'device_token'  => $data->device_token,
             'device_type'   =>   $data->device_type,
@@ -31,6 +32,7 @@ class UserTransformer extends Transformer
         
         return [
             'user_id'       => $data->id,
+            'username'      => $data->username,
             'username'      => $data->username,
             'token'         => isset($data->token) ? $this->nulltoBlank($data->token) : '',
             'device_token'  => $data->device_token,
@@ -111,6 +113,7 @@ class UserTransformer extends Transformer
 
         return [
             'user_id'       => $data->id,
+            'username'      => $data->username,
             'token'         => $this->nulltoBlank($data->token),
             'device_token'  => $data->device_token,
             'device_type'   =>   $data->device_type,

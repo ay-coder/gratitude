@@ -157,7 +157,10 @@ class UsersController extends BaseApiController
 
         $repository = new UserRepository;
         $input      = $request->all();
-        $input      = array_merge($input, ['profile_pic' => 'default.png']);
+        $input      = array_merge($input, [
+            'signup_by'   => 3,
+            'profile_pic' => 'default.png'
+        ]);
         
 
         $user = $repository->createSocialUserStub($input);
@@ -275,7 +278,11 @@ class UsersController extends BaseApiController
     {
         $repository = new UserRepository;
         $input      = $request->all();
-        $input      = array_merge($input, ['profile_pic' => 'default.png']);
+        $signup_by  = $request->has('email') ? 1 : 2;
+        $input      = array_merge($input, [
+            'signup_by'     => $signup_by,
+            'profile_pic'   => 'default.png'
+        ]);
 
         if($request->file('profile_pic'))
         {
