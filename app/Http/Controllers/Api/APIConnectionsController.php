@@ -124,6 +124,7 @@ class APIConnectionsController extends BaseApiController
     public function search(Request $request)
     {
         $userInfo               = $this->getAuthenticatedUser();
+        $keyword                = $request->get('keyword');
         $connectionModel        = new Connections;
         $myConnectionList       = $connectionModel->where([
             'user_id'       => $userInfo->id,
@@ -142,13 +143,13 @@ class APIConnectionsController extends BaseApiController
             'is_accepted'   => 0
         ])->pluck('other_user_id')->toArray();
 
-        if($request->get('keyword'))
+        if(1==1)
         {
             $suggestions = $userModel->whereNotIn('id', $otherConnectionList)
                       ->whereNotIn('id', $myConnectionList)
                       ->where('id', '!=', $userInfo->id)
-                      ->where('name', 'LIKE', '%'. $request->get('keyword') .'%')
-                      ->orwhere('email', 'LIKE', '%'. $request->get('keyword') .'%')
+                      ->where('name', 'LIKE', '%'. $keyword .'%')
+                      ->orwhere('email', 'LIKE', '%'. $keyword .'%')
                       ->get();
             if(isset($suggestions) && count($suggestions))
             {
