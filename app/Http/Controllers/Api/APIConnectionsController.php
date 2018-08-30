@@ -583,6 +583,51 @@ class APIConnectionsController extends BaseApiController
     }
 
     /**
+     * Remove My Request
+     * 
+     * @param  Request $request
+     * @return array
+     */
+    public function removeMyRequest(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'request_id' => 'required'
+        ]);
+
+        if($validator->fails()) 
+        {
+            $messageData = '';
+
+            foreach($validator->messages()->toArray() as $message)
+            {
+                $messageData = $message[0];
+            }
+            return $this->failureResponse($validator->messages(), $messageData);
+        }
+
+        $connectionModel = new Connections;
+        $userInfo   = $this->getAuthenticatedUser();
+        $connection = $connectionModel->where([
+            'id'                => $request->get('request_id'),
+            'requested_user_id' => $userInfo->id
+        ])->first();
+        
+
+        if(isset($connection) && isset($connection->id))
+        {
+            $connection->delete();   
+
+            return $this->successResponse(['message' => 'Request Removed Successfully !'], 'Connection Request Removed Successfully');
+        }
+       
+        return $this->setStatusCode(404)->failureResponse([
+            'reason' => 'Invalid Inputs'
+        ], 'Something went wrong !');
+    }
+
+    
+
+    /**
      * Search Global
      * 
      * @param Request $request
