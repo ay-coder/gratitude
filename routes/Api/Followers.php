@@ -7,7 +7,10 @@ Route::group(['namespace' => 'Api'], function()
 
 	Route::post('followers/remove', 'APIFollowersController@removeFollow')->name('followers.remove');
 
-    Route::get('followers', 'APIFollowersController@index')->name('followers.index');
+    Route::post('my-followings', 'APIFollowersController@index')->name('followers.index');
+
+    
+
     Route::post('followers/create', 'APIFollowersController@create')->name('followers.create');
     Route::post('followers/edit', 'APIFollowersController@edit')->name('followers.edit');
     Route::post('followers/show', 'APIFollowersController@show')->name('followers.show');

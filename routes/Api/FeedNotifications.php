@@ -5,6 +5,8 @@ Route::group(['namespace' => 'Api'], function()
 
     Route::post('my-notifications', 'APIFeedNotificationsController@getAllNotifications')->name('feednotifications.get-all');
 
+    Route::post('notifications/clear-all', 'APIFeedNotificationsController@clearAll')->name('feednotifications.clear-all');
+
 
     Route::post('feednotifications/create', 'APIFeedNotificationsController@create')->name('feednotifications.create');
     Route::post('feednotifications/edit', 'APIFeedNotificationsController@edit')->name('feednotifications.edit');

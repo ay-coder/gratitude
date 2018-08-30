@@ -95,14 +95,32 @@ class APIFollowersController extends BaseApiController
      */
     public function index(Request $request)
     {
-        $paginate   = $request->get('paginate') ? $request->get('paginate') : false;
+        $userInfo   = $this->getAuthenticatedUser();
+        $offset     = $request->has('offset') ? $request->get('offset') : 0;
+        $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
-        $order      = $request->get('order') ? $request->get('order') : 'ASC';
-        $items      = $paginate ? $this->repository->model->orderBy($orderBy, $order)->paginate($paginate)->items() : $this->repository->getAll($orderBy, $order);
+        $order      = $request->get('order') ? $request->get('order') : 'DESC';
+        $followerIds      = $this->repository->model
+        ->where('follower_id', $userInfo->id)
+        ->pluck('user_id')->toArray();
+
+        $items = User::with(['followers', 'followings'])
+        ->whereIn('id', $followerIds)
+        ->offset($offset)
+        ->limit($perPage)
+        ->get()
+        ->filter(function($item)
+        {
+            $item->followers = count($item->followers);
+            $item->followings = count($item->followings);
+            return $item;
+        });
+
+        $items = $items->sortByDesc('followings');
 
         if(isset($items) && count($items))
         {
-            $itemsOutput = $this->followersTransformer->transformCollection($items);
+            $itemsOutput = $this->followersTransformer->followerTransform($userInfo, $items);
 
             return $this->successResponse($itemsOutput);
         }

@@ -56,6 +56,7 @@ class APIFeedNotificationsController extends BaseApiController
         $items      = $this->repository->model->with([
             'user', 'from_user', 'feed'
         ])
+        ->where('is_read', 0)
         ->offset($offset)
         ->limit($perPage)
         ->get();
@@ -68,8 +69,8 @@ class APIFeedNotificationsController extends BaseApiController
         }
 
         return $this->setStatusCode(400)->failureResponse([
-            'message' => 'Unable to find FeedNotifications!'
-            ], 'No FeedNotifications Found !');
+            'message' => 'Unable to find Notifications!'
+            ], 'No Notifications Found !');
     }
 
     /**
@@ -199,5 +200,32 @@ class APIFeedNotificationsController extends BaseApiController
         return $this->setStatusCode(404)->failureResponse([
             'reason' => 'Invalid Inputs'
         ], 'Something went wrong !');
+    }
+
+    /**
+     * Delete
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function clearAll(Request $request)
+    {
+        $userInfo = $this->getAuthenticatedUser();
+        $status   = $this->repository->model->where([
+            'user_id' => $userInfo->id
+        ])->update([
+            'is_read' => 1
+        ]);
+
+        if($status)
+        {
+            return $this->successResponse([
+                    'success' => 'Cleared All Notifications'
+                ], 'Cleared All Notifications');
+        }
+
+        return $this->setStatusCode(404)->failureResponse([
+            'reason' => 'Invalid Inputs or No Notifications Found!'
+        ], 'Invalid Inputs or No Notifications Found!');
     }
 }
