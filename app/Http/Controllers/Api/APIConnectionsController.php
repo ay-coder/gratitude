@@ -294,6 +294,36 @@ class APIConnectionsController extends BaseApiController
     }
 
     /**
+     * Show My Requests
+     * 
+     * @param Request $request
+     * @return array
+     */
+    public function showMyRequests(Request $request)
+    {
+        $userInfo               = $this->getAuthenticatedUser();
+        $connectionModel        = new Connections;
+       
+        $allRequests = $connectionModel->with('user')->where([
+            'requested_user_id' => $userInfo->id,
+            'is_accepted'       => 0
+        ])->get();
+
+        if($allRequests)
+        {
+            $itemsOutput = $this->connectionsTransformer->requestTransform($allRequests);
+
+            return $this->successResponse($itemsOutput);
+            
+        }
+
+        return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'No Requests Found'
+            ], 'No Pending Request Found!');
+
+    }
+
+    /**
      * View
      *
      * @param Request $request

@@ -13,6 +13,8 @@ Route::group(['namespace' => 'Api'], function()
 
     Route::post('connections/show-requests', 'APIConnectionsController@showRequests')->name('connections.show-requests');
 
+    Route::post('connections/show-my-requests', 'APIConnectionsController@showMyRequests')->name('connections.show-requests');
+
     Route::post('connections/request-accept', 'APIConnectionsController@acceptRequests')->name('connections.request-accept');
 
    	Route::post('connections/request-reject', 'APIConnectionsController@rejectRequests')->name('connections.request-reject');
