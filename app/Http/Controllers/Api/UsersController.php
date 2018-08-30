@@ -654,6 +654,16 @@ class UsersController extends BaseApiController
 
             if($user)
             {
+                $headerToken = request()->header('Authorization');
+
+                if($headerToken)
+                {
+                    $token      = explode(" ", $headerToken);
+                    $userToken  = $token[1];
+                }
+                
+                $user->token = $userToken;  
+            
                 $responseData = $this->userTransformer->userInfo($user);
                 
                 return $this->successResponse($responseData);
