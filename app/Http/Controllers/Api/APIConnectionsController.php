@@ -67,7 +67,8 @@ class APIConnectionsController extends BaseApiController
         $myConnectionList       = $connectionModel->where('is_accepted', 1)->where('user_id', $userInfo->id)->pluck('other_user_id')->toArray();
         $otherConnectionList    = $connectionModel->where('is_accepted', 1)->where('other_user_id', $userInfo->id)->pluck('requested_user_id')->toArray();
             
-        $items = $userModel->whereIn('id', $myConnectionList)
+        $items = $userModel->where('id', '!=', $userInfo->id)
+                    ->whereIn('id', $myConnectionList)
                     ->orWhereIn('id', $otherConnectionList)
                     ->get();
 
