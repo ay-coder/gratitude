@@ -192,13 +192,22 @@ class APIConnectionsController extends BaseApiController
         $allConnections         = array_merge($myConnectionList, $otherConnectionList);
         $allConnections         = array_unique($allConnections);
 
+        $userRequestIds         = $connectionModel->where([
+            'user_id'       => $userInfo->id,
+            'is_accepted'   => 0
+        ])->pluck('other_user_id')->toArray();
+
+        $myRequestIds         = $connectionModel->where([
+            'other_user_id'       => $userInfo->id,
+            'is_accepted'   => 0
+        ])->pluck('other_user_id')->toArray();
+
         if(1==1)
         {
             $suggestions = $userModel->whereNotIn('id', $otherConnectionList)
                       ->whereNotIn('id', $myConnectionList)
                       ->whereNotIn('id', $userRequestIds)
                       ->whereNotIn('id', $myRequestIds)
-                      ->whereNotIn('id', $allConnections)
                       ->whereNotIn('id', $allConnections)
                       ->where('id', '!=', $userInfo->id)
                       ->where('name', 'LIKE', '%'. $keyword .'%')
