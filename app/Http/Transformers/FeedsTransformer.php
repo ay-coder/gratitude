@@ -32,12 +32,16 @@ class FeedsTransformer extends Transformer
      */
     public function showAllFeeds($items)
     {
-        $response = [];
+        $response       = [];
+        $currentUserId  = access()->user()->id;
 
         if(isset($items) && count($items))
         {
             foreach($items as $item)
             {
+                $isLoved        = 0;
+                $isLiked        = 0;
+                $isCommented    = 0;
                 $feedImages     = [];
                 $feedLoveUsers  = [];
                 $feedLikeUsers  = [];
@@ -47,6 +51,9 @@ class FeedsTransformer extends Transformer
                 {
                     foreach($item->feed_loves as $love)
                     {
+                        if($love->user->id == $currentUserId)
+                            $isLoved = 1;
+
                         $feedLoveUsers[] = [
                             'user_id'       => (int)  $love->user->id,
                             'username'      => $love->user->name,
@@ -59,6 +66,9 @@ class FeedsTransformer extends Transformer
                 {
                     foreach($item->feed_likes as $like)
                     {
+                        if($like->user->id == $currentUserId)
+                            $isLiked = 1;
+
                         $feedLikeUsers[] = [
                             'user_id'       => (int)  $like->user->id,
                             'username'      => $like->user->name,
@@ -71,6 +81,9 @@ class FeedsTransformer extends Transformer
                 {
                     foreach($item->feed_comments as $comment)
                     {
+                        if($comment->user->id == $currentUserId)
+                            $isCommented = 1;
+
                         $feedComments[] = [
                             'comment_id' => (int) $comment->id,
                             'feed_id'    => (int) $comment->feed_id,
@@ -104,6 +117,9 @@ class FeedsTransformer extends Transformer
                     'description'   => $item->description,
                     'feed_images'   => $feedImages,
                     'create_at'     => date('m/d/Y h:i:s', strtotime($item->created_at)),
+                    'isLiked'       => (int) $isLiked,
+                    'isLoved'       => (int) $isLoved,
+                    'isCommented'   => (int) $isCommented,
                     'likeCount'     => (int) count($item->feed_likes),
                     'loveCount'     => (int) count($item->feed_loves),
                     'commentCount'  => (int) count($item->feed_comments),
@@ -118,11 +134,14 @@ class FeedsTransformer extends Transformer
 
     public function showSingleFeed($item)
     {
-       $response = [];
+       $response        = [];
+       $currentUserId   = access()->user()->id;
 
         if(isset($item) && count($item))
         {
-            
+            $isLoved        = 0;
+            $isLiked        = 0;
+            $isCommented    = 0;
             $feedImages     = [];
             $feedLoveUsers  = [];
             $feedLikeUsers  = [];
@@ -145,6 +164,9 @@ class FeedsTransformer extends Transformer
             {
                 foreach($item->feed_loves as $love)
                 {
+                    if($love->user->id == $currentUserId)
+                        $isLoved = 1;
+
                     $feedLoveUsers[] = [
                         'user_id'       => (int)  $love->user->id,
                         'username'      => $love->user->name,
@@ -157,6 +179,9 @@ class FeedsTransformer extends Transformer
             {
                 foreach($item->feed_likes as $like)
                 {
+                    if($like->user->id == $currentUserId)
+                        $isLiked = 1;
+
                     $feedLikeUsers[] = [
                         'user_id'       => (int)  $like->user->id,
                         'username'      => $like->user->name,
@@ -169,6 +194,9 @@ class FeedsTransformer extends Transformer
             {
                 foreach($item->feed_comments as $comment)
                 {
+                    if($comment->user->id == $currentUserId)
+                        $isCommented = 1;
+
                     $feedComments[] = [
                         'comment_id' => (int) $comment->id,
                         'feed_id'    => (int) $comment->feed_id,
@@ -201,6 +229,9 @@ class FeedsTransformer extends Transformer
                 'profile_pic'   => URL::to('/').'/uploads/user/' . $item->user->profile_pic,
                 'description'   => $item->description,
                 'create_at'     => date('m/d/Y h:i:s', strtotime($item->created_at)),
+                'isLiked'       => (int) $isLiked,
+                'isLoved'       => (int) $isLoved,
+                'isCommented'   => (int) $isCommented,
                 'feed_images'   => $feedImages,
                 'likeCount'     => (int) count($item->feed_likes),
                 'loveCount'     => (int) count($item->feed_loves),
