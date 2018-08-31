@@ -82,6 +82,7 @@ class BaseApiController extends BaseController
     public function setStatusCode($statusCode = 200)
     {
         $this->statusCode = $statusCode;
+        $this->statusCode = 200;
 
         return $this;
     }
@@ -122,7 +123,7 @@ class BaseApiController extends BaseController
             'error'     => $data,
             'status'    => false,
             'message'   => $message ? $message : 'Failure',
-            'code'      => $code ? $code : $this->getStatusCode()
+            'code'      => 200
         ];
 
         return response()->json(
