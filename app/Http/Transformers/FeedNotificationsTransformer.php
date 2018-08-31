@@ -40,7 +40,8 @@ class FeedNotificationsTransformer extends Transformer
                     'notification_type' => $item->notification_type,
                     'description'       => $item->description,
                     'icon'              => URL::to('/').'/uploads/notifications/' . $item->icon,
-                    'is_read'           => (int) $item->is_read
+                    'is_read'           => (int) $item->is_read,
+                    'created_at'        => date('m/d/Y H:i:s', strtotime($item->created_at))
                 ];
             }
         }
