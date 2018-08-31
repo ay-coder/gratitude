@@ -48,7 +48,7 @@ class ConnectionsTransformer extends Transformer
 
         return $response;
     }
-    
+
     public function requestTransform($items)
     {
         $response = [];
@@ -124,7 +124,7 @@ class ConnectionsTransformer extends Transformer
         return $response;
     }
 
-    public function searchUserTranform($items, $myConnectionList = array(), $userRequestIds = array(), $userInfo = null)
+    public function searchUserTranform($items, $myConnectionList = array(), $userRequestIds = array(), $userInfo = null, $myRequestIds = array())
     {
         $response = [];
 
@@ -136,15 +136,19 @@ class ConnectionsTransformer extends Transformer
                 {
                     continue;
                 }
+
+                if(in_array($data->id, $myRequestIds))
+                {
+                    continue;
+                }
+
                 $isConnected    = in_array($data->id, $myConnectionList) ? 1 : 0;
-                $isRequested    = in_array($data->id, $userRequestIds ) ? 1 : 0;
                 $response[]     = [
                     'user_id'       => (int) $data->id,
                     'name'          => $this->nulltoBlank($data->name),
                     'email'         => $this->nulltoBlank($data->email),
                     'phone'         => $this->nulltoBlank($data->phone),
                     'is_connected'  => $isConnected,
-                    'is_requested'  => $isRequested,
                     'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
                 ];
             }

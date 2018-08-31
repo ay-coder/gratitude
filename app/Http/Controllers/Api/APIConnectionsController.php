@@ -128,12 +128,14 @@ class APIConnectionsController extends BaseApiController
         $connectionModel        = new Connections;
         $myConnectionList       = $connectionModel->where([
             'user_id'       => $userInfo->id,
-            
+            'is_accepted'   => 1
         ])->pluck('other_user_id')->toArray();
+
         $otherConnectionList    = $connectionModel->where([
             'other_user_id' => $userInfo->id,
-            
+            'is_accepted'   => 1
         ])->pluck('requested_user_id')->toArray();
+
         $userModel              = new User;   
         $allConnections         = array_merge($myConnectionList, $otherConnectionList);
         $allConnections         = array_unique($allConnections);
@@ -148,17 +150,20 @@ class APIConnectionsController extends BaseApiController
             'is_accepted'   => 0
         ])->pluck('other_user_id')->toArray();
 
+
+        $myRequestIds = array_merge($userRequestIds, $myRequestIds);
+        $myRequestIds = array_unique($myRequestIds);        
+
         if(1==1)
         {
-            $suggestions = $userModel->whereNotIn('id', $otherConnectionList)
-                      ->whereNotIn('id', $myConnectionList)
+            $suggestions = $userModel->whereNotIn('id', $myRequestIds)
                       ->where('id', '!=', $userInfo->id)
                       ->where('name', 'LIKE', '%'. $keyword .'%')
                       ->orwhere('email', 'LIKE', '%'. $keyword .'%')
                       ->get();
             if(isset($suggestions) && count($suggestions))
             {
-                $itemsOutput = $this->connectionsTransformer->searchUserTranform($suggestions, $allConnections, $userRequestIds, $userInfo);
+                $itemsOutput = $this->connectionsTransformer->searchUserTranform($suggestions, $allConnections, $userRequestIds, $userInfo, $myRequestIds);
 
                 if(count($itemsOutput) && isset($itemsOutput))
                 {
