@@ -765,4 +765,32 @@ class UsersController extends BaseApiController
 
         return $this->successResponse($successResponse);
     }
+
+    public function changeDeviceToken(Request $request)
+    {
+        if($request->has('device_token'))        
+        {
+            $userInfo = $this->getAuthenticatedUser();
+
+            $userInfo->device_token = $request->get('device_token');
+
+            if($request->has('device_type'))
+            {
+                $userInfo->device_type = $request->get('device_type');
+            }
+
+            if($userInfo->save())
+            {
+                $successResponse = [
+                    'message' => 'Device Token Updated successfully.'
+                ];
+
+                return $this->successResponse($successResponse);                
+            }
+        }
+
+        return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'Invalid Input !'
+        ], 'Invalid Input!');
+    }
 }

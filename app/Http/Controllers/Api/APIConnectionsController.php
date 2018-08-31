@@ -192,18 +192,6 @@ class APIConnectionsController extends BaseApiController
         $allConnections         = array_merge($myConnectionList, $otherConnectionList);
         $allConnections         = array_unique($allConnections);
 
-        //dd();
-
-        $userRequestIds         = $connectionModel->where([
-            'user_id'       => $userInfo->id,
-            'is_accepted'   => 0
-        ])->pluck('other_user_id')->toArray();
-
-        $myRequestIds         = $connectionModel->where([
-            'other_user_id'       => $userInfo->id,
-            'is_accepted'   => 0
-        ])->pluck('other_user_id')->toArray();
-
         if(1==1)
         {
             $suggestions = $userModel->whereNotIn('id', $otherConnectionList)
@@ -376,7 +364,7 @@ class APIConnectionsController extends BaseApiController
 
         if($allRequests)
         {
-            $itemsOutput = $this->connectionsTransformer->requestTransform($allRequests);
+            $itemsOutput = $this->connectionsTransformer->myRequestTransform($allRequests);
 
             return $this->successResponse($itemsOutput);
             

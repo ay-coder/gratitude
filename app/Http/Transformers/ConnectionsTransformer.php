@@ -24,6 +24,31 @@ class ConnectionsTransformer extends Transformer
         ];
     }
 
+    
+    public function myRequestTransform($items)
+    {
+        $response = [];
+
+        if($items)
+        {
+            foreach($items as $item)
+            {
+                $response[] = [
+                    'request_id'        => (int) $item->id,
+                    'other_user_id'     => (int) $item->other_user_id,
+                    'requested_user_id' => (int) $item->user->id,
+                    'user_id'           => $item->user->id,
+                    'name'              => $item->other_user->name,
+                    'email'             => $item->other_user->email,
+                    'phone'             => $item->other_user->phone,
+                    'profile_pic'       => isset($item->other_user->profile_pic) ? URL::to('/').'/uploads/user/' . $item->other_user->profile_pic : ''
+                ];
+            }
+        }
+
+        return $response;
+    }
+    
     public function requestTransform($items)
     {
         $response = [];

@@ -35,6 +35,7 @@ Route::group(['namespace' => 'Api',], function ()
     Route::get('config', 'UsersController@config')->name('api.config');
 
     Route::get('test-push-notification', 'UsersController@testNotification')->name('api.test-notification');
+
     /*Route::post('verifyotp', 'UsersController@verifyOtp')->name('api.verifyotp');
     Route::post('resendotp', 'UsersController@resendOtp')->name('api.resendotp');
     Route::post('forgotpassword', 'UsersController@forgotPassword')->name('api.forgotPassword');
@@ -45,6 +46,9 @@ Route::group(['namespace' => 'Api',], function ()
 Route::group(['namespace' => 'Api', 'middleware' => 'jwt.customauth'], function () 
 {
     Route::post('update-user-profile', 'UsersController@updageUserProfile')->name('api.update-user-profile');
+
+    Route::post('change-device_token', 'UsersController@changeDeviceToken')->name('api.change-device-token');
+
 
     Route::post('change-password', 'UsersController@changePassword')->name('api.change-password');
 
