@@ -383,6 +383,16 @@ class UserRepository extends BaseRepository
                 unset($input['id']);
             }
 
+            if(! isset($input['phone']))
+            {
+                unset($input['phone']);
+            }
+
+            if(! isset($input['email']))
+            {
+                unset($input['email']);
+            }
+
             if(isset($input['email']))
             {
                 unset($input['email']);
