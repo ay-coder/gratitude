@@ -34,6 +34,8 @@ class FeedsTransformer extends Transformer
     {
         $response       = [];
         $currentUserId  = access()->user()->id;
+        $connectionIds  = access()->getMyConnectionIds($currentUserId);
+        $requestIds     = access()->getMyRequestIds($currentUserId);
 
         if(isset($items) && count($items))
         {
@@ -46,6 +48,21 @@ class FeedsTransformer extends Transformer
                 $feedLoveUsers  = [];
                 $feedLikeUsers  = [];
                 $feedComments   = [];
+                $tagUsers       = [];
+                $loveLikes      = [];
+                $feedLoveLikeUsers = [];
+
+                if(isset($item->feed_tag_users) && count($item->feed_tag_users))
+                {
+                    foreach($item->feed_tag_users as $tagUser)
+                    {
+                        $tagUsers[] = [
+                            'user_id'       => (int)  $tagUser->user->id,
+                            'username'      => $tagUser->user->name,
+                            'profile_pic'   => URL::to('/').'/uploads/user/' . $tagUser->user->profile_pic,
+                        ];
+                    }
+                }
 
                 if(isset($item->feed_loves) && count($item->feed_loves))
                 {
@@ -57,7 +74,10 @@ class FeedsTransformer extends Transformer
                         $feedLoveUsers[] = [
                             'user_id'       => (int)  $love->user->id,
                             'username'      => $love->user->name,
+                            'is_love'       => 1,
+                            'is_like'       => 0,
                             'profile_pic'   => URL::to('/').'/uploads/user/' . $love->user->profile_pic,
+                            'created_at'    => date('m/d/Y H:i:s', strtotime($love->created_at))
                         ];
                     }
                 }
@@ -72,11 +92,41 @@ class FeedsTransformer extends Transformer
                         $feedLikeUsers[] = [
                             'user_id'       => (int)  $like->user->id,
                             'username'      => $like->user->name,
+                            'is_like'       => 1,
+                            'is_love'       => 0,
                             'profile_pic'   => URL::to('/').'/uploads/user/' . $like->user->profile_pic,
+                            'created_at'    => date('m/d/Y H:i:s', strtotime($like->created_at))
                         ];
                     }
                 }
 
+
+                $loveLikeUsers = array_merge($feedLoveUsers, $feedLikeUsers);
+                $loveLikeUsers = collect($loveLikeUsers);
+                $loveLikeUsers = $loveLikeUsers->sortBy('created_at');
+
+                if(isset($loveLikeUsers) && count($loveLikeUsers))
+                {
+                    foreach($loveLikeUsers as $loveLike)   
+                    {
+                        $loveLike = (object)$loveLike;
+                        $isConnected = in_array($loveLike->user_id, $connectionIds) ? 1 : 0;
+                        $isRequested = in_array($loveLike->user_id, $requestIds) ? 1 : 0;
+                        $isMe  = $loveLike->user_id == $currentUserId ? 1 : 0;
+                        $feedLoveLikeUsers[] = [
+                            'user_id'       => (int) $loveLike->user_id,
+                            'is_connected'  => $isConnected,
+                            'is_requested'  => $isRequested,
+                            'is_me'         => $isMe,
+                            'username'      => $loveLike->username,
+                            'is_like'       => $loveLike->is_like,
+                            'is_love'       => $loveLike->is_love,
+                            'profile_pic'   => $loveLike->profile_pic,
+                            'created_at'    => $loveLike->created_at
+                        ];
+                    }
+                }
+                
                 if(isset($item->feed_comments) && count($item->feed_comments))
                 {
                     foreach($item->feed_comments as $comment)
@@ -125,7 +175,9 @@ class FeedsTransformer extends Transformer
                     'commentCount'  => (int) count($item->feed_comments),
                     'loveUsers'     => $feedLoveUsers,
                     'likeUsers'     => $feedLikeUsers,
-                    'allComments'   => $feedComments
+                    'allComments'   => $feedComments,
+                    'tagUsers'      => $tagUsers,
+                    'loveLikeUsers' => $feedLoveLikeUsers
                 ];
             }
         }
@@ -134,8 +186,10 @@ class FeedsTransformer extends Transformer
 
     public function showSingleFeed($item)
     {
-       $response        = [];
-       $currentUserId   = access()->user()->id;
+       $response       = [];
+       $currentUserId  = access()->user()->id;
+       $connectionIds  = access()->getMyConnectionIds($currentUserId);
+       $requestIds     = access()->getMyRequestIds($currentUserId);
 
         if(isset($item) && count($item))
         {
@@ -147,6 +201,8 @@ class FeedsTransformer extends Transformer
             $feedLikeUsers  = [];
             $feedComments   = [];
             $tagUsers       = [];
+            $loveLikes      = [];
+            $feedLoveLikeUsers = [];
 
             if(isset($item->feed_tag_users) && count($item->feed_tag_users))
             {
@@ -170,7 +226,10 @@ class FeedsTransformer extends Transformer
                     $feedLoveUsers[] = [
                         'user_id'       => (int)  $love->user->id,
                         'username'      => $love->user->name,
+                        'is_love'       => 1,
+                        'is_like'       => 0,
                         'profile_pic'   => URL::to('/').'/uploads/user/' . $love->user->profile_pic,
+                        'created_at'    => date('m/d/Y H:i:s', strtotime($love->created_at))
                     ];
                 }
             }
@@ -185,10 +244,40 @@ class FeedsTransformer extends Transformer
                     $feedLikeUsers[] = [
                         'user_id'       => (int)  $like->user->id,
                         'username'      => $like->user->name,
+                        'is_like'       => 1,
+                        'is_love'       => 0,
                         'profile_pic'   => URL::to('/').'/uploads/user/' . $like->user->profile_pic,
+                        'created_at'    => date('m/d/Y H:i:s', strtotime($like->created_at))
                     ];
                 }
             }
+
+            $loveLikeUsers = array_merge($feedLoveUsers, $feedLikeUsers);
+            $loveLikeUsers = collect($loveLikeUsers);
+            $loveLikeUsers = $loveLikeUsers->sortBy('created_at');
+
+            if(isset($loveLikeUsers) && count($loveLikeUsers))
+            {
+                foreach($loveLikeUsers as $loveLike)   
+                {
+                    $loveLike = (object)$loveLike;
+                    $isConnected = in_array($loveLike->user_id, $connectionIds) ? 1 : 0;
+                    $isRequested = in_array($loveLike->user_id, $requestIds) ? 1 : 0;
+                    $isMe  = $loveLike->user_id == $currentUserId ? 1 : 0;
+                    $feedLoveLikeUsers[] = [
+                        'user_id'       => (int) $loveLike->user_id,
+                        'is_connected'  => $isConnected,
+                        'is_requested'  => $isRequested,
+                        'is_me'         => $isMe,
+                        'username'      => $loveLike->username,
+                        'is_like'       => $loveLike->is_like,
+                        'is_love'       => $loveLike->is_love,
+                        'profile_pic'   => $loveLike->profile_pic,
+                        'created_at'    => $loveLike->created_at
+                    ];
+                }
+            }
+
 
             if(isset($item->feed_comments) && count($item->feed_comments))
             {
@@ -240,7 +329,8 @@ class FeedsTransformer extends Transformer
                 'loveUsers'     => $feedLoveUsers,
                 'likeUsers'     => $feedLikeUsers,
                 'allComments'   => $feedComments,
-                'tagUsers'      => $tagUsers
+                'tagUsers'      => $tagUsers,
+                'loveLikeUsers'=> $feedLoveLikeUsers
             ];
         }
         

@@ -4,6 +4,7 @@ namespace App\Services\Access;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use App\Models\ReadPost\ReadPost;
+use App\Models\Connections\Connections;
 
 /**
  * Class Access.
@@ -167,4 +168,64 @@ class Access
         
         return [];
     }    
+
+    /**
+     * Get My ConnectionIds
+     * 
+     * @param int $userId
+     * @return array
+     */
+    public function getMyConnectionIds($userId = null)
+    {
+        if($userId)   
+        {
+            $connectionModel        = new Connections;
+            $myConnectionList       = $connectionModel->where([
+                'user_id'       => $userId,
+                'is_accepted'   => 1
+            ])->pluck('other_user_id')->toArray();
+
+            $otherConnectionList    = $connectionModel->where([
+                'other_user_id' => $userId,
+                'is_accepted'   => 1
+            ])->pluck('requested_user_id')->toArray();
+
+            $allConnections         = array_merge($myConnectionList, $otherConnectionList);
+            $allConnections         = array_unique($allConnections);
+
+            return $allConnections;
+        }
+
+        return [];
+    }
+
+    /**
+     * Get My Request Ids
+     * 
+     * @param int $userId
+     * @return array
+     */
+    public function getMyRequestIds($userId = null)
+    {
+        if($userId)   
+        {
+            $connectionModel        = new Connections;
+            $myConnectionList       = $connectionModel->where([
+                'user_id'       => $userId,
+                'is_accepted'   => 0
+            ])->pluck('other_user_id')->toArray();
+
+            $otherConnectionList    = $connectionModel->where([
+                'other_user_id' => $userId,
+                'is_accepted'   => 0
+            ])->pluck('requested_user_id')->toArray();
+
+            $allConnections         = array_merge($myConnectionList, $otherConnectionList);
+            $allConnections         = array_unique($allConnections);
+
+            return $allConnections;
+        }
+
+        return [];
+    }
 }

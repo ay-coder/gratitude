@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Http\Transformers\FeedsTransformer;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\Feeds\EloquentFeedsRepository;
+use App\Models\UserGroups\UserGroups;
+use App\Models\Connections\Connections;
 
 class APIFeedsController extends BaseApiController
 {
@@ -149,7 +151,8 @@ class APIFeedsController extends BaseApiController
 
         if($model)
         {
-            $input = $request->all();
+            $input      = $request->all();
+            $tagUsers   = [];
 
             if(isset($input['feed_images']) && count($input['feed_images']))
             {
@@ -173,6 +176,7 @@ class APIFeedsController extends BaseApiController
                 }
             }
 
+
             if(isset($input['tag_users']))
             {
                 $tagUsers       = explode(',', $input['tag_users']);
@@ -189,6 +193,49 @@ class APIFeedsController extends BaseApiController
                 {
                     $model->feed_tag_users()->insert($tagUserData);
                 }
+            }
+
+            if(isset($input['group_id']))
+            {
+                $userInfo           = $this->getAuthenticatedUser();
+                $groupMemberData    = [];
+                $userGroup          = UserGroups::where([
+                    'user_id'   => $userInfo->id,
+                    'id'        => $input['group_id']
+                ])
+                ->with('group_members')
+                ->first();
+
+                $uniqueGrpMembers = [];
+
+                if(isset($userGroup) && isset($userGroup->group_members))
+                {
+                    foreach($userGroup->group_members as $member)
+                    {
+                        if(in_array($member->member_id, $tagUsers))
+                        {
+                            continue;
+                        }
+
+                        if(in_array($member->member_id, $uniqueGrpMembers))
+                        {
+                            continue;
+                        }
+                        
+                        $uniqueGrpMembers[] = $member->member_id;
+
+                        $groupMemberData[] = [
+                            'user_id'   => $member->member_id,
+                            'feed_id'   => $model->id
+                        ];
+                    }
+
+                    if(count($groupMemberData))
+                    {
+                        $model->feed_tag_users()->insert($groupMemberData);
+                    }
+                }
+
             }
 
             $responseData = [
