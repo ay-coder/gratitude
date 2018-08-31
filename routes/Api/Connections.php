@@ -9,6 +9,9 @@ Route::group(['namespace' => 'Api'], function()
     
     Route::post('connections-search', 'APIConnectionsController@search')->name('connections.search');
 
+    Route::post('search-app-users', 'APIConnectionsController@searchAppUsers')->name('connections.search-app-users');
+
+
     Route::post('connections/create', 'APIConnectionsController@create')->name('connections.create');
 
     Route::post('connections/show-requests', 'APIConnectionsController@showRequests')->name('connections.show-requests');

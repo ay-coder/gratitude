@@ -128,11 +128,11 @@ class APIConnectionsController extends BaseApiController
         $connectionModel        = new Connections;
         $myConnectionList       = $connectionModel->where([
             'user_id'       => $userInfo->id,
-            'is_accepted'   => 1
+            
         ])->pluck('other_user_id')->toArray();
         $otherConnectionList    = $connectionModel->where([
             'other_user_id' => $userInfo->id,
-            'is_accepted'   => 1
+            
         ])->pluck('requested_user_id')->toArray();
         $userModel              = new User;   
         $allConnections         = array_merge($myConnectionList, $otherConnectionList);
@@ -140,6 +140,11 @@ class APIConnectionsController extends BaseApiController
 
         $userRequestIds         = $connectionModel->where([
             'user_id'       => $userInfo->id,
+            'is_accepted'   => 0
+        ])->pluck('other_user_id')->toArray();
+
+        $myRequestIds         = $connectionModel->where([
+            'other_user_id'       => $userInfo->id,
             'is_accepted'   => 0
         ])->pluck('other_user_id')->toArray();
 
@@ -154,6 +159,66 @@ class APIConnectionsController extends BaseApiController
             if(isset($suggestions) && count($suggestions))
             {
                 $itemsOutput = $this->connectionsTransformer->searchUserTranform($suggestions, $allConnections, $userRequestIds, $userInfo);
+
+                if(count($itemsOutput) && isset($itemsOutput))
+                {
+                    return $this->successResponse($itemsOutput);
+                }
+
+                return $this->successResponse([], 'No Result Found !');
+            }
+        }
+        
+
+        return $this->setStatusCode(400)->failureResponse([
+            'message' => 'Unable to find Connections!'
+            ], 'No Connections Found !');
+    }
+
+    public function searchAppUsers(Request $request)
+    {
+        $userInfo               = $this->getAuthenticatedUser();
+        $keyword                = $request->get('keyword');
+        $connectionModel        = new Connections;
+        $myConnectionList       = $connectionModel->where([
+            'user_id'       => $userInfo->id,
+            
+        ])->pluck('other_user_id')->toArray();
+        $otherConnectionList    = $connectionModel->where([
+            'other_user_id' => $userInfo->id,
+            
+        ])->pluck('requested_user_id')->toArray();
+        $userModel              = new User;   
+        $allConnections         = array_merge($myConnectionList, $otherConnectionList);
+        $allConnections         = array_unique($allConnections);
+
+        //dd();
+
+        $userRequestIds         = $connectionModel->where([
+            'user_id'       => $userInfo->id,
+            'is_accepted'   => 0
+        ])->pluck('other_user_id')->toArray();
+
+        $myRequestIds         = $connectionModel->where([
+            'other_user_id'       => $userInfo->id,
+            'is_accepted'   => 0
+        ])->pluck('other_user_id')->toArray();
+
+        if(1==1)
+        {
+            $suggestions = $userModel->whereNotIn('id', $otherConnectionList)
+                      ->whereNotIn('id', $myConnectionList)
+                      ->whereNotIn('id', $userRequestIds)
+                      ->whereNotIn('id', $myRequestIds)
+                      ->whereNotIn('id', $allConnections)
+                      ->whereNotIn('id', $allConnections)
+                      ->where('id', '!=', $userInfo->id)
+                      ->where('name', 'LIKE', '%'. $keyword .'%')
+                      ->orwhere('email', 'LIKE', '%'. $keyword .'%')
+                      ->get();
+            if(isset($suggestions) && count($suggestions))
+            {
+                $itemsOutput = $this->connectionsTransformer->searchAppUserTranform($suggestions, $userInfo, $allConnections);
 
                 if(count($itemsOutput) && isset($itemsOutput))
                 {

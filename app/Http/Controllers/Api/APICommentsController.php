@@ -6,6 +6,9 @@ use App\Http\Transformers\CommentsTransformer;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\Comments\EloquentCommentsRepository;
 use App\Models\ReportComments\ReportComments;
+use App\Models\Feeds\Feeds;
+use App\Library\Push\PushNotification;
+use App\Models\Notifications\Notifications;
 use URL;
 
 class APICommentsController extends BaseApiController
@@ -109,6 +112,7 @@ class APICommentsController extends BaseApiController
         if($request->has('feed_id'))
         {
             $userInfo   = $this->getAuthenticatedUser();
+            $feedOwner  = Feeds::with('user')->where('id', $request->get('feed_id'))->first();
             $model      = $this->repository->model->create([
                 'user_id'       => (int) $userInfo->id,
                 'feed_id'       => (int) $request->get('feed_id'),
@@ -117,6 +121,29 @@ class APICommentsController extends BaseApiController
 
             if($model)
             {
+                $text = $userInfo->name . ' has commented on your Feed.';
+                $payload = [
+                    'mtitle'            => '',
+                    'mdesc'             => $text,
+                    'feed_id'           => $request->get('feed_id'),
+                    'to_user_id'        => $feedOwner->user->id,
+                    'from_user_id'      => $userInfo->id,
+                    'mtype'             => 'NEW_COMMENT'
+                ];
+                
+                Notifications::create([
+                    'user_id'           => $feedOwner->user->id,
+                    'from_user_id'      => $userInfo->id,
+                    'description'       => $text,
+                    'feed_id'           => $model->id,
+                    'notification_type' => 'NEW_COMMENT'
+                ]);
+
+                if(isset($feedOwner->user->device_token))
+                {
+                    PushNotification::iOS($payload, $feedOwner->user->device_token);
+                }
+                
                 $response = [
                     'comment_id' => $model->id,
                     'feed_id'    => $model->feed_id,

@@ -121,8 +121,37 @@ class ConnectionsTransformer extends Transformer
                     'is_connected'  => $isConnected,
                     'is_requested'  => $isRequested,
                     'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
-                    'dob'           => $this->nulltoBlank($data->dob),
-                    'gender'        => $this->nulltoBlank($data->gender)
+                ];
+            }
+        }
+
+        return $response;
+    }
+
+    public function searchAppUserTranform($items, $userInfo = null, $allConnections = array())
+    {
+        $response = [];
+
+        if(isset($items) && count($items))
+        {
+            foreach($items as $data)
+            {
+                if(isset($userInfo) && $userInfo->id == $data->id)
+                {
+                    continue;
+                }
+
+                if(in_array($data->id, $allConnections))
+                {
+                    continue;
+                }
+                
+                $response[]     = [
+                    'user_id'       => (int) $data->id,
+                    'name'          => $this->nulltoBlank($data->name),
+                    'email'         => $this->nulltoBlank($data->email),
+                    'phone'         => $this->nulltoBlank($data->phone),
+                    'profile_pic'   => isset($data->profile_pic) ? URL::to('/').'/uploads/user/' . $data->profile_pic : '',
                 ];
             }
         }

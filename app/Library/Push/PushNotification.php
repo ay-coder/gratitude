@@ -8,7 +8,7 @@ class PushNotification
 	private static $API_ACCESS_KEY = 'AIzaSyDG3fYAj1uW7VB-wejaMJyJXiO5JagAsYI';
 
 	// (iOS) Private key's passphrase.
-	private static $passphrase = '123456789';
+	private static $passphrase = 'n1234567890';
 	
 	// (Windows Phone 8) The name of our push channel.
     private static $channelName = "";
@@ -102,7 +102,7 @@ class PushNotification
 		$ctx = stream_context_create();
 
 		// ck.pem is your certificate file
-		stream_context_set_option($ctx, 'ssl', 'local_cert', public_path().DIRECTORY_SEPARATOR.'spotter.pem');
+		stream_context_set_option($ctx, 'ssl', 'local_cert', public_path().DIRECTORY_SEPARATOR.'gratitude.pem');
 		stream_context_set_option($ctx, 'ssl', 'passphrase', self::$passphrase);
 
 		//LIVE URL - gateway.push.apple.com
