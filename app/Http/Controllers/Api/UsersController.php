@@ -355,12 +355,12 @@ class UsersController extends BaseApiController
             $userData       = array_merge($user, ['token' => $token]);  
             $responseData   = $this->userTransformer->transform((object)$userData);
 
-            Connections::create([
+            /*Connections::create([
                 'user_id'           => $user['id'],
                 'other_user_id'     => 1,
                 'requested_user_id' => $user['id'],
                 'is_accepted'       => 1
-            ]);
+            ]);*/
 
             return $this->successResponse($responseData);
         }
