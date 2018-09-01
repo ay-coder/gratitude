@@ -436,7 +436,7 @@ class UsersController extends BaseApiController
 
             return $this->setStatusCode(400)->failureResponse([
                 'error' => 'User not Found !'
-            ], 'Something went wrong !');
+            ], 'User not Found !');
         }
 
         return $this->setStatusCode(400)->failureResponse([
