@@ -418,7 +418,7 @@ class UsersController extends BaseApiController
                     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 
                     // More headers
-                    $headers .= 'From: <info@spottrmedia.com>' . "\r\n";
+                    $headers .= 'From: <info@grattitude.com>' . "\r\n";
                     if(mail($to, $subject, $message, $headers))
                     {
                         $successResponse = [
@@ -431,7 +431,7 @@ class UsersController extends BaseApiController
                 $successResponse = [
                     'message' => 'Reset Password Mail send successfully.'
                 ];
-                return $this->successResponse($successResponse);
+                return $this->successResponse($successResponse, 'Reset Password Mail send successfully.');
             }
 
             return $this->setStatusCode(400)->failureResponse([
