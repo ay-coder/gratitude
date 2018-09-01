@@ -347,7 +347,7 @@ class APIUserGroupsController extends BaseApiController
             $userInfo   = $this->getAuthenticatedUser();
             $model      = UserGroupMembers::where([
                 'member_id'   => $userInfo->id,
-                'id'          => $request->get('group_id')
+                'group_id'    => $request->get('group_id')
             ])->first();
 
             if(count($model) == 0 )
