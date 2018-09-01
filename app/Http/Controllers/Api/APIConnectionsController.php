@@ -316,7 +316,7 @@ class APIConnectionsController extends BaseApiController
         
         FeedNotifications::create([
             'user_id'           => $requestedUser->id,
-            'to_user_id'        => $userInfo->id,
+            'from_user_id'      => $userInfo->id,
             'description'       => $text,
             'notification_type' => 'NEW_CONNECTION'
         ]);
