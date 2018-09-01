@@ -318,6 +318,7 @@ class APIConnectionsController extends BaseApiController
             'user_id'           => $requestedUser->id,
             'from_user_id'      => $userInfo->id,
             'description'       => $text,
+            'icon'              => 'friendsrequest.png',
             'notification_type' => 'NEW_CONNECTION'
         ]);
 
@@ -588,11 +589,12 @@ class APIConnectionsController extends BaseApiController
                 'mtype'             => 'ACCEPT_CONNECTION'
             ];
             
-            Notifications::create([
-                'user_id'           => $userInfo->id,
-                'to_user_id'        => $requestedUser->id,
+            FeedNotifications::create([
+                'user_id'           => $requestedUser->id,
+                'from_user_id'      => $userInfo->id,
                 'description'       => $text,
-                'notification_type' => 'ACCEPT_CONNECTION'
+                'icon'              => 'acceptrequest.png',
+                'notification_type' => 'CONNECTION_ACCEPTED'
             ]);
 
             if(isset($requestedUser->device_token))
