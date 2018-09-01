@@ -90,6 +90,7 @@ class APIFeedsController extends BaseApiController
             'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
         ->where('feed_type', 1)
+        ->where('user_id', $userInfo->id)
         ->offset($offset)
         ->limit($perPage)
         ->get();
@@ -123,6 +124,7 @@ class APIFeedsController extends BaseApiController
             'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
         ->where('feed_type', 2)
+        ->where('user_id', $userInfo->id)
         ->offset($offset)
         ->limit($perPage)
         ->get();
