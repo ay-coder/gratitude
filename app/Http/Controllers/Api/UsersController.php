@@ -23,6 +23,7 @@ use App\Models\Connections\Connections;
 use App\Library\Push\PushNotification;
 use App\Models\Categories\Categories;
 use URL;
+use App\Models\Templates\Templates;
 
 class UsersController extends BaseApiController
 {
@@ -243,7 +244,9 @@ class UsersController extends BaseApiController
     public function config(Request $request)
     {
         $categories     =  Categories::getAll();
+        $templates      =  Templates::getAll();
         $categoryData   = [];
+        $templateData   = [];
 
         if(isset($categories) && count($categories))
         {
@@ -257,12 +260,25 @@ class UsersController extends BaseApiController
             }
             
         }
+
+        if(isset($templates) && count($templates))
+        {
+            foreach($templates as $template)
+            {
+                $templateData[] = [
+                    'template_id'   => (int) $template->id,
+                    'body'          => $template->body
+                ];
+            }
+        }
+
         $successResponse = [
             'support_number'        => '110001010',
             'rateus_url'            => route('frontend.privacy-policy'),
             'privacy_policy_url'    => route('frontend.privacy-policy'),
             'about_us_url'          => route('frontend.about-us'),
             'terms_conditions_url'  => route('frontend.terms-conditions'),
+            'feed_templates'        => $templateData
         ];
 
         return $this->successResponse($successResponse);
