@@ -9,7 +9,7 @@ use App\Models\Access\User\User;
 use App\Models\Connections\Connections;
 use Illuminate\Support\Facades\Validator;
 use App\Library\Push\PushNotification;
-use App\Models\Notifications\Notifications;
+use App\Models\FeedNotifications\FeedNotifications;
 
 class APIConnectionsController extends BaseApiController
 {
@@ -314,7 +314,7 @@ class APIConnectionsController extends BaseApiController
             'mtype'             => 'NEW_CONNECTION'
         ];
         
-        Notifications::create([
+        FeedNotifications::create([
             'user_id'           => $userInfo->id,
             'to_user_id'        => $requestedUser->id,
             'description'       => $text,
