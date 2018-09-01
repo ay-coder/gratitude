@@ -57,6 +57,7 @@ class APIFeedNotificationsController extends BaseApiController
             'user', 'from_user', 'feed'
         ])
         ->where('is_read', 0)
+        ->where('user_id', $userInfo->id)
         ->offset($offset)
         ->limit($perPage)
         ->get();
