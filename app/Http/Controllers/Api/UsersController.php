@@ -327,6 +327,18 @@ class UsersController extends BaseApiController
             return $this->failureResponse($validator->messages(), $messageData);
         }
 
+        if($request->has('email'))
+        {
+            $isExist = User::where('email', $request->get('email'))->first();
+
+            if(isset($isExist->id) && count($isExist))
+            {
+               return $this->setStatusCode(400)->failureResponse([
+                'reason' => 'Email Already Exists !'
+                ], 'Email Already Exists !'); 
+            }
+        }
+
         $user = $repository->createUserStub($input);
 
         if($user)
