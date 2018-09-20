@@ -104,12 +104,36 @@ class FeedsTransformer extends Transformer
                 $loveLikeUsers = array_merge($feedLoveUsers, $feedLikeUsers);
                 $loveLikeUsers = collect($loveLikeUsers);
                 $loveLikeUsers = $loveLikeUsers->sortBy('created_at');
+                $loveLikeIds   = [];
 
                 if(isset($loveLikeUsers) && count($loveLikeUsers))
                 {
                     foreach($loveLikeUsers as $loveLike)   
                     {
+
                         $loveLike = (object)$loveLike;
+
+                        if(in_array($loveLike->user_id, $loveLikeIds))
+                        {
+                            continue;
+                        }
+
+                        $loveLikeIds[] = $loveLike->user_id;
+
+                        $isLiked       = $loveLikeUsers->where('user_id', $loveLike->user_id)->where('is_like', 1)->first();
+                        $isLoved       = $loveLikeUsers->where('user_id', $loveLike->user_id)->where('is_love', 1)->first();
+                        
+                        $loveFlag = $likeFlag = 0;
+
+                        if(isset($isLoved['is_love']))
+                        {
+                            $loveFlag = $isLoved['is_love'];
+                        }
+                        if(isset($isLiked['is_like']))
+                        {
+                            $likeFlag = $isLiked['is_like'];
+                        }
+
                         $isConnected = in_array($loveLike->user_id, $connectionIds) ? 1 : 0;
                         $isRequested = in_array($loveLike->user_id, $requestIds) ? 1 : 0;
                         $isMe  = $loveLike->user_id == $currentUserId ? 1 : 0;
@@ -119,8 +143,8 @@ class FeedsTransformer extends Transformer
                             'is_requested'  => $isRequested,
                             'is_me'         => $isMe,
                             'username'      => $loveLike->username,
-                            'is_like'       => $loveLike->is_like,
-                            'is_love'       => $loveLike->is_love,
+                            'is_like'       => $loveFlag,
+                            'is_love'       => $likeFlag,
                             'profile_pic'   => $loveLike->profile_pic,
                             'created_at'    => $loveLike->created_at
                         ];
@@ -254,13 +278,37 @@ class FeedsTransformer extends Transformer
 
             $loveLikeUsers = array_merge($feedLoveUsers, $feedLikeUsers);
             $loveLikeUsers = collect($loveLikeUsers);
-            $loveLikeUsers = $loveLikeUsers->sortBy('created_at');
+            $loveLikeUsers = $loveLikeUsers->sortBy('created_at', 'DESC');
+            $loveLikeIds   = [];
 
             if(isset($loveLikeUsers) && count($loveLikeUsers))
             {
                 foreach($loveLikeUsers as $loveLike)   
                 {
+
                     $loveLike = (object)$loveLike;
+
+                    if(in_array($loveLike->user_id, $loveLikeIds))
+                    {
+                        continue;
+                    }
+
+                    $loveLikeIds[] = $loveLike->user_id;
+
+                    $isLiked       = $loveLikeUsers->where('user_id', $loveLike->user_id)->where('is_like', 1)->first();
+                    $isLoved       = $loveLikeUsers->where('user_id', $loveLike->user_id)->where('is_love', 1)->first();
+                    
+                    $loveFlag = $likeFlag = 0;
+
+                    if(isset($isLoved['is_love']))
+                    {
+                        $loveFlag = $isLoved['is_love'];
+                    }
+                    if(isset($isLiked['is_like']))
+                    {
+                        $likeFlag = $isLiked['is_like'];
+                    }
+
                     $isConnected = in_array($loveLike->user_id, $connectionIds) ? 1 : 0;
                     $isRequested = in_array($loveLike->user_id, $requestIds) ? 1 : 0;
                     $isMe  = $loveLike->user_id == $currentUserId ? 1 : 0;
@@ -270,14 +318,13 @@ class FeedsTransformer extends Transformer
                         'is_requested'  => $isRequested,
                         'is_me'         => $isMe,
                         'username'      => $loveLike->username,
-                        'is_like'       => $loveLike->is_like,
-                        'is_love'       => $loveLike->is_love,
+                        'is_like'       => $loveFlag,
+                        'is_love'       => $likeFlag,
                         'profile_pic'   => $loveLike->profile_pic,
                         'created_at'    => $loveLike->created_at
                     ];
                 }
             }
-
 
             if(isset($item->feed_comments) && count($item->feed_comments))
             {

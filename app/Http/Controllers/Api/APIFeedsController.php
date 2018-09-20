@@ -59,6 +59,7 @@ class APIFeedsController extends BaseApiController
         ])
         ->offset($offset)
         ->limit($perPage)
+        ->orderBy('id', 'DESC')
         ->get();
 
         if(isset($items) && count($items))
@@ -290,6 +291,95 @@ class APIFeedsController extends BaseApiController
      */
     public function edit(Request $request)
     {
+        if($request->has('feed_id'))
+        {
+            $input      = $request->all();
+            $feed       = $this->repository->model->where('id', $request->get('feed_id'))->first();
+            $tagUsers   = [];
+
+            if(isset($input['feed_images']) && count($input['feed_images']))
+            {
+                $feedImages = [];
+
+                foreach($input['feed_images'] as $image)
+                {
+                    $imageName  = rand(11111, 99999) . '_feed.' . $image->getClientOriginalExtension();
+
+                    $image->move(base_path() . '/public/uploads/feeds/', $imageName);
+
+                    $feedImages[] = [
+                        'feed_id' => $model->id,
+                        'image'   => $imageName 
+                    ];
+                }
+
+                if(count($feedImages))
+                {
+                    $model->feed_images()->insert($feedImages);
+                }
+            }
+
+
+            if(isset($input['tag_users']))
+            {
+                $tagUsers       = explode(',', $input['tag_users']);
+                $tagUserData    = [];
+                foreach($tagUsers as $tagUser)
+                {
+                    $tagUserData[] = [
+                        'user_id'   => $tagUser,
+                        'feed_id'   => $model->id
+                    ];
+                }
+
+                if(count($tagUserData))
+                {
+                    $model->feed_tag_users()->insert($tagUserData);
+                }
+            }
+
+            if(isset($input['group_id']))
+            {
+                $userInfo           = $this->getAuthenticatedUser();
+                $groupMemberData    = [];
+                $userGroup          = UserGroups::where([
+                    'user_id'   => $userInfo->id,
+                    'id'        => $input['group_id']
+                ])
+                ->with('group_members')
+                ->first();
+
+                $uniqueGrpMembers = [];
+
+                if(isset($userGroup) && isset($userGroup->group_members))
+                {
+                    foreach($userGroup->group_members as $member)
+                    {
+                        if(in_array($member->member_id, $tagUsers))
+                        {
+                            continue;
+                        }
+
+                        if(in_array($member->member_id, $uniqueGrpMembers))
+                        {
+                            continue;
+                        }
+                        
+                        $uniqueGrpMembers[] = $member->member_id;
+
+                        $groupMemberData[] = [
+                            'user_id'   => $member->member_id,
+                            'feed_id'   => $model->id
+                        ];
+                    }
+
+                    if(count($groupMemberData))
+                    {
+                        $model->feed_tag_users()->insert($groupMemberData);
+                    }
+                }
+            }
+        }
         $itemId = (int) hasher()->decode($request->get($this->primaryKey));
 
         if($itemId)
