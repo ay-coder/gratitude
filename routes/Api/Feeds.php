@@ -7,6 +7,8 @@ Route::group(['namespace' => 'Api'], function()
 
 	Route::post('my-image-feeds', 'APIFeedsController@myImageFeeds')->name('feeds.my-image-feeds');
 
+	Route::post('feeds/get-love-like', 'APIFeedsController@getLoveLike')->name('feeds.get-love-like');
+
     Route::post('feeds/create', 'APIFeedsController@create')->name('feeds.create');
     Route::post('feeds/edit', 'APIFeedsController@edit')->name('feeds.edit');
     Route::post('feeds/show', 'APIFeedsController@show')->name('feeds.show');

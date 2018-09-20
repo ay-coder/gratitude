@@ -42,6 +42,7 @@ class CommentsTransformer extends Transformer
                     'comment_id' => (int) $item->id,
                     'feed_id'    => (int) $item->feed_id,
                     'user_id'    => (int) $item->user->id,
+                    'username'   => $item->user->name,
                     'comment'    => $item->comment,
                     'profile_pic'   =>  URL::to('/').'/uploads/user/' . $item->user->profile_pic,
                     'create_at'  => date('m/d/Y h:i:s', strtotime($item->created_at))
