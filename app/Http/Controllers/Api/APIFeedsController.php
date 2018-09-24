@@ -62,6 +62,95 @@ class APIFeedsController extends BaseApiController
         ->orderBy('id', 'DESC')
         ->get();
 
+        $itemCount      = $this->repository->model->offset($offset+1)
+        ->limit($perPage)
+        ->orderBy('id', 'DESC')
+        ->count();
+
+        if(isset($items) && count($items))
+        {
+            $loadMore    = 0;
+            $itemsOutput = $this->feedsTransformer->showAllFeeds($items);
+
+            if(isset($itemCount) && $itemCount > 0)
+            {
+                $loadMore = 1;
+            }
+
+            return $this->successResponseWithPagination($itemsOutput, '', $loadMore);
+        }
+
+        return $this->setStatusCode(400)->failureResponse([
+            'message' => 'Unable to find Feeds!'
+            ], 'No Feeds Found !');
+    }
+
+    /**
+     * List of All Feeds
+     *
+     * @param Request $request
+     * @return json
+     */
+    public function refreshFeeds(Request $request)
+    {
+        $userInfo   = $this->getAuthenticatedUser();
+        $feedId     = $request->has('feed_id') ? $request->get('feed_id') : false;
+
+        $query     = $this->repository->model->with([
+            'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
+        ])
+        ->orderBy('id', 'DESC');
+
+        if($feedId)
+        {
+           $query->where('id', '>=', $feedId);
+        }
+        $items = $query->get();
+
+        if(isset($items) && count($items))
+        {
+            $itemsOutput = $this->feedsTransformer->showAllFeeds($items);
+
+            return $this->successResponse($itemsOutput);
+        }
+
+        return $this->setStatusCode(400)->failureResponse([
+            'message' => 'Unable to find Feeds!'
+            ], 'No Feeds Found !');
+    }
+
+    /**
+     * List of All Feeds
+     *
+     * @param Request $request
+     * @return json
+     */
+    public function filter(Request $request)
+    {
+        $keyword    = $request->has('keyword') ? $request->get('keyword') : false;
+        $userInfo   = $this->getAuthenticatedUser();
+        $offset     = $request->has('offset') ? $request->get('offset') : 0;
+        $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
+        $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
+        $order      = $request->get('order') ? $request->get('order') : 'DESC';
+        $query      = $this->repository->model->with([
+            'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
+        ]);
+
+        if($keyword)
+        {
+            $query->where('description', 'LIKE', "%$keyword%");
+            $query->orWhereHas('user', function($q) use($keyword)
+            {
+                $q->where('name', 'LIKE', "%$keyword%");
+            });
+        }
+
+        $query = $query->offset($offset)
+        ->limit($perPage)
+        ->orderBy('id', 'DESC');
+
+        $items = $query->get();
         if(isset($items) && count($items))
         {
             $itemsOutput = $this->feedsTransformer->showAllFeeds($items);

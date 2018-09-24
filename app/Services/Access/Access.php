@@ -228,4 +228,15 @@ class Access
 
         return [];
     }
+
+    /**
+     * Get Load More Flag
+     * 
+     * @param object $model
+     * @return bool
+     */
+    public function getLoadMoreFlag($model = null)
+    {
+
+    }
 }

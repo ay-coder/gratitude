@@ -310,24 +310,34 @@ class APICommentsController extends BaseApiController
      */
     public function edit(Request $request)
     {
-        $itemId = (int) hasher()->decode($request->get($this->primaryKey));
-
-        if($itemId)
+        if($request->has('comment_id') && $request->has('feed_id'))
         {
-            $status = $this->repository->update($itemId, $request->all());
-
-            if($status)
+            $model = $this->repository->model->where([
+                'id'        => $request->get('comment_id'),
+                'feed_id'   => $request->get('feed_id')
+            ])->first();
+                
+            if(isset($model) && isset($model->id))
             {
-                $itemData       = $this->repository->getById($itemId);
-                $responseData   = $this->commentsTransformer->transform($itemData);
+                $model->comment = $request->get('comment');
 
-                return $this->successResponse($responseData, 'Comments is Edited Successfully');
+                if($model->save())
+                {
+                    $response = [
+                        'message' => 'comment updated successfully'
+                    ];
+                    return $this->successResponse($response, 'comment updated successfully');
+                }
             }
+
+            return $this->setStatusCode(400)->failureResponse([
+                'reason' => 'No Comment Found!'
+            ], 'No Comment Found!');
         }
 
         return $this->setStatusCode(400)->failureResponse([
-            'reason' => 'Invalid Inputs'
-        ], 'Something went wrong !');
+                'reason' => 'Invalid Inputs'
+            ], 'Invalid Inputs!');
     }
 
     /**

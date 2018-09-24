@@ -3,6 +3,10 @@ Route::group(['namespace' => 'Api'], function()
 {
     Route::post('feeds', 'APIFeedsController@index')->name('feeds.index');
 
+    Route::post('feeds/filter', 'APIFeedsController@filter')->name('feeds.filter');
+
+    Route::post('feeds/refresh', 'APIFeedsController@refreshFeeds')->name('feeds.refresh');
+
 	Route::post('my-text-feeds', 'APIFeedsController@myTextFeeds')->name('feeds.my-text-feeds');
 
 	Route::post('my-image-feeds', 'APIFeedsController@myImageFeeds')->name('feeds.my-image-feeds');

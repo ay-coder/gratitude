@@ -313,8 +313,8 @@ class FeedsTransformer extends Transformer
                         'is_requested'  => $isRequested,
                         'is_me'         => $isMe,
                         'username'      => $loveLike->username,
-                        'is_like'       => $loveFlag,
-                        'is_love'       => $likeFlag,
+                        'is_like'       => $likeFlag,
+                        'is_love'       => $loveFlag,
                         'profile_pic'   => $loveLike->profile_pic,
                         'created_at'    => $loveLike->created_at
                     ];
@@ -406,7 +406,11 @@ class FeedsTransformer extends Transformer
 
             $loveLikeUsers = array_merge($feedLoveUsers, $feedLikeUsers);
             $loveLikeUsers = collect($loveLikeUsers);
-            $loveLikeUsers = $loveLikeUsers->sortBy('created_at', 'DESC');
+
+            if(isset($loveLikeUsers) && count($loveLikeUsers))
+            {
+                $loveLikeUsers = $loveLikeUsers->sortByDesc('created_at');
+            }
             $loveLikeIds   = [];
 
             if(isset($loveLikeUsers) && count($loveLikeUsers))

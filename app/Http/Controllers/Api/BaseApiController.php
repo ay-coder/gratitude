@@ -110,6 +110,29 @@ class BaseApiController extends BaseController
     }
 
     /**
+     * Success Response
+     * 
+     * @param array $data
+     * @param string $message
+     * @param int $code
+     * @return json|string
+     */
+    public function successResponseWithPagination($data = array(), $message = 'Success', $loadMore = 0, $code = 200)
+    {
+        $response = [
+            'data'      => $data,
+            'load_more' => $loadMore,
+            'status'    => true,
+            'message'   => $message ? $message : 'Success',
+            'code'      => $code ? $code : $this->getStatusCode()
+        ];
+
+        return response()->json((object)$response,
+            $this->getStatusCode()  
+        );
+    }
+
+    /**
      * Failure Response
      * 
      * @param array $data

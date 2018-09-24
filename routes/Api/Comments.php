@@ -14,6 +14,8 @@ Route::group(['namespace' => 'Api'], function()
 
     
     Route::post('comments/edit', 'APICommentsController@edit')->name('comments.edit');
+
+    
     Route::post('comments/show', 'APICommentsController@show')->name('comments.show');
     Route::post('comments/delete', 'APICommentsController@delete')->name('comments.delete');
 });
