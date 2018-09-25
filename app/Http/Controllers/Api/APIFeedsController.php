@@ -50,6 +50,7 @@ class APIFeedsController extends BaseApiController
     public function index(Request $request)
     {
         $userInfo   = $this->getAuthenticatedUser();
+        $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
@@ -57,12 +58,13 @@ class APIFeedsController extends BaseApiController
         $items      = $this->repository->model->with([
             'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
+        ->whereNotIn('id', $blockFeeds)
         ->offset($offset)
         ->limit($perPage)
         ->orderBy('id', 'DESC')
         ->get();
 
-        $itemCount      = $this->repository->model->offset($offset+1)
+        $itemCount      = $this->repository->model->whereNotIn('id', $blockFeeds)->offset($offset+1)
         ->limit($perPage)
         ->orderBy('id', 'DESC')
         ->count();
@@ -94,6 +96,7 @@ class APIFeedsController extends BaseApiController
     public function refreshFeeds(Request $request)
     {
         $userInfo   = $this->getAuthenticatedUser();
+        $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $feedId     = $request->has('feed_id') ? $request->get('feed_id') : false;
 
         $query     = $this->repository->model->with([
@@ -105,7 +108,7 @@ class APIFeedsController extends BaseApiController
         {
            $query->where('id', '>=', $feedId);
         }
-        $items = $query->get();
+        $items = $query->whereNotIn('id', $blockFeeds)->get();
 
         if(isset($items) && count($items))
         {
@@ -129,13 +132,14 @@ class APIFeedsController extends BaseApiController
     {
         $keyword    = $request->has('keyword') ? $request->get('keyword') : false;
         $userInfo   = $this->getAuthenticatedUser();
+        $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $query      = $this->repository->model->with([
             'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
-        ]);
+        ])->whereNotIn('id', $blockFeeds);
 
         if($keyword)
         {
@@ -201,6 +205,7 @@ class APIFeedsController extends BaseApiController
     public function myTextFeeds(Request $request)
     {
         $userInfo   = $this->getAuthenticatedUser();
+        $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
@@ -208,6 +213,7 @@ class APIFeedsController extends BaseApiController
         $items      = $this->repository->model->with([
             'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
+        ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 1)
         ->where('user_id', $userInfo->id)
         ->orderBy('id', 'DESC')
@@ -236,6 +242,7 @@ class APIFeedsController extends BaseApiController
     public function myImageFeeds(Request $request)
     {
         $userInfo   = $this->getAuthenticatedUser();
+        $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
@@ -243,6 +250,7 @@ class APIFeedsController extends BaseApiController
         $items      = $this->repository->model->with([
             'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
+        ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 2)
         ->where('user_id', $userInfo->id)
         ->orderBy('id', 'DESC')
@@ -371,6 +379,41 @@ class APIFeedsController extends BaseApiController
         return $this->setStatusCode(400)->failureResponse([
             'reason' => 'Invalid Inputs'
             ], 'Something went wrong !');
+    }
+
+    /**
+     * Update Feed Category
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function updateCategory(Request $request)
+    {
+        if($request->has('feed_id') && $request->has('category_id') )
+        {
+            $feed = $this->repository->model->where([
+                'id' => $request->get('feed_id')
+            ])->first();
+
+
+            if(isset($feed) && isset($feed->id))
+            {
+                $feed->category_id = $request->get('category_id');  
+
+                if($feed->save())
+                {
+                    $responseData = [
+                        'message' => 'Feed category updated successfully'
+                    ];
+
+                    return $this->successResponse($responseData, 'Feed category updated successfully');
+                }
+            }
+        }
+
+        return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'Invalid Feed Id or No Feed Found !'
+            ], 'Invalid Feed Id or No Feed Found !');
     }
 
     /**

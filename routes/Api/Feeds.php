@@ -3,6 +3,8 @@ Route::group(['namespace' => 'Api'], function()
 {
     Route::post('feeds', 'APIFeedsController@index')->name('feeds.index');
 
+    Route::post('feeds/update-category', 'APIFeedsController@updateCategory')->name('feeds.update-category');
+
     Route::post('feeds/filter', 'APIFeedsController@filter')->name('feeds.filter');
 
     Route::post('feeds/refresh', 'APIFeedsController@refreshFeeds')->name('feeds.refresh');

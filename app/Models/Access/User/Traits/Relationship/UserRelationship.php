@@ -9,6 +9,7 @@ use App\Models\Connections\Connections;
 use App\Models\Posts\Posts;
 use App\Models\Notifications\Notifications;
 use App\Models\Followers\Followers;
+use App\Models\ReportFeeds\ReportFeeds;
 
 /**
  * Class UserRelationship.
@@ -143,5 +144,15 @@ trait UserRelationship
     public function followings()   
     {
         return $this->hasMany(Followers::class, 'user_id');
+    }
+
+    /**
+     * Feeds Reported
+     * 
+     * @return array
+     */
+    public function feeds_reported()   
+    {
+        return $this->hasMany(ReportFeeds::class, 'user_id');
     }
 }
