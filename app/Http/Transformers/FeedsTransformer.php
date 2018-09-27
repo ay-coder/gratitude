@@ -143,8 +143,8 @@ class FeedsTransformer extends Transformer
                             'is_requested'  => $isRequested,
                             'is_me'         => $isMe,
                             'username'      => $loveLike->username,
-                            'is_like'       => $loveFlag,
-                            'is_love'       => $likeFlag,
+                            'is_like'       => $likeFlag,
+                            'is_love'       => $loveFlag,
                             'profile_pic'   => $loveLike->profile_pic,
                             'created_at'    => $loveLike->created_at
                         ];
