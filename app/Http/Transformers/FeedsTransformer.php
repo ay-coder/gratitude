@@ -42,7 +42,9 @@ class FeedsTransformer extends Transformer
             foreach($items as $item)
             {
                 $isLoved        = 0;
-                $isLiked        = 0;
+                $isLoved        = 0;
+                $isMyLoved      = 0;
+                $isMyLiked      = 0;
                 $isCommented    = 0;
                 $feedImages     = [];
                 $feedLoveUsers  = [];
@@ -69,7 +71,10 @@ class FeedsTransformer extends Transformer
                     foreach($item->feed_loves as $love)
                     {
                         if($love->user->id == $currentUserId)
-                            $isLoved = 1;
+                        {
+                            $isMyLoved  = 1;
+                            $isLoved    = 1;
+                        }
 
                         $feedLoveUsers[] = [
                             'user_id'       => (int)  $love->user->id,
@@ -82,12 +87,17 @@ class FeedsTransformer extends Transformer
                     }
                 }
 
+                
+
                 if(isset($item->feed_likes) && count($item->feed_likes))
                 {
                     foreach($item->feed_likes as $like)
                     {
                         if($like->user->id == $currentUserId)
+                        {
+                            $isMyLiked = 1;
                             $isLiked = 1;
+                        }
 
                         $feedLikeUsers[] = [
                             'user_id'       => (int)  $like->user->id,
@@ -191,8 +201,8 @@ class FeedsTransformer extends Transformer
                     'description'   => $item->description,
                     'feed_images'   => $feedImages,
                     'create_at'     => date('m/d/Y h:i:s', strtotime($item->created_at)),
-                    'isLiked'       => (int) $isLiked,
-                    'isLoved'       => (int) $isLoved,
+                    'isLiked'       => (int) $isMyLiked,
+                    'isLoved'       => (int) $isMyLoved,
                     'isCommented'   => (int) $isCommented,
                     'likeCount'     => (int) count($item->feed_likes),
                     'loveCount'     => (int) count($item->feed_loves),
@@ -347,6 +357,8 @@ class FeedsTransformer extends Transformer
         {
             $isLoved        = 0;
             $isLiked        = 0;
+            $isMyLiked      = 0;
+            $isMyLoved      = 0;
             $isCommented    = 0;
             $feedImages     = [];
             $feedLoveUsers  = [];
@@ -373,7 +385,10 @@ class FeedsTransformer extends Transformer
                 foreach($item->feed_loves as $love)
                 {
                     if($love->user->id == $currentUserId)
-                        $isLoved = 1;
+                    {
+                        $isMyLoved  = 1;
+                        $isLoved    = 1;
+                    }
 
                     $feedLoveUsers[] = [
                         'user_id'       => (int)  $love->user->id,
@@ -391,7 +406,10 @@ class FeedsTransformer extends Transformer
                 foreach($item->feed_likes as $like)
                 {
                     if($like->user->id == $currentUserId)
-                        $isLiked = 1;
+                    {
+                        $isMyLiked  = 1;
+                        $isLiked    = 1;
+                    }
 
                     $feedLikeUsers[] = [
                         'user_id'       => (int)  $like->user->id,
@@ -497,8 +515,8 @@ class FeedsTransformer extends Transformer
                 'profile_pic'   => URL::to('/').'/uploads/user/' . $item->user->profile_pic,
                 'description'   => $item->description,
                 'create_at'     => date('m/d/Y h:i:s', strtotime($item->created_at)),
-                'isLiked'       => (int) $isLiked,
-                'isLoved'       => (int) $isLoved,
+                'isLiked'       => (int) $isMyLiked,
+                'isLoved'       => (int) $isMyLoved,
                 'isCommented'   => (int) $isCommented,
                 'feed_images'   => $feedImages,
                 'likeCount'     => (int) count($item->feed_likes),
