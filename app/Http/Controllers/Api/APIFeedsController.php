@@ -64,17 +64,17 @@ class APIFeedsController extends BaseApiController
         ->orderBy('id', 'ASC')
         ->get();
 
-        $itemCount      = $this->repository->model->whereNotIn('id', $blockFeeds)->offset($offset+1)
+        $itemCount      = $this->repository->model->whereNotIn('id', $blockFeeds)
+        ->offset($offset+1)
         ->limit($perPage)
-        ->orderBy('id', 'DESC')
-        ->count();
+        ->get();
 
         if(isset($items) && count($items))
         {
             $loadMore    = 0;
             $itemsOutput = $this->feedsTransformer->showAllFeeds($items);
 
-            if(isset($itemCount) && $itemCount > 0)
+            if(isset($itemCount) && count($itemCount) > 0)
             {
                 $loadMore = 1;
             }
