@@ -7,6 +7,7 @@ use App\Models\FeedLove\FeedLove;
 use App\Models\FeedLike\FeedLike;
 use App\Models\Categories\Categories;
 use App\Models\FeedTagUsers\FeedTagUsers;
+use App\Models\UserGroups\UserGroups;
 
 trait Relationship
 {
@@ -64,5 +65,15 @@ trait Relationship
 	public function feed_tag_users()
 	{
 	    return $this->hasMany(FeedTagUsers::class, 'feed_id');
+	}
+
+	/**
+	 * Feed Group
+	 * 
+	 * @return belongsTo Relation
+	 */
+	public function feed_group()
+	{
+		return $this->belongsTo(UserGroups::class, 'group_id');
 	}
 }

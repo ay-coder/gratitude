@@ -56,12 +56,12 @@ class APIFeedsController extends BaseApiController
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $items      = $this->repository->model->with([
-            'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
+            'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
         ->whereNotIn('id', $blockFeeds)
         ->offset($offset)
         ->limit($perPage)
-        ->orderBy('id', 'DESC')
+        ->orderBy('id', 'ASC')
         ->get();
 
         $itemCount      = $this->repository->model->whereNotIn('id', $blockFeeds)->offset($offset+1)

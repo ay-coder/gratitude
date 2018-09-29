@@ -42,17 +42,37 @@ class FeedsTransformer extends Transformer
             foreach($items as $item)
             {
                 $isLoved        = 0;
+                $isGroupFeed    = 0;
                 $isLoved        = 0;
                 $isMyLoved      = 0;
                 $isMyLiked      = 0;
                 $isCommented    = 0;
                 $feedImages     = [];
+                $feedGroup      = [];
+                $feedCategory   = [];
                 $feedLoveUsers  = [];
                 $feedLikeUsers  = [];
                 $feedComments   = [];
                 $tagUsers       = [];
                 $loveLikes      = [];
                 $feedLoveLikeUsers = [];
+
+                if(isset($item->feed_group) && count($item->feed_group))
+                {
+                    $isGroupFeed = 1;
+                    $feedGroup = [
+                        'group_id'      => (int) $item->feed_group->id,
+                        'group_name'    => $item->feed_group->title
+                    ];
+                }
+
+                if(isset($item->feed_category) && count($item->feed_category))
+                {
+                    $feedCategory = [
+                        'category_id' => (int) $item->feed_category->id,
+                        'title'       => $item->feed_category->title
+                    ];                
+                }
 
                 if(isset($item->feed_tag_users) && count($item->feed_tag_users))
                 {
@@ -207,6 +227,9 @@ class FeedsTransformer extends Transformer
                     'likeCount'     => (int) count($item->feed_likes),
                     'loveCount'     => (int) count($item->feed_loves),
                     'commentCount'  => (int) count($item->feed_comments),
+                    'feedCategory'  => (object) $feedCategory,
+                    'is_group_feed' => $isGroupFeed,
+                    'groupData'     => (object) $feedGroup,
                     'loveUsers'     => $feedLoveUsers,
                     'likeUsers'     => $feedLikeUsers,
                     'allComments'   => $feedComments,
@@ -355,6 +378,7 @@ class FeedsTransformer extends Transformer
 
         if(isset($item) && count($item))
         {
+            $isGroupFeed    = 0;
             $isLoved        = 0;
             $isLiked        = 0;
             $isMyLiked      = 0;
@@ -366,13 +390,25 @@ class FeedsTransformer extends Transformer
             $feedComments   = [];
             $tagUsers       = [];
             $loveLikes      = [];
+            $feedGroup      = [];
             $feedCategory   = [];
             $feedLoveLikeUsers = [];
 
-            
+            if(isset($item->feed_group) && count($item->feed_group))
+            {
+                $isGroupFeed    = 1;
+                $feedGroup      = [
+                    'group_id'      => (int) $item->feed_group->id,
+                    'group_name'    => $item->feed_group->title
+                ];
+            }
+
             if(isset($item->feed_category) && count($item->feed_category))
             {
-                dd($item->feed_category);
+                $feedCategory = [
+                    'category_id' => (int) $item->feed_category->id,
+                    'title'       => $item->feed_category->title
+                ];                
             }
 
             if(isset($item->feed_tag_users) && count($item->feed_tag_users))
@@ -531,6 +567,9 @@ class FeedsTransformer extends Transformer
                 'commentCount'  => (int) count($item->feed_comments),
                 'tagUserCount'  => (int) count($item->feed_tag_users),
                 'loveUsers'     => $feedLoveUsers,
+                'feedCategory'  => (object) $feedCategory,
+                'is_group_feed' => $isGroupFeed,
+                'groupData'     => (object) $feedGroup,
                 'likeUsers'     => $feedLikeUsers,
                 'allComments'   => $feedComments,
                 'tagUsers'      => $tagUsers,

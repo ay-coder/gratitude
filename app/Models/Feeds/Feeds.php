@@ -24,7 +24,7 @@ class Feeds extends BaseModel
      *
      */
     protected $fillable = [
-        "id", "user_id", "category_id", "feed_type", "description", "created_at", "updated_at", 
+        "id", "user_id", "group_id", "category_id", "feed_type", "description", "created_at", "updated_at", 
     ];
 
     /**
