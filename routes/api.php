@@ -45,6 +45,8 @@ Route::group(['namespace' => 'Api',], function ()
 
 Route::group(['namespace' => 'Api', 'middleware' => 'jwt.customauth'], function () 
 {
+    Route::post('invite-users', 'UsersController@inviteUsers')->name('api.invite-users');
+
     Route::post('update-user-profile', 'UsersController@updageUserProfile')->name('api.update-user-profile');
 
     Route::post('change-device_token', 'UsersController@changeDeviceToken')->name('api.change-device-token');

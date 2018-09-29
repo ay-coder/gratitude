@@ -821,4 +821,15 @@ class UsersController extends BaseApiController
             'reason' => 'Invalid Input !'
         ], 'Invalid Input!');
     }
+
+    /**
+     * Invite Users
+     * 
+     * @param  Request $request
+     * @return json
+     */
+    public function inviteUsers(Request $request)
+    {
+        dd($request->all());
+    }
 }
