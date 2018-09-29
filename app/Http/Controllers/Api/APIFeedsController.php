@@ -344,7 +344,7 @@ class APIFeedsController extends BaseApiController
                 $userInfo           = $this->getAuthenticatedUser();
                 $groupMemberData    = [];
                 $userGroup          = UserGroups::where([
-                    'user_id'   => $userInfo->id,
+                    // 'user_id'   => $userInfo->id,
                     'id'        => $input['group_id']
                 ])
                 ->with('group_members')

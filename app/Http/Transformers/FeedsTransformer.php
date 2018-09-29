@@ -78,8 +78,13 @@ class FeedsTransformer extends Transformer
                 {
                     foreach($item->feed_tag_users as $tagUser)
                     {
+                        $isConnected = in_array($tagUser->user->id, $connectionIds) ? 1 : 0;
+                        $isRequested = in_array($tagUser->user->id, $requestIds) ? 1 : 0;
+
                         $tagUsers[] = [
                             'user_id'       => (int)  $tagUser->user->id,
+                            'is_connected'  => $isConnected,
+                            'is_requested'  => $isRequested,
                             'username'      => $tagUser->user->name,
                             'profile_pic'   => URL::to('/').'/uploads/user/' . $tagUser->user->profile_pic,
                         ];
@@ -415,8 +420,13 @@ class FeedsTransformer extends Transformer
             {
                 foreach($item->feed_tag_users as $tagUser)
                 {
+                    $isConnected = in_array($tagUser->user->id, $connectionIds) ? 1 : 0;
+                    $isRequested = in_array($tagUser->user->id, $requestIds) ? 1 : 0;
+
                     $tagUsers[] = [
                         'user_id'       => (int)  $tagUser->user->id,
+                        'is_connected'  => $isConnected,
+                        'is_requested'  => $isRequested,
                         'username'      => $tagUser->user->name,
                         'profile_pic'   => URL::to('/').'/uploads/user/' . $tagUser->user->profile_pic,
                     ];
