@@ -61,10 +61,17 @@ class APIFeedsController extends BaseApiController
         ->whereNotIn('id', $blockFeeds)
         ->offset($offset)
         ->limit($perPage)
-        ->orderBy('id', 'ASC')
+        ->orderBy('id', 'DESC')
         ->get();
 
-        $skipp = ($offset+1) * $perPage;
+        if($offset == 0)
+        {
+            $skipp = $perPage;
+        }
+        else
+        {
+            $skipp = $offset * $perPage;
+        }
         
         $itemCount      = $this->repository->model->whereNotIn('id', $blockFeeds)
         ->skip($skipp)
