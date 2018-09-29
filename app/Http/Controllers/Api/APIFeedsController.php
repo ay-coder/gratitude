@@ -58,6 +58,7 @@ class APIFeedsController extends BaseApiController
         $items      = $this->repository->model->with([
             'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
+        ->where('is_individual', 0)
         ->whereNotIn('id', $blockFeeds)
         ->offset($offset)
         ->limit($perPage)
@@ -226,6 +227,10 @@ class APIFeedsController extends BaseApiController
         ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 1)
         ->where('user_id', $userInfo->id)
+        ->orWhereHas('feed_tag_users', function($q) use($userInfo)
+        {
+            $q->where('user_id', $userInfo->id);
+        })
         ->orWhereIn('id', $tagFeedIds)
         ->orderBy('id', 'DESC')
         ->offset($offset)
