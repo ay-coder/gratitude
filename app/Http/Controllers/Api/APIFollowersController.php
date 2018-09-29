@@ -63,7 +63,7 @@ class APIFollowersController extends BaseApiController
         ->where('is_archive', 1)
         ->whereNotIn('id', $followerIds)
         ->where('name', 'LIKE', '%'. $keyword .'%')
-        ->orWhere('email', 'LIKE', '%'. $keyword .'%')
+        /*->orWhere('email', 'LIKE', '%'. $keyword .'%')*/
         ->offset($offset)
         ->limit($perPage)
         ->get();
