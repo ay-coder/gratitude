@@ -58,13 +58,18 @@ class APIFollowersController extends BaseApiController
             'follower_id' => $userInfo->id
         ])->pluck('user_id')->toArray();
 
-        $items = User::with(['followers', 'followings'])
+        $query = User::with(['followers', 'followings'])
         ->where('id', '!=', $userInfo->id)
         ->where('is_archive', 1)
-        ->whereNotIn('id', $followerIds)
-        ->where('name', 'LIKE', '%'. $keyword .'%')
-        ->orWhere('email', 'LIKE', '%'. $keyword .'%')
-        ->offset($offset)
+        ->whereNotIn('id', $followerIds);
+
+        if(isset($keyword) && strlen($keyword) > 1 )
+        {
+            $query->where('name', 'LIKE', '%'. $keyword .'%')
+            ->orWhere('email', 'LIKE', '%'. $keyword .'%');
+        }
+
+        $items = $query->offset($offset)
         ->limit($perPage)
         ->get()
         ->filter(function($item)
@@ -78,7 +83,7 @@ class APIFollowersController extends BaseApiController
 
         if(isset($items) && count($items))
         {
-            $itemsOutput = $this->followersTransformer->followerTransform($userInfo, $items);
+            $itemsOutput = $this->followersTransformer->followerSuggestionTransform($userInfo, $items, $followerIds);
 
             return $this->successResponse($itemsOutput);
         }
