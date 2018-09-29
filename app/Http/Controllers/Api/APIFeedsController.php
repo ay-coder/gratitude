@@ -100,7 +100,7 @@ class APIFeedsController extends BaseApiController
         $feedId     = $request->has('feed_id') ? $request->get('feed_id') : false;
 
         $query     = $this->repository->model->with([
-            'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
+            'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
         ->orderBy('id', 'DESC');
 
@@ -138,7 +138,7 @@ class APIFeedsController extends BaseApiController
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $query      = $this->repository->model->with([
-            'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
+            'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])->whereNotIn('id', $blockFeeds);
 
         if($keyword)
@@ -178,7 +178,7 @@ class APIFeedsController extends BaseApiController
         if($request->has('feed_id'))
         {
             $item      = $this->repository->model->with([
-                'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
+                'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
             ])
             ->where('id', $request->get('feed_id'))
             ->first();
@@ -212,7 +212,7 @@ class APIFeedsController extends BaseApiController
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $items      = $this->repository->model->with([
-            'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
+            'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
         ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 1)
@@ -251,7 +251,7 @@ class APIFeedsController extends BaseApiController
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $items      = $this->repository->model->with([
-            'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
+            'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
         ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 2)
@@ -431,7 +431,7 @@ class APIFeedsController extends BaseApiController
         if($request->has('feed_id'))
         {
             $item = $this->repository->model->with([
-                'user', 'feed_category', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user'
+                'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user'
             ])
             ->where('id', $request->get('feed_id'))
             ->first();
