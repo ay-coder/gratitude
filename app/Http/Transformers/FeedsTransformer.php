@@ -366,7 +366,14 @@ class FeedsTransformer extends Transformer
             $feedComments   = [];
             $tagUsers       = [];
             $loveLikes      = [];
+            $feedCategory   = [];
             $feedLoveLikeUsers = [];
+
+            
+            if(isset($item->feed_category) && count($item->feed_category))
+            {
+                dd($item->feed_category);
+            }
 
             if(isset($item->feed_tag_users) && count($item->feed_tag_users))
             {

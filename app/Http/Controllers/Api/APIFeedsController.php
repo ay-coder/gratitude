@@ -205,6 +205,7 @@ class APIFeedsController extends BaseApiController
     public function myTextFeeds(Request $request)
     {
         $userInfo   = $this->getAuthenticatedUser();
+        $tagFeedIds = $userInfo->user_tag_feeds->pluck('feed_id')->toArray();
         $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
@@ -216,6 +217,7 @@ class APIFeedsController extends BaseApiController
         ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 1)
         ->where('user_id', $userInfo->id)
+        ->orWhereIn('id', $tagFeedIds)
         ->orderBy('id', 'DESC')
         ->offset($offset)
         ->limit($perPage)
@@ -242,6 +244,7 @@ class APIFeedsController extends BaseApiController
     public function myImageFeeds(Request $request)
     {
         $userInfo   = $this->getAuthenticatedUser();
+        $tagFeedIds = $userInfo->user_tag_feeds->pluck('feed_id')->toArray();
         $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
@@ -253,6 +256,7 @@ class APIFeedsController extends BaseApiController
         ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 2)
         ->where('user_id', $userInfo->id)
+        ->orWhereIn('id', $tagFeedIds)
         ->orderBy('id', 'DESC')
         ->offset($offset)
         ->limit($perPage)
