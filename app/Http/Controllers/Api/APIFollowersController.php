@@ -74,7 +74,7 @@ class APIFollowersController extends BaseApiController
         
         $skipp = $offset * $perPage;
         
-        $items = $query->->skip($skipp)
+        $items = $query->skip($skipp)
         ->take($perPage)
         ->get();
 
