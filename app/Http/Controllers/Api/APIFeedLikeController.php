@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Transformers\FeedLikeTransformer;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\FeedLike\EloquentFeedLikeRepository;
+use App\Models\Feeds\Feeds;
 
 class APIFeedLikeController extends BaseApiController
 {
@@ -93,6 +94,59 @@ class APIFeedLikeController extends BaseApiController
 
                     if($status)
                     {
+                        $feedInfo  = Feeds::with(['user' ,'feed_tag_users'])->where('id', $request->get('feed_id'))->first();
+
+                        if(isset($feedInfo->user))
+                        {
+                            $text       = $userInfo->name . ' liked your post.';
+                            $payload    = [
+                                'mtitle'            => '',
+                                'mdesc'             => $text,
+                                'feed_id'           => $request->get('feed_id'),
+                                'to_user_id'        => $feedInfo->user->id,
+                                'from_user_id'      => $userInfo->id,
+                                'mtype'             => 'FEED_LIKE'
+                            ];
+
+                            $storeNotification = [
+                                'user_id'           => $feedInfo->user->id,
+                                'from_user_id'      => $userInfo->id,
+                                'description'       => $text,
+                                'feed_id'           => $request->get('feed_id'),
+                                'notification_type' => 'FEED_LIKE'
+                            ];
+
+                            access()->addNotification($storeNotification);
+                            access()->sentPushNotification($feedInfo, $payload);
+                        }
+
+                        if(isset($feedInfo->feed_tag_users) && count($feedInfo->feed_tag_users))
+                        {
+                            $text       = $userInfo->name . ' liked a post you are tagged in..';
+                            foreach($feedInfo->feed_tag_users as $tagUser)
+                            {
+                                $payload = [
+                                    'mtitle'            => '',
+                                    'mdesc'             => $text,
+                                    'feed_id'           => $request->get('feed_id'),
+                                    'to_user_id'        => $tagUser->id,
+                                    'from_user_id'      => $userInfo->id,
+                                    'mtype'             => 'FEED_LIKE_TAG_USERS'
+                                ];
+
+                                $storeNotification = [
+                                    'user_id'           => $tagUser->id,
+                                    'from_user_id'      => $userInfo->id,
+                                    'description'       => $text,
+                                    'feed_id'           => $request->get('feed_id'),
+                                    'notification_type' => 'FEED_LIKE_TAG_USERS'
+                                ];
+
+                                access()->addNotification($storeNotification);
+                                access()->sentPushNotification($tagUser, $payload);
+                            }
+                        }
+                        
                         $message = [
                             'message' => 'Feed Like successfully'
                         ];

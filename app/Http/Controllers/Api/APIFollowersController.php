@@ -184,6 +184,26 @@ class APIFollowersController extends BaseApiController
 
             if($model)
             {
+                $followerInfo = User::where('id', $request->get('user_id'))->first();
+                $text       = $userInfo->name . ' is now following you.';
+                $payload    = [
+                    'mtitle'            => '',
+                    'mdesc'             => $text,
+                    'to_user_id'        => $request->get('user_id'),
+                    'from_user_id'      => $userInfo->id,
+                    'mtype'             => 'NEW_FOLLOW'
+                ];
+
+                $storeNotification = [
+                    'user_id'           => $request->get('user_id'),
+                    'from_user_id'      => $userInfo->id,
+                    'description'       => $text,
+                    'notification_type' => 'NEW_FOLLOW'
+                ];
+
+                access()->addNotification($storeNotification);
+                access()->sentPushNotification($followerInfo, $payload);
+
                 $responseData = [
                     'message' => 'Followed Successfully !'
                 ];

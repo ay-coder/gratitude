@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Transformers\FeedLoveTransformer;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\FeedLove\EloquentFeedLoveRepository;
+use App\Models\Feeds\Feeds;
 
 class APIFeedLoveController extends BaseApiController
 {
@@ -93,6 +94,59 @@ class APIFeedLoveController extends BaseApiController
 
                     if($status)
                     {
+                        $feedInfo  = Feeds::with(['user', 'feed_tag_users'])->where('id', $request->get('feed_id'))->first();
+                        $text       = $userInfo->name . ' loved  your post.';
+
+                        if(isset($feedInfo->user))
+                        {
+                            $payload = [
+                                'mtitle'            => '',
+                                'mdesc'             => $text,
+                                'feed_id'           => $request->get('feed_id'),
+                                'to_user_id'        => $feedInfo->user->id,
+                                'from_user_id'      => $userInfo->id,
+                                'mtype'             => 'FEED_LOVE'
+                            ];
+
+                            $storeNotification = [
+                                'user_id'           => $feedInfo->user->id,
+                                'from_user_id'      => $userInfo->id,
+                                'description'       => $text,
+                                'feed_id'           => $request->get('feed_id'),
+                                'notification_type' => 'FEED_LOVE'
+                            ];
+
+                            access()->addNotification($storeNotification);
+                            access()->sentPushNotification($feedInfo, $payload);
+                        }
+
+                        if(isset($feedInfo->feed_tag_users) && count($feedInfo->feed_tag_users))
+                        {
+                            $text       = $userInfo->name . ' loved a post you are tagged in.';
+                            foreach($feedInfo->feed_tag_users as $tagUser)
+                            {
+                                $payload = [
+                                    'mtitle'            => '',
+                                    'mdesc'             => $text,
+                                    'feed_id'           => $request->get('feed_id'),
+                                    'to_user_id'        => $tagUser->id,
+                                    'from_user_id'      => $userInfo->id,
+                                    'mtype'             => 'FEED_LOVE_TAG_USERS'
+                                ];
+
+                                $storeNotification = [
+                                    'user_id'           => $tagUser->id,
+                                    'from_user_id'      => $userInfo->id,
+                                    'description'       => $text,
+                                    'feed_id'           => $request->get('feed_id'),
+                                    'notification_type' => 'FEED_LOVE_TAG_USERS'
+                                ];
+
+                                access()->addNotification($storeNotification);
+                                access()->sentPushNotification($tagUser, $payload);
+                            }
+                        }
+
                         $message = [
                             'message' => 'Feed Love successfully'
                         ];

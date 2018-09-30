@@ -6,6 +6,7 @@ use App\Http\Transformers\UserGroupsTransformer;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\UserGroups\EloquentUserGroupsRepository;
 use App\Models\UserGroupMembers\UserGroupMembers;
+use App\Models\Access\User\User;
 
 class APIUserGroupsController extends BaseApiController
 {
@@ -126,7 +127,29 @@ class APIUserGroupsController extends BaseApiController
                         $model->group_members()->insert($groupMemberData);
                     }
                 }
-                
+
+                $allMembers = User::whereIn('id', $members)->get();
+
+                foreach($allMembers as $groupMember)
+                {
+                    $text       = $userInfo->name . ' added you to a group.';
+                    $payload    = [
+                        'mtitle'            => '',
+                        'mdesc'             => $text,
+                        'user_id'           => $groupMember->id,
+                        'mtype'             => 'ADDED_GROUP_MEMBER'
+                    ];
+                    $storeNotification = [
+                        'user_id'           => $groupMember->id,
+                        'from_user_id'      => $userInfo->id,
+                        'description'       => $text,
+                        'notification_type' => 'ADDED_GROUP_MEMBER'
+                    ];
+
+                    access()->addNotification($storeNotification);
+                    access()->sentPushNotification($groupMember, $payload);
+                }
+
                 $responseData = [
                     'message' => 'Group Created Successfully'
                 ];

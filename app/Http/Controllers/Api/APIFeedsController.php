@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\Feeds\EloquentFeedsRepository;
 use App\Models\UserGroups\UserGroups;
 use App\Models\Connections\Connections;
+use App\Models\Access\User\User;
 
 class APIFeedsController extends BaseApiController
 {
@@ -296,7 +297,8 @@ class APIFeedsController extends BaseApiController
      */
     public function create(Request $request)
     {
-        $model = $this->repository->create($request->all());
+        $model      = $this->repository->create($request->all());
+        $userInfo   = $this->getAuthenticatedUser();
 
         if($model)
         {
@@ -342,6 +344,28 @@ class APIFeedsController extends BaseApiController
                 {
                     $model->feed_tag_users()->insert($tagUserData);
                 }
+
+                $allMembers = User::whereIn('id', $tagUsers)->get();
+
+                foreach($allMembers as $tagMember)
+                {
+                    $text       = $userInfo->name . ' tagged you in a post.';
+                    $payload    = [
+                        'mtitle'            => '',
+                        'mdesc'             => $text,
+                        'user_id'           => $tagMember->id,
+                        'mtype'             => 'TAG_USER'
+                    ];
+                    $storeNotification = [
+                        'user_id'           => $tagMember->id,
+                        'from_user_id'      => $userInfo->id,
+                        'description'       => $text,
+                        'notification_type' => 'TAG_USER'
+                    ];
+
+                    access()->addNotification($storeNotification);
+                    access()->sentPushNotification($tagMember, $payload);
+                }
             }
 
             if(isset($input['group_id']))
@@ -383,6 +407,28 @@ class APIFeedsController extends BaseApiController
                     {
                         $model->feed_tag_users()->insert($groupMemberData);
                     }
+                }
+
+                $allGroupMembers = User::whereIn('id', $uniqueGrpMembers)->get();
+
+                foreach($allGroupMembers as $tagGroupMember)
+                {
+                    $text       = $userInfo->name . ' tagged your group.';
+                    $payload    = [
+                        'mtitle'            => '',
+                        'mdesc'             => $text,
+                        'user_id'           => $tagGroupMember->id,
+                        'mtype'             => 'TAG_GROUP_USER'
+                    ];
+                    $storeNotification = [
+                        'user_id'           => $tagGroupMember->id,
+                        'from_user_id'      => $userInfo->id,
+                        'description'       => $text,
+                        'notification_type' => 'TAG_GROUP_USER'
+                    ];
+
+                    access()->addNotification($storeNotification);
+                    access()->sentPushNotification($tagGroupMember, $payload);
                 }
 
             }
