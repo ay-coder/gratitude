@@ -830,6 +830,45 @@ class UsersController extends BaseApiController
      */
     public function inviteUsers(Request $request)
     {
-        dd($request->all());
+        $inviteUsers = $request->all();
+        $appUsers    = User::all();
+        $response    = [];
+
+        if(isset($inviteUsers) && count($inviteUsers))
+        {
+            foreach($inviteUsers  as $inviteUser)
+            {
+                $email = $inviteUser['email'];
+                $phone = $inviteUser['phone'];
+                $flag  = true;
+
+                if(isset($email) && strlen($email) > 0)
+                {
+                    $emailExist = $appUsers->where('email', $email)->first();
+
+                    if(isset($emailExist) && count($emailExist))
+                    {
+                        $flag = false;
+                    }
+                }
+
+                if(isset($phone) && strlen($phone) > 0)
+                {
+                    $phoneExist = $appUsers->where('phone', $phone)->first();
+
+                    if(isset($phoneExist) && count($phoneExist))
+                    {
+                        $flag = false;
+                    }
+                }
+
+                if($flag)
+                {
+                   $response[] = $inviteUser;
+                }
+            }
+        }
+
+        return $this->successResponse($response);                
     }
 }
