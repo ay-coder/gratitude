@@ -416,7 +416,7 @@ class FeedsTransformer extends Transformer
        $response       = [];
        $currentUserId  = access()->user()->id;
        $connectionIds  = access()->getMyConnectionIds($currentUserId);
-       $requestIds     = access()->getMyRequestIds($currentUserId);
+       $requestIds     = access()->getOnlyReceiveRequestIds($currentUserId);
        $myReqIds       = access()->getOnlyMyRequestIds($currentUserId);
 
         if(isset($item) && count($item))
