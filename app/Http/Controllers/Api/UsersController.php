@@ -838,8 +838,8 @@ class UsersController extends BaseApiController
         {
             foreach($inviteUsers  as $inviteUser)
             {
-                $email = $inviteUser['email'];
-                $phone = $inviteUser['phone'];
+                $email = isset($inviteUser['email']) ? $inviteUser['email'] : false;
+                $phone = isset($inviteUser['phone']) ? $inviteUser['phone'] : false;
                 $flag  = true;
 
                 if(isset($email) && strlen($email) > 0)
