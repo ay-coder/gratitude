@@ -232,6 +232,56 @@ class Access
     }
 
     /**
+     * Get My Request Ids
+     * 
+     * @param int $userId
+     * @return array
+     */
+    public function getOnlyMyRequestIds($userId = null)
+    {
+        if($userId)   
+        {
+            $connectionModel        = new Connections;
+            $myConnectionList       = $connectionModel->where([
+                'user_id'           => $userId,
+                'requested_user_id' => $userId,
+                'is_accepted'       => 0
+            ])->pluck('other_user_id')->toArray();
+
+            $allConnections = array_unique($myConnectionList);
+
+            return $allConnections;
+        }
+
+        return [];
+    }
+
+    /**
+     * Get My Request Ids
+     * 
+     * @param int $userId
+     * @return array
+     */
+    public function getOnlyReceiveRequestIds($userId = null)
+    {
+        if($userId)   
+        {
+            $connectionModel        = new Connections;
+            $myConnectionList       = $connectionModel->where([
+                'user_id'           => $userId,
+                'is_accepted'       => 0
+            ])->where('requested_user_id', '!=', $userId)
+            ->pluck('other_user_id')->toArray();
+
+            $allConnections = array_unique($myConnectionList);
+
+            return $allConnections;
+        }
+
+        return [];
+    }
+
+    /**
      * Get Load More Flag
      * 
      * @param object $model

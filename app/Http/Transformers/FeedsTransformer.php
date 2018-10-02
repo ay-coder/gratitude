@@ -35,7 +35,8 @@ class FeedsTransformer extends Transformer
         $response       = [];
         $currentUserId  = access()->user()->id;
         $connectionIds  = access()->getMyConnectionIds($currentUserId);
-        $requestIds     = access()->getMyRequestIds($currentUserId);
+        $requestIds     = access()->getOnlyReceiveRequestIds($currentUserId);
+        $myReqIds       = access()->getOnlyMyRequestIds($currentUserId);
 
         if(isset($items) && count($items))
         {
@@ -80,11 +81,13 @@ class FeedsTransformer extends Transformer
                     {
                         $isConnected = in_array($tagUser->user->id, $connectionIds) ? 1 : 0;
                         $isRequested = in_array($tagUser->user->id, $requestIds) ? 1 : 0;
+                        $isMyRequested = in_array($tagUser->user->id, $myReqIds) ? 1 : 0;
 
                         $tagUsers[] = [
                             'user_id'       => (int)  $tagUser->user->id,
                             'is_connected'  => $isConnected,
                             'is_requested'  => $isRequested,
+                            'is_my_request' => $isMyRequested,
                             'username'      => $tagUser->user->name,
                             'profile_pic'   => URL::to('/').'/uploads/user/' . $tagUser->user->profile_pic,
                         ];
@@ -95,15 +98,27 @@ class FeedsTransformer extends Transformer
                 {
                     foreach($item->feed_loves as $love)
                     {
+                        $isConnected = in_array($love->user->id, $connectionIds) ? 1 : 0;
+                        $isRequested = in_array($love->user->id, $requestIds) ? 1 : 0;
+                        $isMyRequested = in_array($love->user->id, $myReqIds) ? 1 : 0;
+
                         if($love->user->id == $currentUserId)
                         {
-                            $isMyLoved  = 1;
-                            $isLoved    = 1;
+                            $isMyLoved      = 1;
+                            $isLoved        = 1;
+                            $isConnected    = 0;
+                            $isRequested    = 0;
+                            $isMyRequested  = 0;
                         }
+
+                        
 
                         $feedLoveUsers[] = [
                             'user_id'       => (int)  $love->user->id,
                             'username'      => $love->user->name,
+                            'is_connected'  => $isConnected,
+                            'is_requested'  => $isRequested,
+                            'is_my_request' => $isMyRequested,
                             'is_love'       => 1,
                             'is_like'       => 0,
                             'profile_pic'   => URL::to('/').'/uploads/user/' . $love->user->profile_pic,
@@ -118,15 +133,26 @@ class FeedsTransformer extends Transformer
                 {
                     foreach($item->feed_likes as $like)
                     {
+                        $isConnected = in_array($like->user->id, $connectionIds) ? 1 : 0;
+                        $isRequested = in_array($like->user->id, $requestIds) ? 1 : 0;
+                        $isMyRequested = in_array($like->user->id, $myReqIds) ? 1 : 0;
+
+
                         if($like->user->id == $currentUserId)
                         {
-                            $isMyLiked = 1;
-                            $isLiked = 1;
+                            $isMyLiked      = 1;
+                            $isLiked        = 1;
+                            $isConnected    = 0;
+                            $isRequested    = 0;
+                            $isMyRequested  = 0;
                         }
 
                         $feedLikeUsers[] = [
                             'user_id'       => (int)  $like->user->id,
                             'username'      => $like->user->name,
+                            'is_connected'  => $isConnected,
+                            'is_requested'  => $isRequested,
+                            'is_my_request' => $isMyRequested,
                             'is_like'       => 1,
                             'is_love'       => 0,
                             'profile_pic'   => URL::to('/').'/uploads/user/' . $like->user->profile_pic,
@@ -171,11 +197,14 @@ class FeedsTransformer extends Transformer
 
                         $isConnected = in_array($loveLike->user_id, $connectionIds) ? 1 : 0;
                         $isRequested = in_array($loveLike->user_id, $requestIds) ? 1 : 0;
+                        $isMyRequested = in_array($like->user->id, $myReqIds) ? 1 : 0;
+
                         $isMe  = $loveLike->user_id == $currentUserId ? 1 : 0;
                         $feedLoveLikeUsers[] = [
                             'user_id'       => (int) $loveLike->user_id,
                             'is_connected'  => $isConnected,
                             'is_requested'  => $isRequested,
+                            'is_my_request' => $isMyRequested,
                             'is_me'         => $isMe,
                             'username'      => $loveLike->username,
                             'is_like'       => $likeFlag,
@@ -257,7 +286,8 @@ class FeedsTransformer extends Transformer
        $response       = [];
        $currentUserId  = access()->user()->id;
        $connectionIds  = access()->getMyConnectionIds($currentUserId);
-       $requestIds     = access()->getMyRequestIds($currentUserId);
+       $requestIds     = access()->getOnlyReceiveRequestIds($currentUserId);
+       $myReqIds       = access()->getOnlyMyRequestIds($currentUserId);
 
         if(isset($item) && count($item))
         {
@@ -344,11 +374,18 @@ class FeedsTransformer extends Transformer
 
                     $isConnected = in_array($loveLike->user_id, $connectionIds) ? 1 : 0;
                     $isRequested = in_array($loveLike->user_id, $requestIds) ? 1 : 0;
+                    $isMyRequested = in_array($loveLike->user->id, $myReqIds) ? 1 : 0;
+
+
+                    $ = in_array($loveLike->user_id, $myReqIds) ? 1 : 0;
+
+
                     $isMe  = $loveLike->user_id == $currentUserId ? 1 : 0;
                     $feedLoveLikeUsers[] = [
                         'user_id'       => (int) $loveLike->user_id,
                         'is_connected'  => $isConnected,
                         'is_requested'  => $isRequested,
+                        'is_my_request' => $isMyRequested,
                         'is_me'         => $isMe,
                         'username'      => $loveLike->username,
                         'is_like'       => $likeFlag,
@@ -380,6 +417,7 @@ class FeedsTransformer extends Transformer
        $currentUserId  = access()->user()->id;
        $connectionIds  = access()->getMyConnectionIds($currentUserId);
        $requestIds     = access()->getMyRequestIds($currentUserId);
+       $myReqIds       = access()->getOnlyMyRequestIds($currentUserId);
 
         if(isset($item) && count($item))
         {
@@ -422,11 +460,13 @@ class FeedsTransformer extends Transformer
                 {
                     $isConnected = in_array($tagUser->user->id, $connectionIds) ? 1 : 0;
                     $isRequested = in_array($tagUser->user->id, $requestIds) ? 1 : 0;
+                    $isMyRequested = in_array($tagUser->user->id, $myReqIds) ? 1 : 0;
 
                     $tagUsers[] = [
                         'user_id'       => (int)  $tagUser->user->id,
                         'is_connected'  => $isConnected,
                         'is_requested'  => $isRequested,
+                        'is_my_request' => $isMyRequested,
                         'username'      => $tagUser->user->name,
                         'profile_pic'   => URL::to('/').'/uploads/user/' . $tagUser->user->profile_pic,
                     ];
@@ -437,15 +477,25 @@ class FeedsTransformer extends Transformer
             {
                 foreach($item->feed_loves as $love)
                 {
+                    $isConnected    = in_array($love->user_id, $connectionIds) ? 1 : 0;
+                    $isRequested    = in_array($love->user_id, $requestIds) ? 1 : 0;
+                    $isMyRequested  = in_array($love->user->id, $myReqIds) ? 1 : 0;
+
                     if($love->user->id == $currentUserId)
                     {
-                        $isMyLoved  = 1;
-                        $isLoved    = 1;
+                        $isMyLoved      = 1;
+                        $isLoved        = 1;
+                        $isConnected    = 0;
+                        $isRequested    = 0;
+                        $isMyRequested  = 0;
                     }
 
                     $feedLoveUsers[] = [
                         'user_id'       => (int)  $love->user->id,
                         'username'      => $love->user->name,
+                        'is_connected'  => $isConnected,
+                        'is_requested'  => $isRequested,
+                        'is_my_request' => $isMyRequested,
                         'is_love'       => 1,
                         'is_like'       => 0,
                         'profile_pic'   => URL::to('/').'/uploads/user/' . $love->user->profile_pic,
@@ -458,15 +508,25 @@ class FeedsTransformer extends Transformer
             {
                 foreach($item->feed_likes as $like)
                 {
+                    $isConnected    = in_array($like->user_id, $connectionIds) ? 1 : 0;
+                    $isRequested    = in_array($like->user_id, $requestIds) ? 1 : 0;
+                    $isMyRequested  = in_array($like->user->id, $myReqIds) ? 1 : 0;
+
                     if($like->user->id == $currentUserId)
                     {
-                        $isMyLiked  = 1;
-                        $isLiked    = 1;
+                        $isMyLiked      = 1;
+                        $isLiked        = 1;
+                        $isConnected    = 0;
+                        $isRequested    = 0;
+                        $isMyRequested  = 0;
                     }
 
                     $feedLikeUsers[] = [
                         'user_id'       => (int)  $like->user->id,
                         'username'      => $like->user->name,
+                        'is_connected'  => $isConnected,
+                        'is_requested'  => $isRequested,
+                        'is_my_request' => $isMyRequested,
                         'is_like'       => 1,
                         'is_love'       => 0,
                         'profile_pic'   => URL::to('/').'/uploads/user/' . $like->user->profile_pic,
@@ -514,11 +574,14 @@ class FeedsTransformer extends Transformer
 
                     $isConnected = in_array($loveLike->user_id, $connectionIds) ? 1 : 0;
                     $isRequested = in_array($loveLike->user_id, $requestIds) ? 1 : 0;
+                    $isMyRequested = in_array($loveLike->user->id, $myReqIds) ? 1 : 0;
+
                     $isMe  = $loveLike->user_id == $currentUserId ? 1 : 0;
                     $feedLoveLikeUsers[] = [
                         'user_id'       => (int) $loveLike->user_id,
                         'is_connected'  => $isConnected,
                         'is_requested'  => $isRequested,
+                        'is_my_request' => $isMyRequested,
                         'is_me'         => $isMe,
                         'username'      => $loveLike->username,
                         'is_like'       => $likeFlag,
