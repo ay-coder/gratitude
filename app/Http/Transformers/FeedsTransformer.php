@@ -377,9 +377,6 @@ class FeedsTransformer extends Transformer
                     $isMyRequested = in_array($loveLike->user->id, $myReqIds) ? 1 : 0;
 
 
-                    $ = in_array($loveLike->user_id, $myReqIds) ? 1 : 0;
-
-
                     $isMe  = $loveLike->user_id == $currentUserId ? 1 : 0;
                     $feedLoveLikeUsers[] = [
                         'user_id'       => (int) $loveLike->user_id,
