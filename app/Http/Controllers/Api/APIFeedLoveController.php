@@ -94,7 +94,7 @@ class APIFeedLoveController extends BaseApiController
 
                     if($status)
                     {
-                        $feedInfo  = Feeds::with(['user', 'feed_tag_users'])->where('id', $request->get('feed_id'))->first();
+                        $feedInfo  = Feeds::with(['user', 'feed_tag_users', 'feed_tag_users.user'])->where('id', $request->get('feed_id'))->first();
                         $text       = $userInfo->name . ' loved  your post.';
 
                         if(isset($feedInfo->user))
@@ -117,7 +117,7 @@ class APIFeedLoveController extends BaseApiController
                             ];
 
                             access()->addNotification($storeNotification);
-                            access()->sentPushNotification($feedInfo, $payload);
+                            access()->sentPushNotification($feedInfo->user, $payload);
                         }
 
                         if(isset($feedInfo->feed_tag_users) && count($feedInfo->feed_tag_users))
@@ -129,13 +129,13 @@ class APIFeedLoveController extends BaseApiController
                                     'mtitle'            => '',
                                     'mdesc'             => $text,
                                     'feed_id'           => $request->get('feed_id'),
-                                    'to_user_id'        => $tagUser->id,
+                                    'to_user_id'        => $tagUser->user->id,
                                     'from_user_id'      => $userInfo->id,
                                     'mtype'             => 'FEED_LOVE_TAG_USERS'
                                 ];
 
                                 $storeNotification = [
-                                    'user_id'           => $tagUser->id,
+                                    'user_id'           => $tagUser->user->id,
                                     'from_user_id'      => $userInfo->id,
                                     'description'       => $text,
                                     'feed_id'           => $request->get('feed_id'),
@@ -143,7 +143,7 @@ class APIFeedLoveController extends BaseApiController
                                 ];
 
                                 access()->addNotification($storeNotification);
-                                access()->sentPushNotification($tagUser, $payload);
+                                access()->sentPushNotification($tagUser->user, $payload);
                             }
                         }
 
