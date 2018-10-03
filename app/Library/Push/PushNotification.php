@@ -120,7 +120,7 @@ class PushNotification
 			'alert' => array(
 			    'title' 	=> $data['mtitle'],
                 'body' 		=> $data['mdesc'],
-                'post_id' 	=> isset($data['post_id']) ? $data['post_id'] : '',
+                'feed_id' 	=> isset($data['feed_id']) ? $data['feed_id'] : '',
                 'user_id' 	=> isset($data['user_id']) ? $data['user_id'] : '',
                 'mtype' 	=> isset($data['mtype']) ? $data['mtype'] : '',
                 'comment_id' 	=> isset($data['comment_id']) ? $data['comment_id'] : '',
