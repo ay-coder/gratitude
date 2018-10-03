@@ -112,7 +112,7 @@ class APICommentsController extends BaseApiController
         if($request->has('feed_id'))
         {
             $userInfo  = $this->getAuthenticatedUser();
-            $feedInfo  = Feeds::with(['feed_tag_users', 'user'])->where('id', $request->get('feed_id'))->first();
+            $feedInfo  = Feeds::with(['feed_tag_users', 'feed_tag_users.user', 'user'])->where('id', $request->get('feed_id'))->first();
             $model      = $this->repository->model->create([
                 'user_id'       => (int) $userInfo->id,
                 'feed_id'       => (int) $request->get('feed_id'),
@@ -151,13 +151,13 @@ class APICommentsController extends BaseApiController
                             'mtitle'            => '',
                             'mdesc'             => $text,
                             'feed_id'           => $request->get('feed_id'),
-                            'to_user_id'        => $tagUser->id,
+                            'to_user_id'        => $tagUser->user->id,
                             'from_user_id'      => $userInfo->id,
-                            'mtype'             => 'NEW_COMMENT_TAG_USERS'
+                            'mtype'             => '`'
                         ];
 
                         $storeNotification = [
-                            'user_id'           => $tagUser->id,
+                            'user_id'           => $tagUser->user->id,
                             'from_user_id'      => $userInfo->id,
                             'description'       => $text,
                             'feed_id'           => $request->get('feed_id'),
@@ -165,7 +165,7 @@ class APICommentsController extends BaseApiController
                         ];
 
                         access()->addNotification($storeNotification);
-                        access()->sentPushNotification($tagUser, $payload);
+                        access()->sentPushNotification($tagUser->user, $payload);
                     }
                 }
                 
