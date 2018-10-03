@@ -197,7 +197,7 @@ class FeedsTransformer extends Transformer
 
                         $isConnected = in_array($loveLike->user_id, $connectionIds) ? 1 : 0;
                         $isRequested = in_array($loveLike->user_id, $requestIds) ? 1 : 0;
-                        $isMyRequested = in_array($like->user_id, $myReqIds) ? 1 : 0;
+                        $isMyRequested = in_array($loveLike->user_id, $myReqIds) ? 1 : 0;
 
                         $isMe  = $loveLike->user_id == $currentUserId ? 1 : 0;
                         $feedLoveLikeUsers[] = [
