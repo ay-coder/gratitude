@@ -55,6 +55,7 @@ class APINotesController extends BaseApiController
         $items      = $this->repository->model->with('user')
         ->where('user_id', $userInfo->id)
         ->offset($offset)
+        ->orderBy('id', 'DESC')
         ->limit($perPage)
         ->get();
 
