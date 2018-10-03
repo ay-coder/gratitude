@@ -86,6 +86,7 @@ class APIFeedsController extends BaseApiController
         ->whereNotIn('id', $blockFeeds)
         ->skip($skipp)
         ->take(1)
+        ->orderBy('id', 'DESC')
         ->get();
 
         if(isset($items) && count($items))
@@ -93,7 +94,7 @@ class APIFeedsController extends BaseApiController
             $loadMore    = 0;
             $itemsOutput = $this->feedsTransformer->showAllFeeds($items);
 
-            if(isset($itemCount) && count($itemCount) > 1)
+            if(isset($itemCount) && count($itemCount) > 0)
             {
                 $loadMore = 1;
             }
