@@ -79,13 +79,13 @@ class APIFeedsController extends BaseApiController
         }
         else
         {
-            $skipp = $offset * $perPage;
+            $skipp = ($offset + 1) * $perPage;
         }
         
         $itemCount      = $this->repository->model->where('is_individual', 0)
         ->whereNotIn('id', $blockFeeds)
         ->skip($skipp)
-        ->take($perPage)
+        ->take(1)
         ->orderBy('id', 'DESC')
         ->get();
 
