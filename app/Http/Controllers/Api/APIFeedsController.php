@@ -82,7 +82,8 @@ class APIFeedsController extends BaseApiController
             $skipp = $offset * $perPage;
         }
         
-        $itemCount      = $this->repository->model->whereNotIn('id', $blockFeeds)
+        $itemCount      = $this->repository->model->where('is_individual', 0)
+        ->whereNotIn('id', $blockFeeds)
         ->skip($skipp)
         ->take(1)
         ->get();
@@ -92,7 +93,7 @@ class APIFeedsController extends BaseApiController
             $loadMore    = 0;
             $itemsOutput = $this->feedsTransformer->showAllFeeds($items);
 
-            if(isset($itemCount) && count($itemCount) > 0)
+            if(isset($itemCount) && count($itemCount) > 1)
             {
                 $loadMore = 1;
             }
