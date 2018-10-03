@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\Feeds\EloquentFeedsRepository;
 use App\Models\UserGroups\UserGroups;
 use App\Models\Connections\Connections;
+use App\Models\FeedTagUsers\FeedTagUsers;
 use App\Models\Access\User\User;
 
 class APIFeedsController extends BaseApiController
@@ -657,6 +658,42 @@ class APIFeedsController extends BaseApiController
             }
         }
         
+        return $this->setStatusCode(404)->failureResponse([
+            'reason' => 'Invalid Input'
+        ], 'No feed found');
+    }
+
+    /**
+     * Un Tag
+     * 
+     * @param Request $request
+     * @return json
+     */
+    public function unTag(Request $request)
+    {
+        if($request->has('feed_id'))
+        {
+            $feed       = $this->repository->model->where('id', $request->get('feed_id'))->first();
+            $userInfo   = $this->getAuthenticatedUser();
+
+            if(isset($feed))
+            {
+                $status = FeedTagUsers::where([
+                    'feed_id' => $request->get('feed_id'),
+                    'user_id' => $userInfo->id
+                ])->delete();
+
+                if($status)
+                {
+                    $responseData = [
+                        'message' => 'Untag user successfully'
+                    ];
+                    
+                    return $this->successResponse($responseData, 'Untag user successfully');
+                }
+            }
+        }
+
         return $this->setStatusCode(404)->failureResponse([
             'reason' => 'Invalid Input'
         ], 'No feed found');
