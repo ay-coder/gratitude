@@ -140,7 +140,7 @@ class APICommentsController extends BaseApiController
                 ];
 
                 access()->addNotification($storeNotification);
-                access()->sentPushNotification($feedInfo, $payload);
+                access()->sentPushNotification($feedInfo->user, $payload);
 
                 if(isset($feedInfo->feed_tag_users) && count($feedInfo->feed_tag_users))
                 {
@@ -227,7 +227,7 @@ class APICommentsController extends BaseApiController
                 ];
 
                 access()->addNotification($storeNotification);
-                access()->sentPushNotification($feedOwner, $payload);
+                access()->sentPushNotification($feedOwner->user, $payload);
 
                 $response = [
                     'comment_id' => (int) $model->id,
