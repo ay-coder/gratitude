@@ -85,7 +85,7 @@ class APIFeedsController extends BaseApiController
         $itemCount      = $this->repository->model->where('is_individual', 0)
         ->whereNotIn('id', $blockFeeds)
         ->skip($skipp)
-        ->take(1)
+        ->take($perPage)
         ->orderBy('id', 'DESC')
         ->get();
 
