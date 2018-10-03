@@ -57,13 +57,19 @@ class APIFeedsController extends BaseApiController
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
+
+
+        $newOffset = $offset * $perPage;
+
         $items      = $this->repository->model->with([
             'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
         ->where('is_individual', 0)
         ->whereNotIn('id', $blockFeeds)
-        ->offset($offset)
-        ->limit($perPage)
+        /*->offset($offset)
+        ->limit($perPage)*/
+        ->skip($newOffset)
+        ->take($perPage)
         ->orderBy('id', 'DESC')
         ->get();
 
