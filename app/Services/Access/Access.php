@@ -268,9 +268,9 @@ class Access
         {
             $connectionModel        = new Connections;
             $myConnectionList       = $connectionModel->where([
-                'user_id'           => $userId,
+                'other_user_id'     => $userId,
                 'is_accepted'       => 0
-            ])->where('requested_user_id', '!=', $userId)
+            ])
             ->pluck('other_user_id')->toArray();
 
             $allConnections = array_unique($myConnectionList);
