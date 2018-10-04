@@ -97,7 +97,7 @@ class APIFeedLoveController extends BaseApiController
                         $feedInfo  = Feeds::with(['user', 'feed_tag_users', 'feed_tag_users.user'])->where('id', $request->get('feed_id'))->first();
                         $text       = $userInfo->name . ' loved  your post.';
 
-                        if(isset($feedInfo->user))
+                        if(isset($feedInfo->user) && $userInfo->id != $feedInfo->user->id)
                         {
                             $payload = [
                                 'mtitle'            => '',
@@ -126,6 +126,11 @@ class APIFeedLoveController extends BaseApiController
                             $text       = $userInfo->name . ' loved a post you are tagged in.';
                             foreach($feedInfo->feed_tag_users as $tagUser)
                             {
+                                if($userInfo->id != $tagUser->user->id)
+                                {
+                                    continue;
+                                }
+
                                 $payload = [
                                     'mtitle'            => '',
                                     'mdesc'             => $text,

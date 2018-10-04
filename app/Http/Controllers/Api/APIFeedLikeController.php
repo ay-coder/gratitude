@@ -96,7 +96,7 @@ class APIFeedLikeController extends BaseApiController
                     {
                         $feedInfo  = Feeds::with(['user' ,'feed_tag_users', 'feed_tag_users.user'])->where('id', $request->get('feed_id'))->first();
 
-                        if(isset($feedInfo->user))
+                        if(isset($feedInfo->user) && $userInfo->id != $feedInfo->user->id)
                         {
                             $text       = $userInfo->name . ' liked your post.';
                             $payload    = [
@@ -126,6 +126,11 @@ class APIFeedLikeController extends BaseApiController
                             $text       = $userInfo->name . ' liked a post you are tagged in.';
                             foreach($feedInfo->feed_tag_users as $tagUser)
                             {
+                                if($userInfo->id != $tagUser->user->id)
+                                {
+                                    continue;
+                                }
+                                
                                 $payload = [
                                     'mtitle'            => '',
                                     'mdesc'             => $text,
