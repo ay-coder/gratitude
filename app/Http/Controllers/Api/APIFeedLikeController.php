@@ -104,6 +104,7 @@ class APIFeedLikeController extends BaseApiController
                                 'mdesc'             => $text,
                                 'feed_id'           => $request->get('feed_id'),
                                 'to_user_id'        => $feedInfo->user->id,
+                                'feed_type'         => $feedInfo->feed_type,
                                 'from_user_id'      => $userInfo->id,
                                 'mtype'             => 'FEED_LIKE'
                             ];
@@ -130,6 +131,7 @@ class APIFeedLikeController extends BaseApiController
                                     'mdesc'             => $text,
                                     'feed_id'           => $request->get('feed_id'),
                                     'to_user_id'        => $tagUser->user->id,
+                                    'feed_type'         => $feedInfo->feed_type,
                                     'from_user_id'      => $userInfo->id,
                                     'mtype'             => 'FEED_LIKE_TAG_USERS'
                                 ];
