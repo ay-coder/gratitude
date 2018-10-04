@@ -409,6 +409,7 @@ class APIFeedsController extends BaseApiController
                         $uniqueGrpMembers[] = $member->member_id;
 
                         $groupMemberData[] = [
+                            'group_id'  => $userGroup->id,
                             'user_id'   => $member->member_id,
                             'feed_id'   => $model->id
                         ];

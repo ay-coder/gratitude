@@ -123,7 +123,7 @@ class APIFeedLikeController extends BaseApiController
 
                         if(isset($feedInfo->feed_tag_users) && count($feedInfo->feed_tag_users))
                         {
-                            $text       = $userInfo->name . ' liked a post you are tagged in.';
+                            
                             foreach($feedInfo->feed_tag_users as $tagUser)
                             {
                                 if($userInfo->id == $tagUser->user->id)
@@ -134,6 +134,15 @@ class APIFeedLikeController extends BaseApiController
                                 if($feedInfo->user->id == $tagUser->user->id)
                                 {
                                     continue;
+                                }
+
+                                if(isset($tagUser->group_id))
+                                {
+                                    $text = $userInfo->name . ' liked a post your group is tagged in.';
+                                }
+                                else
+                                {
+                                    $text = $userInfo->name . ' liked a post you are tagged in.';
                                 }
 
                                 $payload = [

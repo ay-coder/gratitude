@@ -24,7 +24,7 @@ class FeedTagUsers extends BaseModel
      *
      */
     protected $fillable = [
-        "id", "user_id", "feed_id", "created_at", "updated_at", 
+        "id", "user_id", "feed_id", "group_id", "created_at", "updated_at", 
     ];
 
     /**
