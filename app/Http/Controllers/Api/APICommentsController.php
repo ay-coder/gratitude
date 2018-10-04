@@ -121,7 +121,7 @@ class APICommentsController extends BaseApiController
 
             if($model)
             {
-                if($userInfo->id != $feedInfo->user_id)
+                if($userInfo->id != $feedInfo->user->id)
                 {
                     $text = $userInfo->name . ' has commented on your Feed.';
                     $payload = [
@@ -138,7 +138,7 @@ class APICommentsController extends BaseApiController
                         'user_id'           => $feedInfo->user->id,
                         'from_user_id'      => $userInfo->id,
                         'description'       => $text,
-                        'feed_id'           => $model->id,
+                        'feed_id'           => $request->get('feed_id'),
                         'notification_type' => 'NEW_COMMENT'
                     ];
 
@@ -162,7 +162,7 @@ class APICommentsController extends BaseApiController
                             'feed_id'           => $request->get('feed_id'),
                             'to_user_id'        => $tagUser->user->id,
                             'feed_type'         => $feedInfo->feed_type,
-                            'from_user_id'           => $userInfo->id,
+                            'from_user_id'      => $userInfo->id,
                             'mtype'             => 'NEW_COMMENT_TAG_USERS'
                         ];
 
