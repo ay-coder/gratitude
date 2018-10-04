@@ -131,6 +131,11 @@ class APIFeedLikeController extends BaseApiController
                                     continue;
                                 }
 
+                                if($feedInfo->user->id == $tagUser->user->id)
+                                {
+                                    continue;
+                                }
+
                                 $payload = [
                                     'mtitle'            => '',
                                     'mdesc'             => $text,
