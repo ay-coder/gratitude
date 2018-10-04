@@ -104,6 +104,7 @@ class APIFeedLoveController extends BaseApiController
                                 'mdesc'             => $text,
                                 'feed_id'           => $request->get('feed_id'),
                                 'to_user_id'        => $feedInfo->user->id,
+                                'feed_type'         => $feedInfo->feed_type,
                                 'from_user_id'      => $userInfo->id,
                                 'mtype'             => 'FEED_LOVE'
                             ];
@@ -129,6 +130,7 @@ class APIFeedLoveController extends BaseApiController
                                     'mtitle'            => '',
                                     'mdesc'             => $text,
                                     'feed_id'           => $request->get('feed_id'),
+                                    'feed_type'         => $feedInfo->feed_type,
                                     'to_user_id'        => $tagUser->user->id,
                                     'from_user_id'      => $userInfo->id,
                                     'mtype'             => 'FEED_LOVE_TAG_USERS'
