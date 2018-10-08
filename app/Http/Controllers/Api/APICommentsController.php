@@ -220,7 +220,7 @@ class APICommentsController extends BaseApiController
             {
                 if($userInfo->id != $feedInfo->user->id)
                 {
-                    $text = $userInfo->name . ' has commented on your Feed.';
+                    $text = $userInfo->name . ' commented on your post.';
                     $payload = [
                         'mtitle'            => '',
                         'mdesc'             => $text,
@@ -254,7 +254,7 @@ class APICommentsController extends BaseApiController
 
                         if(isset($tagUser->group_id))
                         {
-                            $text = $userInfo->name . ' commented on a post your group is tagged in..';
+                            $text = $userInfo->name . ' commented on a post your group is tagged in.';
                         }
                         else
                         {
