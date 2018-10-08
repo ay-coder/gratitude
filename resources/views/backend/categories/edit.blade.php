@@ -10,7 +10,9 @@
 @endsection
 
 @section('content')
-    {{ Form::model($item, ['route' => [$repository->getActionRoute('updateRoute'), $item], 'class' => 'form-horizontal', 'role' => 'form', 'method' => 'PATCH']) }}
+    {{ Form::model($item, ['route' => [$repository->getActionRoute('updateRoute'), $item], 'class' => 'form-horizontal',
+        'files'     => true,
+        'role' => 'form', 'method' => 'PATCH']) }}
 
         <div class="box box-success">
             <div class="box-header with-border">

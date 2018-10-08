@@ -32,13 +32,11 @@ class EloquentCategoriesRepository extends DbRepository
      * @var array
      */
     public $tableHeaders = [
-        'id'        => 'Id',
-'title'        => 'Title',
-'icon'        => 'Icon',
-'status'        => 'Status',
-'created_at'        => 'Created_at',
-'updated_at'        => 'Updated_at',
-"actions"         => "Actions"
+        'id'            => 'Id',
+        'title'         => 'Title',
+        'icon'          => 'Icon',
+        'created_at'    => 'Created_at',
+        "actions"       => "Actions"
     ];
 
     /**
@@ -65,21 +63,9 @@ class EloquentCategoriesRepository extends DbRepository
                 'searchable'    => true,
                 'sortable'      => true
             ],
-		'status' =>   [
-                'data'          => 'status',
-                'name'          => 'status',
-                'searchable'    => true,
-                'sortable'      => true
-            ],
-		'created_at' =>   [
+	    'created_at' =>   [
                 'data'          => 'created_at',
                 'name'          => 'created_at',
-                'searchable'    => true,
-                'sortable'      => true
-            ],
-		'updated_at' =>   [
-                'data'          => 'updated_at',
-                'name'          => 'updated_at',
                 'searchable'    => true,
                 'sortable'      => true
             ],

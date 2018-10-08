@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Yajra\Datatables\Facades\Datatables;
 use App\Repositories\Categories\EloquentCategoriesRepository;
+use Html;
 
 /**
  * Class AdminCategoriesController
@@ -78,7 +79,17 @@ class AdminCategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        $this->repository->create($request->all());
+        $input = $request->all();
+        $input = array_merge($input, ['icon' => 'default.png']);
+
+        if($request->file('icon'))
+        {
+            $imageName  = rand(11111, 99999) . '_icon.' . $request->file('icon')->getClientOriginalExtension();
+            $request->file('icon')->move(base_path() . '/public/uploads/categories/', $imageName);
+            $input = array_merge($input, ['icon' => $imageName]);
+        }
+        
+        $this->repository->create($input);
 
         return redirect()->route($this->repository->setAdmin(true)->getActionRoute('listRoute'))->withFlashSuccess($this->createSuccessMessage);
     }
@@ -120,8 +131,16 @@ class AdminCategoriesController extends Controller
      * @return \Illuminate\View\View
      */
     public function update($id, Request $request)
-    {
-        $status = $this->repository->update($id, $request->all());
+    {   
+        $input = $request->all();
+        
+        if($request->file('icon'))
+        {
+            $imageName  = rand(11111, 99999) . '_icon.' . $request->file('icon')->getClientOriginalExtension();
+            $request->file('icon')->move(base_path() . '/public/uploads/categories/', $imageName);
+            $input = array_merge($input, ['icon' => $imageName]);
+        }
+        $status = $this->repository->update($id, $input);
 
         return redirect()->route($this->repository->setAdmin(true)->getActionRoute('listRoute'))->withFlashSuccess($this->editSuccessMessage);
     }
@@ -147,6 +166,9 @@ class AdminCategoriesController extends Controller
     {
         return Datatables::of($this->repository->getForDataTable())
             ->escapeColumns(['id', 'sort'])
+            ->addColumn('icon', function ($item) {
+                return  Html::image('/uploads/categories/'.$item->icon, 'Icon', ['width' => 60, 'height' => 60]);
+            })
             ->addColumn('actions', function ($item) {
                 return $item->admin_action_buttons;
             })

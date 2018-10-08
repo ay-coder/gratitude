@@ -37,6 +37,13 @@
                 </a>
             </li>
 
+            <li class="{{ active_class(Active::checkUriPattern('admin/categories')) }}">
+                <a href="{{ route('admin.categories.index') }}">
+                    <i class="fa fa-dashboard"></i>
+                    <span>Categories</span>
+                </a>
+            </li>
+
             <li class="header">{{ trans('menus.backend.sidebar.system') }}</li>
 
             @role(1)
