@@ -198,6 +198,7 @@ class APIFollowersController extends BaseApiController
                     'user_id'           => $request->get('user_id'),
                     'from_user_id'      => $userInfo->id,
                     'description'       => $text,
+                    'icon'              => 'NEW_FOLLOW.png',
                     'notification_type' => 'NEW_FOLLOW'
                 ];
 

@@ -371,6 +371,7 @@ class APIFeedsController extends BaseApiController
                         'user_id'           => $tagMember->id,
                         'from_user_id'      => $userInfo->id,
                         'description'       => $text,
+                        'icon'              => 'TAG_USER.png',
                         'notification_type' => 'TAG_USER'
                     ];
 
@@ -438,6 +439,7 @@ class APIFeedsController extends BaseApiController
                         'user_id'           => $tagGroupMember->id,
                         'from_user_id'      => $userInfo->id,
                         'description'       => $text,
+                        'icon'              => 'TAG_GROUP_USER.png',
                         'notification_type' => 'TAG_GROUP_USER'
                     ];
 

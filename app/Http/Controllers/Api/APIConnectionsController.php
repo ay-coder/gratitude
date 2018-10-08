@@ -318,7 +318,7 @@ class APIConnectionsController extends BaseApiController
             'user_id'           => $requestedUser->id,
             'from_user_id'      => $userInfo->id,
             'description'       => $text,
-            'icon'              => 'friendsrequest.png',
+            'icon'              => 'NEW_CONNECTION.png',
             'notification_type' => 'NEW_CONNECTION'
         ]);
 
@@ -593,7 +593,7 @@ class APIConnectionsController extends BaseApiController
                 'user_id'           => $requestedUser->id,
                 'from_user_id'      => $userInfo->id,
                 'description'       => $text,
-                'icon'              => 'acceptrequest.png',
+                'icon'              => 'ACCEPT_CONNECTION.png',
                 'notification_type' => 'CONNECTION_ACCEPTED'
             ]);
 

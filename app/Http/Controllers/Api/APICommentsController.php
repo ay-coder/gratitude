@@ -235,6 +235,7 @@ class APICommentsController extends BaseApiController
                         'user_id'           => $feedInfo->user->id,
                         'from_user_id'      => $userInfo->id,
                         'description'       => $text,
+                        'icon'              => 'NEW_COMMENT.png',
                         'feed_id'           => $request->get('feed_id'),
                         'notification_type' => 'NEW_COMMENT'
                     ];
@@ -275,6 +276,7 @@ class APICommentsController extends BaseApiController
                             'user_id'           => $tagUser->user->id,
                             'from_user_id'      => $userInfo->id,
                             'description'       => $text,
+                            'icon'              => 'NEW_COMMENT.png',
                             'feed_id'           => $request->get('feed_id'),
                             'notification_type' => 'NEW_COMMENT_TAG_USERS'
                         ];
