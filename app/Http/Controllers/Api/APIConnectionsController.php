@@ -40,7 +40,7 @@ class APIConnectionsController extends BaseApiController
      */
     public function __construct()
     {
-        $this->repository                       = new EloquentConnectionsRepository();
+        $this->repository             = new EloquentConnectionsRepository();
         $this->connectionsTransformer = new ConnectionsTransformer();
         $this->connectionModel        = new Connections;
     }
