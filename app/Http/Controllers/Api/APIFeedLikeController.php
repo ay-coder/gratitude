@@ -36,7 +36,7 @@ class APIFeedLikeController extends BaseApiController
      */
     public function __construct()
     {
-        $this->repository                       = new EloquentFeedLikeRepository();
+        $this->repository          = new EloquentFeedLikeRepository();
         $this->feedlikeTransformer = new FeedLikeTransformer();
     }
 
