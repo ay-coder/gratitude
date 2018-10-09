@@ -694,8 +694,6 @@ class APIConnectionsController extends BaseApiController
         ], 'Something went wrong !');
     }
 
-    
-
     /**
      * Search Global
      * 
