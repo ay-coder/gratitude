@@ -14,8 +14,7 @@ Route::group(['namespace' => 'Api'], function()
 	Route::post('my-image-feeds', 'APIFeedsController@myImageFeeds')->name('feeds.my-image-feeds');
 
 	Route::post('feeds/get-love-like', 'APIFeedsController@getLoveLike')->name('feeds.get-love-like');
-
-
+    
     Route::post('feeds/untag-user', 'APIFeedsController@unTag')->name('feeds.untag-user');
 
     Route::post('feeds/create', 'APIFeedsController@create')->name('feeds.create');
