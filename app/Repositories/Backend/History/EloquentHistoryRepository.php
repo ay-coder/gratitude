@@ -222,7 +222,7 @@ class EloquentHistoryRepository implements HistoryContract
     {
         $assets = json_decode($assets, true);
         $count = 1;
-        $asset_count = count($assets) + 1;
+        $asset_count = isset($assets) ?  count($assets) + 1 : 0;
 
         if (count($assets)) {
             foreach ($assets as $name => $values) {
