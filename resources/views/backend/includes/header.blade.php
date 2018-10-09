@@ -28,7 +28,9 @@
 
                     <ul class="dropdown-menu">
                         <li class="user-header">
-                            <img src="{{ access()->user()->profile_pic }}" class="img-circle" alt="User Avatar" />
+                            {!! 
+                            Html::image('/uploads/user/'.access()->user()->profile_pic, 'Icon', ['class' => 'img-circle', 'width' => 60, 'height' => 60]);
+                            !!}
                             <p>
                                 {{-- access()->user()->name }} - {{ implode(", ", access()->user()->roles->lists('name')->toArray()) --}}
                                 <small>{{ trans('strings.backend.general.member_since') }} {{ access()->user()->created_at->format("m/d/Y") }}</small>
