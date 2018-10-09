@@ -224,7 +224,7 @@ class EloquentHistoryRepository implements HistoryContract
         $count = 1;
         $asset_count = isset($assets) ?  count($assets) + 1 : 0;
 
-        if (count($assets)) {
+        if (is_array($assets) && count($assets)) {
             foreach ($assets as $name => $values) {
                 $key = explode('_', $name)[0];
                 $type = explode('_', $name)[1];
