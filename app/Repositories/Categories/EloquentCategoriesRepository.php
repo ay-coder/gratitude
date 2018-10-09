@@ -35,7 +35,7 @@ class EloquentCategoriesRepository extends DbRepository
         'id'            => 'Id',
         'title'         => 'Title',
         'icon'          => 'Icon',
-        'created_at'    => 'Created_at',
+        'created_at'    => 'Created Time',
         "actions"       => "Actions"
     ];
 
