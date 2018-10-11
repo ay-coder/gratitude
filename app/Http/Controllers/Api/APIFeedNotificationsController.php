@@ -60,6 +60,7 @@ class APIFeedNotificationsController extends BaseApiController
         ->where('user_id', $userInfo->id)
         ->offset($offset)
         ->limit($perPage)
+        ->orderBy('id', 'desc')
         ->get();
 
         if(isset($items) && count($items))
