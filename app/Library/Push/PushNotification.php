@@ -126,15 +126,7 @@ class PushNotification
 		if (!$fp)
 			exit("Failed to connect: $err $errstr" . PHP_EOL);
 
-		$userId = isset($data['user_id']) ? $data['user_id'] : false;
-
-		$notificationCount = 0;
 		
-		if($userId)
-		{
-			$notificationCount = access()->getUnreadNotificationCount($data['user_id']);
-		}
-
 		// Create the payload body
 		$body['aps'] = array(
 			'alert' => array(
@@ -150,7 +142,7 @@ class PushNotification
                 'tagged_user_id' 	=> isset($data['tagged_user_id']) ? $data['tagged_user_id'] : '',
 
             ),
-            'badge'	=> $notificationCount,
+            'badge'	=> isset($data['badgeCount']) ? $data['badgeCount'] : 0,
 			'sound' => 'default'
 		);
 

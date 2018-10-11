@@ -342,11 +342,15 @@ class Access
      */
     public function getUnreadNotificationCount($userId = null)
     {
-        $userId = isset($userId) ? $userId : auth()->user()->id;
+        if($userId)
+        {
+            return FeedNotifications::where([
+                'is_read'   => 0,
+                'user_id'   => $userId
+            ])->count();
+        }
 
-        return FeedNotifications::where([
-            'is_read'   => 0,
-            'user_id'   => $userId
-        ])->count();
+        return 0;
+
     }
 }
