@@ -141,7 +141,7 @@ class PushNotification
                 'tagged_user_id' 	=> isset($data['tagged_user_id']) ? $data['tagged_user_id'] : '',
 
             ),
-            'badge'	=> access()->getUnreadNotificationCount(),
+            'badge'	=> access()->getUnreadNotificationCount($data['user_id']),
 			'sound' => 'default'
 		);
 
