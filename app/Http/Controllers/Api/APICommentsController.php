@@ -54,7 +54,7 @@ class APICommentsController extends BaseApiController
     {
         $paginate   = $request->get('paginate') ? $request->get('paginate') : false;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
-        $order      = $request->get('order') ? $request->get('order') : 'ASC';
+        $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $items      = $paginate ? $this->repository->model->orderBy($orderBy, $order)->paginate($paginate)->items() : $this->repository->getAll($orderBy, $order);
 
         if(isset($items) && count($items))

@@ -235,7 +235,7 @@ class EloquentCommentsRepository extends DbRepository
      * @param string $sort
      * @return mixed
      */
-    public function getAll($orderBy = 'id', $sort = 'asc')
+    public function getAll($orderBy = 'id', $sort = 'desc')
     {
         return $this->model->orderBy($orderBy, $sort)->get();
     }
