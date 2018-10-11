@@ -365,6 +365,7 @@ class APIFeedsController extends BaseApiController
                         'user_id'           => $tagMember->id,
                         'feed_id'           => $model->id,
                         'feed_type'         => $model->type,
+                        'badgeCount'        => access()->getUnreadNotificationCount($tagMember->id),
                         'mtype'             => 'TAG_USER'
                     ];
                     $storeNotification = [
@@ -433,6 +434,7 @@ class APIFeedsController extends BaseApiController
                         'user_id'           => $tagGroupMember->id,
                         'feed_id'           => $model->id,
                         'feed_type'         => $model->type,
+                        'badgeCount'        => access()->getUnreadNotificationCount($tagGroupMember->id),
                         'mtype'             => 'TAG_GROUP_USER'
                     ];
                     $storeNotification = [

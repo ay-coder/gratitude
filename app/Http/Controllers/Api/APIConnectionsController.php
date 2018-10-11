@@ -311,6 +311,7 @@ class APIConnectionsController extends BaseApiController
             'mdesc'             => $text,
             'user_id'           => $userInfo->id,
             'other_user_id'     => $requestedUser->id,
+            'badgeCount'        => access()->getUnreadNotificationCount($requestedUser->id),
             'mtype'             => 'NEW_CONNECTION'
         ];
         
@@ -586,6 +587,7 @@ class APIConnectionsController extends BaseApiController
                 'mdesc'             => $text,
                 'user_id'           => $requestedUser->id,
                 'tagged_user_id'    => $userInfo->id,
+                'badgeCount'        => access()->getUnreadNotificationCount($requestedUser->id),
                 'mtype'             => 'ACCEPT_CONNECTION'
             ];
             

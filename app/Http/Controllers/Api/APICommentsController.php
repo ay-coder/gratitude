@@ -228,6 +228,7 @@ class APICommentsController extends BaseApiController
                         'to_user_id'        => $feedInfo->user->id,
                         'feed_type'         => $feedInfo->feed_type,
                         'from_user_id'      => $userInfo->id,
+                        'badgeCount'        => access()->getUnreadNotificationCount($feedInfo->user->id),
                         'mtype'             => 'NEW_COMMENT'
                     ];
 
