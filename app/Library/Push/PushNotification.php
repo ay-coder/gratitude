@@ -32,22 +32,33 @@ class PushNotification
 	        $url = 'https://android.googleapis.com/gcm/send';
 
 	        $message = [
-	        	'title' 		=> $data['mtitle'],
+	        	/*'title' 		=> $data['mtitle'],
 	        	'message' 		=> $data['mdesc'],
 	        	'subtitle' 		=> '',
 	        	'tickerText' 	=> '',
 	        	'msgcnt' 		=> 1,
-	        	'vibrate' 		=> 1
+	        	'vibrate' 		=> 1*/
+			    'title' 	=> $data['mtitle'],
+                'body' 		=> $data['mdesc'],
+                'feed_id' 	=> isset($data['feed_id']) ? $data['feed_id'] : '',
+                'feed_type' => isset($data['feed_type']) ? (string) $data['feed_type'] : '',
+                'user_id' 	=> isset($data['user_id']) ? $data['user_id'] : '',
+                'mtype' 	=> isset($data['mtype']) ? $data['mtype'] : '',
+                'from_user_id' => isset($data['from_user_id']) ? $data['from_user_id'] : '',
+                'to_user_id' => isset($data['to_user_id']) ? $data['to_user_id'] : '',
+                'comment_id' 	=> isset($data['comment_id']) ? $data['comment_id'] : '',
+                'tagged_user_id' 	=> isset($data['tagged_user_id']) ? $data['tagged_user_id'] : '',
 	        ];
 	        
 	        $headers = [
 	        	'Authorization: key=' .self::$API_ACCESS_KEY,
 	        	'Content-Type: application/json'
 	        ];
-	        
+
 	        $fields = [
 	            'registration_ids' 	=> array($reg_id),
 	            'data' 				=> $message,
+	            'badge'				=> access()->getUnreadNotificationCount(),
 	        ];
 	
 	    	return $this->useCurl($url, $headers, json_encode($fields));
@@ -130,6 +141,7 @@ class PushNotification
                 'tagged_user_id' 	=> isset($data['tagged_user_id']) ? $data['tagged_user_id'] : '',
 
             ),
+            'badge'	=> access()->getUnreadNotificationCount(),
 			'sound' => 'default'
 		);
 

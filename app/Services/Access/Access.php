@@ -333,4 +333,20 @@ class Access
 
         return true;
     }
+
+    /**
+     * Get Unread Notification Count
+     * 
+     * @param int $userId
+     * @return int
+     */
+    public function getUnreadNotificationCount($userId = null)
+    {
+        $userId = isset($userId) ? $userId : auth()->user()->id;
+
+        return FeedNotifications::where([
+            'is_read'   => 0,
+            'user_id'   => $userId
+        ])->count();
+    }
 }
