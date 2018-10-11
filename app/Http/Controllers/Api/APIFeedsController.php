@@ -547,10 +547,10 @@ class APIFeedsController extends BaseApiController
             if(isset($model->id))
             {
                 $model->update($input);
-                $model->feed_images()->delete();
+                //$model->feed_images()->delete();
                 $model->feed_tag_users()->delete();
 
-                if(isset($input['feed_images']) && count($input['feed_images']))
+                /*if(isset($input['feed_images']) && count($input['feed_images']))
                 {
                     $feedImages = [];
 
@@ -570,7 +570,7 @@ class APIFeedsController extends BaseApiController
                     {
                         $model->feed_images()->insert($feedImages);
                     }
-                }
+                }*/
 
 
                 if(isset($input['tag_users']))
