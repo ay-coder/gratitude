@@ -32,11 +32,19 @@ class FeedNotificationsTransformer extends Transformer
         {
             foreach($items as $item)
             {
+                $feedType = false;
+
+                if(isset($item->feed))
+                {
+                    $feedType = $item->feed->feed_type;
+                }
+
                 $response[] = [
                     'notification_id'   => (int) $item->id,
                     'user_id'           => (int) $item->user_id,
                     'from_user_id'      => (int) $item->from_user_id,
                     'feed_id'           => (int) $item->feed_id,
+                    'feed_type'         => $feedType,
                     'notification_type' => $item->notification_type,
                     'description'       => $item->description,
                     'icon'              => URL::to('/').'/uploads/notifications/' . $item->icon,
