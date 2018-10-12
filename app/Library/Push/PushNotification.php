@@ -29,8 +29,6 @@ class PushNotification
      */
 	public function android($data, $reg_id) 
 	{
-	        $url = 'https://android.googleapis.com/gcm/send';
-
 	        $message = [
 	        	/*'title' 		=> $data['mtitle'],
 	        	'message' 		=> $data['mdesc'],
@@ -50,7 +48,7 @@ class PushNotification
                 'tagged_user_id' 	=> isset($data['tagged_user_id']) ? $data['tagged_user_id'] : '',
 	        ];
 	        
-	        $headers = [
+	        /*$headers = [
 	        	'Authorization: key=' .self::$API_ACCESS_KEY,
 	        	'Content-Type: application/json'
 	        ];
@@ -61,7 +59,33 @@ class PushNotification
 	            'badge'				=> access()->getUnreadNotificationCount(),
 	        ];
 	
-	    	return $this->useCurl($url, $headers, json_encode($fields));
+	    	return $this->useCurl($url, $headers, json_encode($fields));*/
+
+
+			$fields = array
+			(
+			    'data'      => $message,
+			    'badge'		=> isset($data['badgeCount']) ? $data['badgeCount'] : 0,
+			);
+			 
+			$headers = array
+			(
+			    'Authorization: key=AIzaSyDU34S_I5f2TqpqLDOOTBueYooYr8Pc-0M',
+			    'Content-Type: application/json'
+			);
+			 
+			$ch = curl_init();
+			curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
+			curl_setopt( $ch,CURLOPT_POST, true );
+			curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
+			curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
+			curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+			curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
+			$result = curl_exec($ch );
+			curl_close( $ch );
+		
+			return $result;
+
     	}
 	
 	/**

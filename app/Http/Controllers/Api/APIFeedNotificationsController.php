@@ -56,12 +56,18 @@ class APIFeedNotificationsController extends BaseApiController
         $items      = $this->repository->model->with([
             'user', 'from_user', 'feed'
         ])
-        ->where('is_read', 0)
+        ->where('is_clear', 0)
         ->where('user_id', $userInfo->id)
         ->offset($offset)
         ->limit($perPage)
         ->orderBy('id', 'desc')
         ->get();
+
+        $this->repository->model->where([
+            'user_id' => $userInfo->id
+        ])->update([
+            'is_read' => 1
+        ]);
 
         if(isset($items) && count($items))
         {
@@ -92,6 +98,8 @@ class APIFeedNotificationsController extends BaseApiController
         {
             $itemsOutput = $this->feednotificationsTransformer->transformCollection($items);
 
+
+            
             return $this->successResponse($itemsOutput);
         }
 
@@ -216,7 +224,7 @@ class APIFeedNotificationsController extends BaseApiController
         $status   = $this->repository->model->where([
             'user_id' => $userInfo->id
         ])->update([
-            'is_read' => 1
+            'is_clear' => 1
         ]);
 
         if($status)

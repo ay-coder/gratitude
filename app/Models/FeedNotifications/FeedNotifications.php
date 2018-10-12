@@ -24,7 +24,7 @@ class FeedNotifications extends BaseModel
      *
      */
     protected $fillable = [
-        "id", "user_id", "from_user_id", "feed_id", "description", "notification_type", "icon", "is_read", "created_at", "updated_at", 
+        "id", "user_id", "from_user_id", "is_clear", "feed_id", "description", "notification_type", "icon", "is_read", "created_at", "updated_at", 
     ];
 
     /**
