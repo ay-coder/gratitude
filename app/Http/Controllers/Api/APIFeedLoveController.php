@@ -153,6 +153,7 @@ class APIFeedLoveController extends BaseApiController
                                     'feed_type'         => $feedInfo->feed_type,
                                     'to_user_id'        => $tagUser->user->id,
                                     'from_user_id'      => $userInfo->id,
+                                    'badgeCount'        => access()->getUnreadNotificationCount($tagUser->user->id),
                                     'mtype'             => 'FEED_LOVE_TAG_USERS'
                                 ];
 

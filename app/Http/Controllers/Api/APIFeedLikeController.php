@@ -154,6 +154,7 @@ class APIFeedLikeController extends BaseApiController
                                     'to_user_id'        => $tagUser->user->id,
                                     'feed_type'         => $feedInfo->feed_type,
                                     'from_user_id'      => $userInfo->id,
+                                    'badgeCount'        => access()->getUnreadNotificationCount($tagUser->user->id),
                                     'mtype'             => 'FEED_LIKE_TAG_USERS'
                                 ];
 
