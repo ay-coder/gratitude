@@ -358,6 +358,5 @@ class Access
         }
 
         return 1;
-
     }
 }
