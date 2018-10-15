@@ -344,10 +344,17 @@ class Access
     {
         if($userId)
         {
-            return FeedNotifications::where([
+            $count = FeedNotifications::where([
                 'is_read'   => 0,
                 'user_id'   => $userId
             ])->count();
+
+            if($count == 0)
+            {
+                return 1;
+            }
+
+            return $count;
         }
 
         return 1;
