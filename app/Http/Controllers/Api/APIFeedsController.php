@@ -249,7 +249,7 @@ class APIFeedsController extends BaseApiController
 
         if(isset($items) && count($items))
         {
-            $itemsOutput = $this->feedsTransformer->showAllFeeds($items);
+            $itemsOutput = $this->feedsTransformer->showMyFeeds($items);
 
             return $this->successResponse($itemsOutput);
         }
@@ -288,7 +288,7 @@ class APIFeedsController extends BaseApiController
 
         if(isset($items) && count($items))
         {
-            $itemsOutput = $this->feedsTransformer->showAllFeeds($items);
+            $itemsOutput = $this->feedsTransformer->showMyFeeds($items);
 
             return $this->successResponse($itemsOutput);
         }
