@@ -354,9 +354,9 @@ class Access
                 return 1;
             }
 
-            return count($data);
+            return count($data) + 1;
         }
 
-        //return 1;
+        return 1;
     }
 }
