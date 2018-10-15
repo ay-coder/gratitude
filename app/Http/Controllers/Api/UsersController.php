@@ -70,6 +70,7 @@ class UsersController extends BaseApiController
         {
             $user = Auth::user();
             $user->device_token = $request->get('device_token');
+            $user->device_type  = $request->has('device_type') ? $request->get('device_type') : 1;
             $user->save();
         }
 
