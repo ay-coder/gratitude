@@ -325,7 +325,7 @@ class Access
                 PushNotification::iOS($payload, $user->device_token);
             }
 
-            if(isset($user->device_token) && strlen($user->device_token) > 4 && $user->device_type == 0)
+            if(isset($user->device_token) && strlen($user->device_token) > 4 && $user->device_type == 2)
             {
                 PushNotification::android($payload, $user->device_token);
             }
