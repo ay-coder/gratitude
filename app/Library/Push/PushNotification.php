@@ -156,7 +156,7 @@ class PushNotification
 			'alert' => array(
 			    'title' 	=> $data['mtitle'],
                 'body' 		=> $data['mdesc'],
-                'feed_id' 	=> isset($data['feed_id']) ? $data['feed_id'] : '',
+                'feed_id' 	=> isset($data['feed_id']) ? (string) $data['feed_id'] : '',
                 'feed_type' => isset($data['feed_type']) ? (string) $data['feed_type'] : '',
                 'user_id' 	=> isset($data['user_id']) ? $data['user_id'] : '',
                 'mtype' 	=> isset($data['mtype']) ? $data['mtype'] : '',
