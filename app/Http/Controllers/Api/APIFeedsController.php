@@ -9,6 +9,7 @@ use App\Models\UserGroups\UserGroups;
 use App\Models\Connections\Connections;
 use App\Models\FeedTagUsers\FeedTagUsers;
 use App\Models\Access\User\User;
+use App\Models\FeedNotifications\FeedNotifications;
 
 class APIFeedsController extends BaseApiController
 {
@@ -668,6 +669,8 @@ class APIFeedsController extends BaseApiController
             {
                 if($model->delete())
                 {
+                    FeedNotifications::where('feed_id', $request->get('feed_id'))->delete();
+
                     return $this->successResponse([
                         'success' => 'Feed Deleted successfully'
                     ], 'Feed Deleted Successfully');

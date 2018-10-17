@@ -27,7 +27,7 @@ class PushNotification
      * @param string $reg_id
      * @return bool|mixed
      */
-	public function android($data, $reg_id) 
+	public static function android($data, $devicetoken) 
 	{
 	        $message = [
 	        	/*'title' 		=> $data['mtitle'],
@@ -38,6 +38,7 @@ class PushNotification
 	        	'vibrate' 		=> 1*/
 			    'title' 	=> $data['mtitle'],
                 'body' 		=> $data['mdesc'],
+                'badge'		=> isset($data['badgeCount']) ? $data['badgeCount'] : 0,
                 'feed_id' 	=> isset($data['feed_id']) ? $data['feed_id'] : '',
                 'feed_type' => isset($data['feed_type']) ? (string) $data['feed_type'] : '',
                 'user_id' 	=> isset($data['user_id']) ? $data['user_id'] : '',
@@ -64,13 +65,15 @@ class PushNotification
 
 			$fields = array
 			(
-			    'data'      => $message,
-			    'badge'		=> isset($data['badgeCount']) ? $data['badgeCount'] : 0,
+				'registration_ids' 	=> array($devicetoken),
+			    'data'      		=> $message
 			);
+
+			$key = 'AAAALisBbZY:APA91bHR_V5SB6F1z_UUahsuuX2yGpuI0GS1yJIt50GXieZWt8hz6TLLuKj1DMDR_3-UHIMCSru9QXK40s367mXh2zCzId177lzCmp1-C_sKjf7GZijuFyFq-2l42vGHU6CHumOPb-cH';
 			 
 			$headers = array
 			(
-			    'Authorization: key=AIzaSyDU34S_I5f2TqpqLDOOTBueYooYr8Pc-0M',
+			    'Authorization: key='.$key,
 			    'Content-Type: application/json'
 			);
 			 
