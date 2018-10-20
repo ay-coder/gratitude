@@ -323,10 +323,7 @@ class APIConnectionsController extends BaseApiController
             'notification_type' => 'NEW_CONNECTION'
         ]);
 
-        if(isset($requestedUser->device_token))
-        {
-            PushNotification::iOS($payload, $requestedUser->device_token);
-        }
+        access()->sentPushNotification($requestedUser, $payload);
 
         if($model)
         {
@@ -599,10 +596,7 @@ class APIConnectionsController extends BaseApiController
                 'notification_type' => 'CONNECTION_ACCEPTED'
             ]);
 
-            if(isset($requestedUser->device_token))
-            {
-                PushNotification::iOS($payload, $requestedUser->device_token);
-            }  
+            access()->sentPushNotification($requestedUser, $payload);
 
             return $this->successResponse(['message' => 'Request Accepted Successfully !'], 'Connection added Successfully');
         }

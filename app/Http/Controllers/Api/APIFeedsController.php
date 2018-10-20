@@ -58,15 +58,21 @@ class APIFeedsController extends BaseApiController
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
-
-
-        $newOffset = $offset * $perPage;
+        $friendIds  = access()->getMyConnectionIds($userInfo->id);
+        array_push($friendIds, $userInfo->id);
+        
+        $newOffset  = $offset * $perPage;
 
         $items      = $this->repository->model->with([
             'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
         ->where('is_individual', 0)
         ->whereNotIn('id', $blockFeeds)
+        ->whereIn('user_id', $friendIds)
+        ->orWhereHas('feed_tag_users', function($q) use($friendIds)
+        {
+            return $q->whereIn('user_id', $friendIds);
+        })
         /*->offset($offset)
         ->limit($perPage)*/
         ->skip($newOffset)
@@ -85,6 +91,11 @@ class APIFeedsController extends BaseApiController
         
         $itemCount      = $this->repository->model->where('is_individual', 0)
         ->whereNotIn('id', $blockFeeds)
+        ->whereIn('user_id', $friendIds)
+        ->orWhereHas('feed_tag_users', function($q) use($friendIds)
+        {
+            return $q->whereIn('user_id', $friendIds);
+        })
         ->skip($skipp)
         ->take(1)
         ->orderBy('id', 'DESC')
@@ -119,10 +130,18 @@ class APIFeedsController extends BaseApiController
         $userInfo   = $this->getAuthenticatedUser();
         $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $feedId     = $request->has('feed_id') ? $request->get('feed_id') : false;
+        $friendIds  = access()->getMyConnectionIds($userInfo->id);
+        array_push($friendIds, $userInfo->id);
 
         $query     = $this->repository->model->with([
             'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
+        ->where('is_individual', 0)
+        ->whereIn('user_id', $friendIds)
+        ->orWhereHas('feed_tag_users', function($q) use($friendIds)
+        {
+            return $q->whereIn('user_id', $friendIds);
+        })
         ->orderBy('id', 'DESC');
 
         if($feedId)
@@ -158,6 +177,8 @@ class APIFeedsController extends BaseApiController
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
+        $friendIds  = access()->getMyConnectionIds($userInfo->id);
+        array_push($friendIds, $userInfo->id);
         $query      = $this->repository->model->with([
             'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])->whereNotIn('id', $blockFeeds);
@@ -171,7 +192,11 @@ class APIFeedsController extends BaseApiController
             });
         }
 
-        $query = $query->offset($offset)
+        $query = $query ->whereIn('user_id', $friendIds)
+        ->orWhereHas('feed_tag_users', function($q) use($friendIds)
+        {
+            return $q->whereIn('user_id', $friendIds);
+        })->offset($offset)
         ->limit($perPage)
         ->orderBy('id', 'DESC');
 
