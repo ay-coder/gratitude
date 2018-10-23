@@ -390,7 +390,7 @@ class APIFeedsController extends BaseApiController
                         'mdesc'             => $text,
                         'user_id'           => $tagMember->id,
                         'feed_id'           => $model->id,
-                        'feed_type'         => $model->type,
+                        'feed_type'         => $model->feed_type,
                         'badgeCount'        => access()->getUnreadNotificationCount($tagMember->id),
                         'mtype'             => 'TAG_USER'
                     ];
@@ -459,7 +459,7 @@ class APIFeedsController extends BaseApiController
                         'mdesc'             => $text,
                         'user_id'           => $tagGroupMember->id,
                         'feed_id'           => $model->id,
-                        'feed_type'         => $model->type,
+                        'feed_type'         => $model->feed_type,
                         'badgeCount'        => access()->getUnreadNotificationCount($tagGroupMember->id),
                         'mtype'             => 'TAG_GROUP_USER'
                     ];
