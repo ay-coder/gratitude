@@ -275,7 +275,7 @@ class APIFeedsController extends BaseApiController
 
         if(isset($items) && count($items))
         {
-            $itemsOutput = $this->feedsTransformer->showMyFeeds($items);
+            $itemsOutput = $this->feedsTransformer->showMyProfileFeeds($items);
 
             return $this->successResponse($itemsOutput);
         }
@@ -306,7 +306,7 @@ class APIFeedsController extends BaseApiController
         ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 2)
         ->where('user_id', $userInfo->id)
-        /*->orWhereIn('id', $tagFeedIds)*/
+        ->orWhereIn('id', $tagFeedIds)
         ->orderBy('id', 'DESC')
         ->offset($offset)
         ->limit($perPage)
@@ -316,7 +316,7 @@ class APIFeedsController extends BaseApiController
 
         if(isset($items) && count($items))
         {
-            $itemsOutput = $this->feedsTransformer->showMyFeeds($items);
+            $itemsOutput = $this->feedsTransformer->showMyProfileFeeds($items);
 
             return $this->successResponse($itemsOutput);
         }

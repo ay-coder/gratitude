@@ -532,6 +532,262 @@ class FeedsTransformer extends Transformer
     }
 
     /**
+     * Show All Feeds
+     * 
+     * @param object $items
+     * @return array
+     */
+    public function showMyProfileFeeds($items)
+    {
+        $response       = [];
+        $currentUserId  = access()->user()->id;
+        $connectionIds  = access()->getMyConnectionIds($currentUserId);
+        $requestIds     = access()->getOnlyReceiveRequestIds($currentUserId);
+        $myReqIds       = access()->getOnlyMyRequestIds($currentUserId);
+
+        if(isset($items) && count($items))
+        {
+            foreach($items as $item)
+            {
+                /*if($item->user_id != $currentUserId)
+                {
+                    continue;
+                }*/
+
+                $isLoved        = 0;
+                $isGroupFeed    = 0;
+                $isLoved        = 0;
+                $isMyLoved      = 0;
+                $isMyLiked      = 0;
+                $isCommented    = 0;
+                $feedImages     = [];
+                $feedGroup      = [];
+                $feedCategory   = [];
+                $feedLoveUsers  = [];
+                $feedLikeUsers  = [];
+                $feedComments   = [];
+                $tagUsers       = [];
+                $loveLikes      = [];
+                $feedLoveLikeUsers = [];
+
+                if(isset($item->feed_group) && count($item->feed_group))
+                {
+                    $isGroupFeed = 1;
+                    $feedGroup = [
+                        'group_id'      => (int) $item->feed_group->id,
+                        'group_name'    => $item->feed_group->title
+                    ];
+                }
+
+                if(isset($item->feed_category) && count($item->feed_category))
+                {
+                    $feedCategory = [
+                        'category_id' => (int) $item->feed_category->id,
+                        'title'       => $item->feed_category->title
+                    ];                
+                }
+
+                if(isset($item->feed_tag_users) && count($item->feed_tag_users))
+                {
+                    foreach($item->feed_tag_users as $tagUser)
+                    {
+                        $isConnected = in_array($tagUser->user->id, $connectionIds) ? 1 : 0;
+                        $isRequested = in_array($tagUser->user->id, $requestIds) ? 1 : 0;
+                        $isMyRequested = in_array($tagUser->user->id, $myReqIds) ? 1 : 0;
+
+                        $tagUsers[] = [
+                            'user_id'       => (int)  $tagUser->user->id,
+                            'is_connected'  => $isConnected,
+                            'is_requested'  => $isRequested,
+                            'is_my_request' => $isMyRequested,
+                            'username'      => $tagUser->user->name,
+                            'profile_pic'   => URL::to('/').'/uploads/user/' . $tagUser->user->profile_pic,
+                        ];
+                    }
+                }
+
+                if(isset($item->feed_loves) && count($item->feed_loves))
+                {
+                    foreach($item->feed_loves as $love)
+                    {
+                        $isConnected = in_array($love->user->id, $connectionIds) ? 1 : 0;
+                        $isRequested = in_array($love->user->id, $requestIds) ? 1 : 0;
+                        $isMyRequested = in_array($love->user->id, $myReqIds) ? 1 : 0;
+
+                        if($love->user->id == $currentUserId)
+                        {
+                            $isMyLoved      = 1;
+                            $isLoved        = 1;
+                            $isConnected    = 0;
+                            $isRequested    = 0;
+                            $isMyRequested  = 0;
+                        }
+
+                        
+
+                        $feedLoveUsers[] = [
+                            'user_id'       => (int)  $love->user->id,
+                            'username'      => $love->user->name,
+                            'is_connected'  => $isConnected,
+                            'is_requested'  => $isRequested,
+                            'is_my_request' => $isMyRequested,
+                            'is_love'       => 1,
+                            'is_like'       => 0,
+                            'profile_pic'   => URL::to('/').'/uploads/user/' . $love->user->profile_pic,
+                            'created_at'    => date('m/d/Y H:i:s', strtotime($love->created_at))
+                        ];
+                    }
+                }
+
+                
+
+                if(isset($item->feed_likes) && count($item->feed_likes))
+                {
+                    foreach($item->feed_likes as $like)
+                    {
+                        $isConnected = in_array($like->user->id, $connectionIds) ? 1 : 0;
+                        $isRequested = in_array($like->user->id, $requestIds) ? 1 : 0;
+                        $isMyRequested = in_array($like->user->id, $myReqIds) ? 1 : 0;
+
+
+                        if($like->user->id == $currentUserId)
+                        {
+                            $isMyLiked      = 1;
+                            $isLiked        = 1;
+                            $isConnected    = 0;
+                            $isRequested    = 0;
+                            $isMyRequested  = 0;
+                        }
+
+                        $feedLikeUsers[] = [
+                            'user_id'       => (int)  $like->user->id,
+                            'username'      => $like->user->name,
+                            'is_connected'  => $isConnected,
+                            'is_requested'  => $isRequested,
+                            'is_my_request' => $isMyRequested,
+                            'is_like'       => 1,
+                            'is_love'       => 0,
+                            'profile_pic'   => URL::to('/').'/uploads/user/' . $like->user->profile_pic,
+                            'created_at'    => date('m/d/Y H:i:s', strtotime($like->created_at))
+                        ];
+                    }
+                }
+
+
+                $loveLikeUsers = array_merge($feedLoveUsers, $feedLikeUsers);
+                $loveLikeUsers = collect($loveLikeUsers);
+                $loveLikeUsers = $loveLikeUsers->sortBy('created_at');
+                $loveLikeIds   = [];
+
+                if(isset($loveLikeUsers) && count($loveLikeUsers))
+                {
+                    foreach($loveLikeUsers as $loveLike)   
+                    {
+
+                        $loveLike = (object)$loveLike;
+
+                        if(in_array($loveLike->user_id, $loveLikeIds))
+                        {
+                            continue;
+                        }
+
+                        $loveLikeIds[] = $loveLike->user_id;
+
+                        $isLiked       = $loveLikeUsers->where('user_id', $loveLike->user_id)->where('is_like', 1)->first();
+                        $isLoved       = $loveLikeUsers->where('user_id', $loveLike->user_id)->where('is_love', 1)->first();
+                        
+                        $loveFlag = $likeFlag = 0;
+
+                        if(isset($isLoved['is_love']))
+                        {
+                            $loveFlag = $isLoved['is_love'];
+                        }
+                        if(isset($isLiked['is_like']))
+                        {
+                            $likeFlag = $isLiked['is_like'];
+                        }
+
+                        $isConnected = in_array($loveLike->user_id, $connectionIds) ? 1 : 0;
+                        $isRequested = in_array($loveLike->user_id, $requestIds) ? 1 : 0;
+                        $isMyRequested = in_array($loveLike->user_id, $myReqIds) ? 1 : 0;
+
+                        $isMe  = $loveLike->user_id == $currentUserId ? 1 : 0;
+                        $feedLoveLikeUsers[] = [
+                            'user_id'       => (int) $loveLike->user_id,
+                            'is_connected'  => $isConnected,
+                            'is_requested'  => $isRequested,
+                            'is_my_request' => $isMyRequested,
+                            'is_me'         => $isMe,
+                            'username'      => $loveLike->username,
+                            'is_like'       => $likeFlag,
+                            'is_love'       => $loveFlag,
+                            'profile_pic'   => $loveLike->profile_pic,
+                            'created_at'    => $loveLike->created_at
+                        ];
+                    }
+                }
+                
+                if(isset($item->feed_comments) && count($item->feed_comments))
+                {
+                    foreach($item->feed_comments as $comment)
+                    {
+                        if($comment->user->id == $currentUserId)
+                            $isCommented = 1;
+
+                        $feedComments[] = [
+                            'comment_id' => (int) $comment->id,
+                            'feed_id'    => (int) $comment->feed_id,
+                            'user_id'    => (int) $comment->user_id,
+                            'comment'    => $comment->comment,
+                            'username'   => $comment->user->name,
+                            'profile_pic'   =>  URL::to('/').'/uploads/user/' . $comment->user->profile_pic,
+                            'create_at'  => date('m/d/Y h:i:s', strtotime($comment->created_at))
+                        ];
+                    }
+                }
+
+
+                if(isset($item->feed_images) && count($item->feed_images))
+                {
+                    foreach($item->feed_images as $image)
+                    {
+                        $feedImages[] = [
+                            'feed_image_id' => (int) $image->id,
+                            'feed_image'    => URL::to('/').'/uploads/feeds/' . $image->image
+                        ];
+                    }
+                }
+
+                $response[] = [
+                    'feed_id'       => (int) $item->id,
+                    'feed_type'     => $item->feed_type,
+                    'user_id'       => (int)  $item->user_id,
+                    'username'      => $item->user->name,
+                    'profile_pic'   => URL::to('/').'/uploads/user/' . $item->user->profile_pic,
+                    'description'   => $item->description,
+                    'feed_images'   => $feedImages,
+                    'create_at'     => date('m/d/Y h:i:s', strtotime($item->created_at)),
+                    'isLiked'       => (int) $isMyLiked,
+                    'isLoved'       => (int) $isMyLoved,
+                    'isCommented'   => (int) $isCommented,
+                    'likeCount'     => (int) count($item->feed_likes),
+                    'loveCount'     => (int) count($item->feed_loves),
+                    'commentCount'  => (int) count($item->feed_comments),
+                    'feedCategory'  => (object) $feedCategory,
+                    'is_group_feed' => $isGroupFeed,
+                    'groupData'     => (object) $feedGroup,
+                    'loveUsers'     => $feedLoveUsers,
+                    'likeUsers'     => $feedLikeUsers,
+                    'allComments'   => $feedComments,
+                    'tagUsers'      => $tagUsers,
+                    'loveLikeUsers' => $feedLoveLikeUsers
+                ];
+            }
+        }
+        return $response;
+    }
+
+    /**
      * Get Love Like
      * 
      * @param object $item
