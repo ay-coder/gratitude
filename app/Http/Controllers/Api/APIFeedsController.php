@@ -294,7 +294,7 @@ class APIFeedsController extends BaseApiController
     public function myImageFeeds(Request $request)
     {
         $userInfo   = $this->getAuthenticatedUser();
-        $tagFeedIds = $userInfo->user_tag_feeds->pluck('feed_id')->toArray();
+        $tagFeedIds = $userInfo->user_tag_feeds()->where('feed_type', 2)->pluck('feed_id')->toArray();
         $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
