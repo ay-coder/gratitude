@@ -294,7 +294,7 @@ class APIFeedsController extends BaseApiController
     public function myImageFeeds(Request $request)
     {
         $userInfo   = $this->getAuthenticatedUser();
-        $tagFeedIds = $userInfo->user_tag_feeds()->where('feed_type', 2)->pluck('feed_id')->toArray();
+        $tagFeedIds = $userInfo->user_tag_feeds->pluck('feed_id')->toArray();
         $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
@@ -397,6 +397,8 @@ class APIFeedsController extends BaseApiController
                     $storeNotification = [
                         'user_id'           => $tagMember->id,
                         'from_user_id'      => $userInfo->id,
+                        'feed_id'           => $model->id,
+                        'feed_type'         => $model->feed_type,
                         'description'       => $text,
                         'icon'              => 'TAG_USER.png',
                         'notification_type' => 'TAG_USER'
@@ -466,6 +468,8 @@ class APIFeedsController extends BaseApiController
                     $storeNotification = [
                         'user_id'           => $tagGroupMember->id,
                         'from_user_id'      => $userInfo->id,
+                        'feed_id'           => $model->id,
+                        'feed_type'         => $model->feed_type,
                         'description'       => $text,
                         'icon'              => 'TAG_GROUP_USER.png',
                         'notification_type' => 'TAG_GROUP_USER'
