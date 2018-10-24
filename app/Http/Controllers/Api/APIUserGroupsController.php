@@ -143,6 +143,7 @@ class APIUserGroupsController extends BaseApiController
                         'user_id'           => $groupMember->id,
                         'from_user_id'      => $userInfo->id,
                         'description'       => $text,
+                        'icon'              => 'NEW_CONNECTION.png',
                         'notification_type' => 'ADDED_GROUP_MEMBER'
                     ];
 
