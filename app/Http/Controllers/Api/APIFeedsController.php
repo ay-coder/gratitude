@@ -61,6 +61,10 @@ class APIFeedsController extends BaseApiController
         $friendIds  = access()->getMyConnectionIds($userInfo->id);
         array_push($friendIds, $userInfo->id);
         
+
+        $tagFeedIds = $userInfo->user_tag_feeds->pluck('feed_id')->toArray();
+        $txtFeedIds   = $this->repository->model->whereIn('id', $tagFeedIds)->where('is_individual', 0)->pluck('id')->toArray();
+
         $newOffset  = $offset * $perPage;
 
         $items      = $this->repository->model->with([
@@ -69,10 +73,11 @@ class APIFeedsController extends BaseApiController
         ->where('is_individual', 0)
         ->whereNotIn('id', $blockFeeds)
         ->whereIn('user_id', $friendIds)
-        ->orWhereHas('feed_tag_users', function($q) use($friendIds)
+        ->orWhereIn('id', $txtFeedIds)
+        /*->orWhereHas('feed_tag_users', function($q) use($friendIds)
         {
             return $q->whereIn('user_id', $friendIds);
-        })
+        })*/
         /*->offset($offset)
         ->limit($perPage)*/
         ->skip($newOffset)
