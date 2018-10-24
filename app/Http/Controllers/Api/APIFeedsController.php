@@ -312,7 +312,7 @@ class APIFeedsController extends BaseApiController
         ->limit($perPage)
         ->get();
 
-        dd($items->toSql());
+        
 
         if(isset($items) && count($items))
         {
