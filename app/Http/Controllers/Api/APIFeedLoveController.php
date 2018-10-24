@@ -95,7 +95,7 @@ class APIFeedLoveController extends BaseApiController
                     if($status)
                     {
                         $feedInfo  = Feeds::with(['user', 'feed_tag_users', 'feed_tag_users.user'])->where('id', $request->get('feed_id'))->first();
-                        $text       = $userInfo->name . ' loved  your post.';
+                        $text       = $userInfo->name . ' loved your post.';
 
                         if(isset($feedInfo->user) && $userInfo->id != $feedInfo->user->id)
                         {
