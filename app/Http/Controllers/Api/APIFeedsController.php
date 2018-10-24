@@ -257,17 +257,21 @@ class APIFeedsController extends BaseApiController
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
+
+        $txtFeedIds   = $this->repository->model->whereIn('id', $tagFeedIds)->where('feed_type', 1)->pluck('id')->toArray();
+
+
         $items      = $this->repository->model->with([
             'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
         ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 1)
         ->where('user_id', $userInfo->id)
-        ->orWhereHas('feed_tag_users', function($q) use($userInfo)
+        /*->orWhereHas('feed_tag_users', function($q) use($userInfo)
         {
             $q->where('user_id', $userInfo->id);
-        })
-        ->orWhereIn('id', $tagFeedIds)
+        })*/
+        ->orWhereIn('id', $txtFeedIds)
         ->orderBy('id', 'DESC')
         ->offset($offset)
         ->limit($perPage)
@@ -300,13 +304,17 @@ class APIFeedsController extends BaseApiController
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
+
+        $imageFeedIds   = $this->repository->model->whereIn('id', $tagFeedIds)->where('feed_type', 2)->pluck('id')->toArray();
+
+        
         $items      = $this->repository->model->with([
             'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
         ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 2)
         ->where('user_id', $userInfo->id)
-        ->orWhereIn('id', $tagFeedIds)
+        ->orWhereIn('id', $imageFeedIds)
         ->orderBy('id', 'DESC')
         ->offset($offset)
         ->limit($perPage)
