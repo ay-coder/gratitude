@@ -306,11 +306,13 @@ class APIFeedsController extends BaseApiController
         ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 2)
         ->where('user_id', $userInfo->id)
-        ->orWhereIn('id', $tagFeedIds)
+        /*->orWhereIn('id', $tagFeedIds)*/
         ->orderBy('id', 'DESC')
         ->offset($offset)
         ->limit($perPage)
         ->get();
+
+        dd($items->toSql());
 
         if(isset($items) && count($items))
         {
@@ -426,6 +428,11 @@ class APIFeedsController extends BaseApiController
                 {
                     foreach($userGroup->group_members as $member)
                     {
+                        if($member->member_id == $userInfo->id)
+                        {
+                            continue;   
+                        }
+
                         if(in_array($member->member_id, $tagUsers))
                         {
                             continue;
