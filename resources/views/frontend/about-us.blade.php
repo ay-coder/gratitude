@@ -2,9 +2,9 @@
 
 @section('content')
     <div class="row">
-        <strong> What is Gratitude?</strong>
+        <strong> What is Gratitude Circle? </strong>
 <p>
-Gratitude is a social media app unlike any other. The way people can now connect is more unique, special and fun than ever before! Gratitude allows users to post photos and videos (with captions, views and comments) onto their friends pages so the content shared is in the right place. It is shown who posted the photo/video on to your/your friends page, so people are held accountable. This means that the photos and videos you have on your page have all been posted by your friends! However, when a friend posts onto your page or vise versa, the person receiving the post must approve of it before he/she’s friends see it on their feed. Lastly, since all the content posted onto your page has been posted by your friends, it truly shows the most authentic version of yourself. Since you can approve or disprove of anything posted on to your page, your page will be filled with tons of cool stuff that has been posted by your friends and that you’re proud of.
+Gratitude CircleTM is a unique, fun and interactive social media app which empowers users by encouraging them to share gratitude and feel the benefits of doing so!  The app is unique because it compiles photo and note posts in one ‘Feed’ for you to soak up gratefulness shared within the circle you set up.  The app aims to bring happiness and positivity to its users.  Add or invite friends to begin.  You can react to others’ posts with a ‘Like’ and or ‘Love’ button and discover newly inspiring ways to pay it forward.  You can privately track gratitude in ‘My Notebook’ as well.  Feel free to express gratitude with close or wide circles of friends, family, co-workers, neighbors, mentors, acquaintances and more by also trying the ‘Group’ feature.   Gratitude Circle’s user empowerment via gratitude definitely makes it “social media you’ll want to keep.”  Empower yourself today!
 </p>
 
 

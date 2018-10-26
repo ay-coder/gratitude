@@ -147,7 +147,6 @@
     	<ul>
     	<li>By email: info@Gratcircle.com</li>
     	<li>By visiting this page on our website: https://Gratcircle.com/contact/</li>
-    	<li>By phone number: 703-501-5369</li>
     	</ul>
     	<p><strong>&nbsp;</strong></p>
     </div>
