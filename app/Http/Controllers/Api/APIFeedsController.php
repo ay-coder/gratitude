@@ -177,6 +177,8 @@ class APIFeedsController extends BaseApiController
     {
         $keyword    = $request->has('keyword') ? $request->get('keyword') : false;
         $userInfo   = $this->getAuthenticatedUser();
+        
+
         $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
@@ -184,24 +186,23 @@ class APIFeedsController extends BaseApiController
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $friendIds  = access()->getMyConnectionIds($userInfo->id);
         array_push($friendIds, $userInfo->id);
+
         $query      = $this->repository->model->with([
             'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
-        ])->whereNotIn('id', $blockFeeds);
-
-        if($keyword)
-        {
-            $query->where('description', 'LIKE', "%$keyword%");
-            $query->orWhereHas('user', function($q) use($keyword)
-            {
-                $q->where('name', 'LIKE', "%$keyword%");
-            });
-        }
-
-        $query = $query ->whereIn('user_id', $friendIds)
-        ->orWhereHas('feed_tag_users', function($q) use($friendIds)
+        ])->whereNotIn('id', $blockFeeds)
+        /*->whereIn('user_id', $friendIds)*/
+        ->where('description', 'LIKE', "%$keyword%")->where('user_id', $userInfo->id)
+        /*->whereHas('feed_tag_users', function($q) use($friendIds)
         {
             return $q->whereIn('user_id', $friendIds);
-        })->offset($offset)
+        })*/
+        ->orWhereHas('user', function($q) use($keyword, $friendIds)
+        {
+            $q->whereIn('user_id', $friendIds)->where('name', 'LIKE', "%$keyword%");
+        });
+
+
+        $query->offset($offset)
         ->limit($perPage)
         ->orderBy('id', 'DESC');
 
