@@ -10,6 +10,7 @@ use App\Models\Connections\Connections;
 use App\Models\FeedTagUsers\FeedTagUsers;
 use App\Models\Access\User\User;
 use App\Models\FeedNotifications\FeedNotifications;
+use App\Models\Followers\Followers;
 
 class APIFeedsController extends BaseApiController
 {
@@ -59,11 +60,18 @@ class APIFeedsController extends BaseApiController
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $friendIds  = access()->getMyConnectionIds($userInfo->id);
-        $followIds  = $userInfo->followings->pluck('user_id')->toArray();
+
+        $followIds  = Followers::where('follower_id', $userInfo->id)->pluck('user_id')->toArray();
+        //$followIds  = $userInfo->followings->pluck('user_id')->toArray();
 
         array_push($friendIds, $userInfo->id);
 
-        $friendIds  = array_merge($friendIds, $followIds);
+        if(isset($followIds) && count($followIds))
+        {
+            $friendIds = array_unique(array_merge($friendIds, $followIds));
+        }
+
+
         $tagFeedIds = $userInfo->user_tag_feeds->pluck('feed_id')->toArray();
         $txtFeedIds   = $this->repository->model->whereIn('id', $tagFeedIds)->where('is_individual', 0)->pluck('id')->toArray();
 
