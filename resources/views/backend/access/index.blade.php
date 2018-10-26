@@ -31,7 +31,7 @@
                             <th>{{ trans('labels.backend.access.users.table.id') }}</th>
                             <th>{{ trans('labels.backend.access.users.table.name') }}</th>
                             <th>{{ trans('labels.backend.access.users.table.email') }}</th>
-                            <th>{{ trans('labels.backend.access.users.table.confirmed') }}</th>
+                            <th>Verified</th>
                             <th>{{ trans('labels.backend.access.users.table.roles') }}</th>
                             <th>{{ trans('labels.backend.access.users.table.created') }}</th>
                             <th>{{ trans('labels.backend.access.users.table.last_updated') }}</th>
@@ -74,7 +74,7 @@
                     {data: 'id', name: '{{config('access.users_table')}}.id'},
                     {data: 'name', name: '{{config('access.users_table')}}.name'},
                     {data: 'email', name: '{{config('access.users_table')}}.email'},
-                    {data: 'confirmed', name: '{{config('access.users_table')}}.confirmed'},
+                    {data: 'is_archive', name: '{{config('access.users_table')}}.is_archive'},
                     {data: 'roles', name: '{{config('access.roles_table')}}.name', sortable: false},
                     {data: 'created_at', name: '{{config('access.users_table')}}.created_at'},
                     {data: 'updated_at', name: '{{config('access.users_table')}}.updated_at'},

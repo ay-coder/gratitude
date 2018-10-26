@@ -59,7 +59,7 @@ class APIFeedsController extends BaseApiController
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $friendIds  = access()->getMyConnectionIds($userInfo->id);
-        $followIds  = $userInfo->followings->pluck('follower_id')->toArray();
+        $followIds  = $userInfo->followings->pluck('user_id')->toArray();
 
         array_push($friendIds, $userInfo->id);
 

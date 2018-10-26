@@ -48,10 +48,10 @@
                     </div><!--form control-->
 
                     <div class="form-group">
-                        {{ Form::label('confirmed', trans('validation.attributes.backend.access.users.confirmed'), ['class' => 'col-lg-2 control-label']) }}
+                        {{ Form::label('is_archive', 'Verified', ['class' => 'col-lg-2 control-label']) }}
 
                         <div class="col-lg-1">
-                            {{ Form::checkbox('confirmed', '1', $user->confirmed == 1) }}
+                            {{ Form::checkbox('is_archive', '1', $user->is_archive == 1) }}
                         </div><!--col-lg-1-->
                     </div><!--form control-->
 
