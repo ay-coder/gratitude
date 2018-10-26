@@ -59,9 +59,11 @@ class APIFeedsController extends BaseApiController
         $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $friendIds  = access()->getMyConnectionIds($userInfo->id);
-        array_push($friendIds, $userInfo->id);
-        
+        $followIds  = $userInfo->followings->pluck('follower_id')->toArray();
 
+        array_push($friendIds, $userInfo->id);
+
+        $friendIds  = array_merge($friendIds, $followIds);
         $tagFeedIds = $userInfo->user_tag_feeds->pluck('feed_id')->toArray();
         $txtFeedIds   = $this->repository->model->whereIn('id', $tagFeedIds)->where('is_individual', 0)->pluck('id')->toArray();
 
@@ -476,7 +478,7 @@ class APIFeedsController extends BaseApiController
 
                 foreach($allGroupMembers as $tagGroupMember)
                 {
-                    $text       = $userInfo->name . ' tagged your group.';
+                    $text       = $userInfo->name . ' tagged your group in a post.';
                     $payload    = [
                         'mtitle'            => '',
                         'mdesc'             => $text,
