@@ -191,6 +191,7 @@ class APIFollowersController extends BaseApiController
                     'mdesc'             => $text,
                     'to_user_id'        => $request->get('user_id'),
                     'from_user_id'      => $userInfo->id,
+                    'badgeCount'        => access()->getUnreadNotificationCount($request->get('user_id')),
                     'mtype'             => 'NEW_FOLLOW'
                 ];
 
