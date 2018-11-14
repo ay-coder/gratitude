@@ -7,6 +7,7 @@ use App\Models\ReadPost\ReadPost;
 use App\Models\Connections\Connections;
 use App\Models\FeedNotifications\FeedNotifications;
 use App\Library\Push\PushNotification;
+use App\Models\BlockUsers\BlockUsers;
 
 /**
  * Class Access.
@@ -181,6 +182,7 @@ class Access
     {
         if($userId)   
         {
+            $blockUserIds           = BlockUsers::where('user_id', $userId)->pluck('block_user_id')->toArray();
             $connectionModel        = new Connections;
             $myConnectionList       = $connectionModel->where([
                 'user_id'       => $userId,
@@ -192,10 +194,21 @@ class Access
                 'is_accepted'   => 1
             ])->pluck('requested_user_id')->toArray();
 
-            $allConnections         = array_merge($myConnectionList, $otherConnectionList);
-            $allConnections         = array_unique($allConnections);
+            $allConnections = array_merge($myConnectionList, $otherConnectionList);
+            $allConnections = array_unique($allConnections);
+            $connectionIds  = [];        
 
-            return $allConnections;
+            foreach($allConnections as $connectionId)
+            {
+                if(in_array($connectionId, $blockUserIds))
+                {
+                    continue;
+                }
+
+                $connectionIds[] = $connectionId;
+            }
+
+            return $connectionIds;
         }
 
         return [];

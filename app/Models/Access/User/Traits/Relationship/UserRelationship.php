@@ -11,6 +11,7 @@ use App\Models\Notifications\Notifications;
 use App\Models\Followers\Followers;
 use App\Models\ReportFeeds\ReportFeeds;
 use App\Models\FeedTagUsers\FeedTagUsers;
+use App\Models\BlockUsers\BlockUsers;
 
 /**
  * Class UserRelationship.
@@ -165,5 +166,15 @@ trait UserRelationship
     public function user_tag_feeds()
     {
         return $this->hasMany(FeedTagUsers::class, 'user_id');
+    }
+
+    /**
+     * Block Users 
+     * 
+     * @return relation
+     */
+    public function block_users()
+    {
+        return $this->hasMany(BlockUsers::class, 'user_id');
     }
 }

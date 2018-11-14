@@ -11,6 +11,7 @@ use App\Models\FeedTagUsers\FeedTagUsers;
 use App\Models\Access\User\User;
 use App\Models\FeedNotifications\FeedNotifications;
 use App\Models\Followers\Followers;
+use App\Models\BlockUsers\BlockUsers;
 
 class APIFeedsController extends BaseApiController
 {
@@ -54,6 +55,7 @@ class APIFeedsController extends BaseApiController
     public function index(Request $request)
     {
         $userInfo   = $this->getAuthenticatedUser();
+        $blockUserIds = BlockUsers::where('user_id', $userInfo->id)->pluck('block_user_id')->toArray();
         $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
         $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
@@ -61,7 +63,7 @@ class APIFeedsController extends BaseApiController
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $friendIds  = access()->getMyConnectionIds($userInfo->id);
 
-        $followIds  = Followers::where('follower_id', $userInfo->id)->pluck('user_id')->toArray();
+        $followIds  = Followers::where('follower_id', $userInfo->id)->whereNotIn('user_id', $blockUserIds)->pluck('user_id')->toArray();
         //$followIds  = $userInfo->followings->pluck('user_id')->toArray();
 
         array_push($friendIds, $userInfo->id);
@@ -72,8 +74,8 @@ class APIFeedsController extends BaseApiController
         }
 
 
-        $tagFeedIds = $userInfo->user_tag_feeds->pluck('feed_id')->toArray();
-        $txtFeedIds   = $this->repository->model->whereIn('id', $tagFeedIds)->where('is_individual', 0)->pluck('id')->toArray();
+        $tagFeedIds = $userInfo->user_tag_feeds()->whereNotIn('user_id', $blockUserIds)->pluck('feed_id')->toArray();
+        $txtFeedIds = $this->repository->model->whereIn('id', $tagFeedIds)->where('is_individual', 0)->whereNotIn('user_id', $blockUserIds)->pluck('id')->toArray();
 
         $newOffset  = $offset * $perPage;
 
