@@ -10,7 +10,7 @@ use App\Models\Feeds\Feeds;
 use App\Library\Push\PushNotification;
 use App\Models\Notifications\Notifications;
 use URL;
-use App\Models\Posts\Posts;
+
 
 class APICommentsController extends BaseApiController
 {
@@ -340,12 +340,13 @@ class APICommentsController extends BaseApiController
         if($request->has('comment_id'))
         {
             $userInfo   = $this->getAuthenticatedUser();
+
             $model      = $this->repository->model->where([
                 'id' => $request->get('comment_id'),
             ])->first();
 
-            $postInfo = Posts::where('id', $model->post_id)->first();
-            
+            $postInfo = Feeds::where('id', $model->feed_id)->first();
+
             if(isset($postInfo) && isset($model) && isset($model->id))
             {
                 if($postInfo->user_id == $userInfo->id || $model->user_id == $userInfo->id)
