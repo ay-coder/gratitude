@@ -417,6 +417,11 @@ class APIFeedsController extends BaseApiController
 
                 foreach($allMembers as $tagMember)
                 {
+                    if(in_array($tagMember->id, $blockUserIds))
+                    {
+                       continue;
+                    }
+
                     $text       = $userInfo->name . ' tagged you in a post.';
                     $payload    = [
                         'mtitle'            => '',
@@ -498,6 +503,11 @@ class APIFeedsController extends BaseApiController
 
                 foreach($allGroupMembers as $tagGroupMember)
                 {
+                    if(in_array($tagGroupMember->id, $blockUserIds))
+                    {
+                       continue;
+                    }
+                    
                     $text       = $userInfo->name . ' tagged your group in a post.';
                     $payload    = [
                         'mtitle'            => '',

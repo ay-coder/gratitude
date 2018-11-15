@@ -57,6 +57,7 @@ class APIConnectionsController extends BaseApiController
         $userModel              = new User;   
         $userId                 = $request->has('user_id') ? $request->get('user_id') : $loginUser->id;
         $userInfo               = User::where('id', $userId)->first();
+        $blockUserIds           = access()->getBlockUserIds($userInfo->id);
         if(! $userInfo)
         {
             return $this->setStatusCode(400)->failureResponse([
@@ -66,10 +67,23 @@ class APIConnectionsController extends BaseApiController
         $connectionModel        = new Connections;
         $myConnectionList       = $connectionModel->where('is_accepted', 1)->where('user_id', $userInfo->id)->pluck('other_user_id')->toArray();
         $otherConnectionList    = $connectionModel->where('is_accepted', 1)->where('other_user_id', $userInfo->id)->pluck('requested_user_id')->toArray();
-            
-        $items = $userModel->where('id', '!=', $userInfo->id)
+        
+        $orConnections = [];
+
+        foreach($otherConnectionList as $other)
+        {
+            if(in_array($other,  $blockUserIds))
+            {
+                continue;
+            }
+
+            $orConnections[] = $other;
+        }
+
+        $items = $userModel->whereNotIn('id', $blockUserIds )
+                    ->where('id', '!=', $userInfo->id)
                     ->whereIn('id', $myConnectionList)
-                    ->orWhereIn('id', $otherConnectionList)
+                    ->orWhereIn('id', $orConnections)
                     ->get();
 
         if(isset($items) && count($items))
