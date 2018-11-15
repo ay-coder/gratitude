@@ -344,6 +344,8 @@ class APIConnectionsController extends BaseApiController
             ], 'User Blocked!');
         }
 
+
+
         $input      = [
             'user_id'               => $userInfo->id,
             'requested_user_id'     => $userInfo->id,
@@ -354,25 +356,30 @@ class APIConnectionsController extends BaseApiController
         $model = $this->repository->create($input);
         $requestedUser = User::where('id', $request->get('user_id'))->first();
 
-        $text       = $userInfo->name . ' has sent you a friend request';
-        $payload    = [
-            'mtitle'            => '',
-            'mdesc'             => $text,
-            'user_id'           => $userInfo->id,
-            'other_user_id'     => $requestedUser->id,
-            'badgeCount'        => access()->getUnreadNotificationCount($requestedUser->id),
-            'mtype'             => 'NEW_CONNECTION'
-        ];
-        
-        FeedNotifications::create([
-            'user_id'           => $requestedUser->id,
-            'from_user_id'      => $userInfo->id,
-            'description'       => $text,
-            'icon'              => 'NEW_CONNECTION.png',
-            'notification_type' => 'NEW_CONNECTION'
-        ]);
+        $otherBlockedUserIds = access()->getBlockUserIds($request->get('user_id'));
 
-        access()->sentPushNotification($requestedUser, $payload);
+        if(!in_array($request->get('user_id'), $otherBlockedUserIds))
+        {
+            $text       = $userInfo->name . ' has sent you a friend request';
+            $payload    = [
+                'mtitle'            => '',
+                'mdesc'             => $text,
+                'user_id'           => $userInfo->id,
+                'other_user_id'     => $requestedUser->id,
+                'badgeCount'        => access()->getUnreadNotificationCount($requestedUser->id),
+                'mtype'             => 'NEW_CONNECTION'
+            ];
+            
+            FeedNotifications::create([
+                'user_id'           => $requestedUser->id,
+                'from_user_id'      => $userInfo->id,
+                'description'       => $text,
+                'icon'              => 'NEW_CONNECTION.png',
+                'notification_type' => 'NEW_CONNECTION'
+            ]);
+
+            access()->sentPushNotification($requestedUser, $payload); 
+        }
 
         if($model)
         {
