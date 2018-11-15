@@ -390,7 +390,7 @@ class UsersController extends BaseApiController
             {
                 $password       = str_random(6);
                 $user->password = bcrypt($password);
-                if($user->save() && 1 == 2 )  
+                if($user->save())  
                 {
                     $to = $user->email;
                     $subject = "Reset Password - Gratitude";
