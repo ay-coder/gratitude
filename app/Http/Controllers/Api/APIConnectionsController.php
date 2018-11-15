@@ -298,7 +298,7 @@ class APIConnectionsController extends BaseApiController
         $inConnection = $this->connectionModel->where([
             'other_user_id' => $userInfo->id,
             'user_id'       => $request->get('user_id')
-            ])->count();
+            ])->first();
 
 
         if($inConnection)
@@ -315,11 +315,10 @@ class APIConnectionsController extends BaseApiController
             ], 'Already In Connection!');
         }   
 
-
         $outConnection = $this->connectionModel->where([
             'other_user_id' => $request->get('user_id'),
             'user_id'       => $userInfo->id
-            ])->count();
+            ])->first();
 
         if($outConnection)
         {
@@ -344,8 +343,6 @@ class APIConnectionsController extends BaseApiController
             ], 'User Blocked!');
         }
 
-
-
         $input      = [
             'user_id'               => $userInfo->id,
             'requested_user_id'     => $userInfo->id,
@@ -358,7 +355,7 @@ class APIConnectionsController extends BaseApiController
 
         $otherBlockedUserIds = access()->getBlockUserIds($request->get('user_id'));
 
-        if(!in_array($request->get('user_id'), $otherBlockedUserIds))
+        if(!in_array($userInfo->id, $otherBlockedUserIds))
         {
             $text       = $userInfo->name . ' has sent you a friend request';
             $payload    = [
