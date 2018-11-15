@@ -178,8 +178,11 @@ class APIConnectionsController extends BaseApiController
             $suggestions = $userModel->whereNotIn('id', $myRequestIds)
                       ->where('id', '!=', $userInfo->id)
                       ->whereNotIn('id', $blockUserIds)
-                      ->where('name', 'LIKE', '%'. $keyword .'%')
-                      ->orwhere('email', 'LIKE', '%'. $keyword .'%')
+                      ->where(function($q) use($keyword)
+                      {
+                        $q->where('name', 'LIKE', '%'. $keyword .'%')
+                        ->orwhere('email', 'LIKE', '%'. $keyword .'%');
+                      })
                       ->get();
             if(isset($suggestions) && count($suggestions))
             {
