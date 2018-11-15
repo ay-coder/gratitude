@@ -51,8 +51,8 @@ class UsersController extends BaseApiController
             // verify the credentials and create_function(args, code) a token for the user
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json([
-                    'error'     => 'Invalid Credentials',
-                    'message'   => 'No User Found for given details',
+                    'error'     => 'Invalid username or password',
+                    'message'   => 'Invalid username or password',
                     'status'    => false,
                     ], 401);
             }
@@ -229,8 +229,8 @@ class UsersController extends BaseApiController
         }
 
         return response()->json([
-            'error'     => 'Invalid Credentials',
-            'message'   => 'No User Found for given details',
+            'error'     => 'Invalid username or password',
+            'message'   => 'Invalid username or password',
             'status'    => false,
             ], 401);
     }
