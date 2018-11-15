@@ -275,7 +275,7 @@ class UsersController extends BaseApiController
 
         $successResponse = [
             'support_number'        => '110001010',
-            'app_url'               => route('frontend.privacy-policy'),
+            'app_url'               => 'https://itunes.apple.com/app/id1441201406',
             'rateus_url'            => 'https://itunes.apple.com/app/id1441201406',
             'privacy_policy_url'    => route('frontend.privacy-policy'),
             'about_us_url'          => route('frontend.about-us'),
