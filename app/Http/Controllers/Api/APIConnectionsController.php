@@ -97,8 +97,11 @@ class APIConnectionsController extends BaseApiController
         $connectionModel        = new Connections;
         $myConnectionList       = $connectionModel->where('is_accepted', 1)->where('user_id', $userInfo->id)->pluck('other_user_id')->toArray();
          $otherConnectionList    = $connectionModel->where('is_accepted', 1)->where('other_user_id', $userInfo->id)->pluck('requested_user_id')->toArray();
+
+        $blockUserIds = access()->getBlockUserIds($userInfo->id);
             
         $items = $userModel->where('id', '!=', $userInfo->id)
+                    ->whereNotIn('id', $blockUserIds)
                     ->whereIn('id', $myConnectionList)
                     ->orWhereIn('id', $otherConnectionList)
                     ->get();
@@ -136,6 +139,8 @@ class APIConnectionsController extends BaseApiController
             'is_accepted'   => 1
         ])->pluck('requested_user_id')->toArray();
 
+        $blockUserIds = access()->getBlockUserIds($userInfo->id);
+
         $userModel              = new User;   
         $allConnections         = array_merge($myConnectionList, $otherConnectionList);
         $allConnections         = array_unique($allConnections);
@@ -158,6 +163,7 @@ class APIConnectionsController extends BaseApiController
         {
             $suggestions = $userModel->whereNotIn('id', $myRequestIds)
                       ->where('id', '!=', $userInfo->id)
+                      ->whereNotIn('id', $blockUserIds)
                       ->where('name', 'LIKE', '%'. $keyword .'%')
                       ->orwhere('email', 'LIKE', '%'. $keyword .'%')
                       ->get();
@@ -197,6 +203,8 @@ class APIConnectionsController extends BaseApiController
         $allConnections         = array_merge($myConnectionList, $otherConnectionList);
         $allConnections         = array_unique($allConnections);
 
+        $blockUserIds = access()->getBlockUserIds($userInfo->id);
+
         $userRequestIds         = $connectionModel->where([
             'user_id'       => $userInfo->id,
             'is_accepted'   => 0
@@ -211,6 +219,7 @@ class APIConnectionsController extends BaseApiController
         {
             $suggestions = $userModel->whereNotIn('id', $otherConnectionList)
                       ->whereNotIn('id', $myConnectionList)
+                      ->whereNotIn('id', $$blockUserIds)
                       ->whereNotIn('id', $userRequestIds)
                       ->whereNotIn('id', $myRequestIds)
                       ->whereNotIn('id', $allConnections)
@@ -338,10 +347,11 @@ class APIConnectionsController extends BaseApiController
     
     public function showRequests(Request $request)
     {
-        $userInfo               = $this->getAuthenticatedUser();
-        $connectionModel        = new Connections;
-       
-        $allRequests = $connectionModel->with('user')->where(['other_user_id' => $userInfo->id,
+        $userInfo           = $this->getAuthenticatedUser();
+        $connectionModel    = new Connections;
+        $blockUserIds       = access()->getBlockUserIds($userInfo->id);
+
+        $allRequests = $connectionModel->with('user')->whereNotIn('user_id', $blockUserIds)->where(['other_user_id' => $userInfo->id,
             'is_accepted' => 0
         ])->get();
 
@@ -367,10 +377,11 @@ class APIConnectionsController extends BaseApiController
      */
     public function showMyRequests(Request $request)
     {
-        $userInfo               = $this->getAuthenticatedUser();
-        $connectionModel        = new Connections;
-       
-        $allRequests = $connectionModel->with('user')->where([
+        $userInfo           = $this->getAuthenticatedUser();
+        $connectionModel    = new Connections;
+        $blockUserIds       = access()->getBlockUserIds($userInfo->id);
+
+        $allRequests = $connectionModel->with('user')->whereNotIn('user_id', $blockUserIds)->where([
             'requested_user_id' => $userInfo->id,
             'is_accepted'       => 0
         ])->get();
@@ -701,10 +712,13 @@ class APIConnectionsController extends BaseApiController
         $connectionModel        = new Connections;
         $myConnectionList       = $connectionModel->where('user_id', $userInfo->id)->pluck('other_user_id')->toArray();
         $otherConnectionList    = $connectionModel->where('other_user_id', $userInfo->id)->pluck('requested_user_id')->toArray();
+
+        $blockUserIds           = access()->getBlockUserIds($userInfo->id);
         $userModel              = new User;   
 
         $suggestions = $userModel->whereNotIn('id', $otherConnectionList)
                       ->whereNotIn('id', $myConnectionList)
+                      ->whereNotIn('id', $blockUserIds)
                       ->where('id', '!=', $userInfo->id)
                       ->get();
         

@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Transformers\BlockUsersTransformer;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\BlockUsers\EloquentBlockUsersRepository;
+use App\Models\Access\User\User;
 
 class APIBlockUsersController extends BaseApiController
 {
@@ -47,21 +48,32 @@ class APIBlockUsersController extends BaseApiController
      */
     public function index(Request $request)
     {
-        $paginate   = $request->get('paginate') ? $request->get('paginate') : false;
-        $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
-        $order      = $request->get('order') ? $request->get('order') : 'ASC';
-        $items      = $paginate ? $this->repository->model->orderBy($orderBy, $order)->paginate($paginate)->items() : $this->repository->getAll($orderBy, $order);
+        $userInfo       = $this->getAuthenticatedUser();
+        $userModel      = new User;   
+        $blockUserIds   = access()->getBlockUserIds($userInfo->id);
 
-        if(isset($items) && count($items))
+        if(1==1)
         {
-            $itemsOutput = $this->blockusersTransformer->transformCollection($items);
+            $blockedUsers = $userModel->whereIn('id', $blockUserIds)
+            ->get();
 
-            return $this->successResponse($itemsOutput);
+            if(isset($blockedUsers) && count($blockedUsers))
+            {
+                $itemsOutput = $this->blockusersTransformer->blockUsersTransform($blockedUsers);
+
+                if(count($itemsOutput) && isset($itemsOutput))
+                {
+                    return $this->successResponse($itemsOutput);
+                }
+
+                return $this->successResponse([], 'No Result Found !');
+            }
         }
+        
 
         return $this->setStatusCode(400)->failureResponse([
-            'message' => 'Unable to find BlockUsers!'
-            ], 'No BlockUsers Found !');
+            'message' => 'Unable to find Connections!'
+            ], 'No Connections Found !');       
     }
 
     /**

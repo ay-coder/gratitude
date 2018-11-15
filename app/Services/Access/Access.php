@@ -170,7 +170,23 @@ class Access
         }
         
         return [];
-    }    
+    }
+
+    /**
+     * Get Block User Ids
+     *
+     * @param int $userId
+     * @return array
+     */
+    public function getBlockUserIds($userId = null)    
+    {
+        if($userId)
+        {
+            return BlockUsers::where('user_id', $userId)->pluck('block_user_id')->toArray();
+        }
+
+        return [];
+    }
 
     /**
      * Get My ConnectionIds

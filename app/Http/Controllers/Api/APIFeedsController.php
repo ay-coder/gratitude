@@ -63,6 +63,7 @@ class APIFeedsController extends BaseApiController
         $order      = $request->get('order') ? $request->get('order') : 'DESC';
         $friendIds  = access()->getMyConnectionIds($userInfo->id);
 
+
         $followIds  = Followers::where('follower_id', $userInfo->id)->whereNotIn('user_id', $blockUserIds)->pluck('user_id')->toArray();
         //$followIds  = $userInfo->followings->pluck('user_id')->toArray();
 
@@ -360,8 +361,9 @@ class APIFeedsController extends BaseApiController
      */
     public function create(Request $request)
     {
-        $model      = $this->repository->create($request->all());
-        $userInfo   = $this->getAuthenticatedUser();
+        $model          = $this->repository->create($request->all());
+        $userInfo       = $this->getAuthenticatedUser();
+        $blockUserIds   = access()->getBlockUserIds($userInfo->id);
 
         if($model)
         {
@@ -397,10 +399,13 @@ class APIFeedsController extends BaseApiController
                 $tagUserData    = [];
                 foreach($tagUsers as $tagUser)
                 {
-                    $tagUserData[] = [
-                        'user_id'   => $tagUser,
-                        'feed_id'   => $model->id
-                    ];
+                    if(!in_array($tagUser, $blockUserIds))
+                    {
+                        $tagUserData[] = [
+                            'user_id'   => $tagUser,
+                            'feed_id'   => $model->id
+                        ];
+                    }
                 }
 
                 if(count($tagUserData))
@@ -465,6 +470,11 @@ class APIFeedsController extends BaseApiController
                         }
 
                         if(in_array($member->member_id, $uniqueGrpMembers))
+                        {
+                            continue;
+                        }
+
+                        if(in_array($member->member_id, $blockUserIds))
                         {
                             continue;
                         }
