@@ -6,6 +6,7 @@ use App\Http\Transformers\BlockUsersTransformer;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Repositories\BlockUsers\EloquentBlockUsersRepository;
 use App\Models\Access\User\User;
+use App\Models\Connections\Connections;
 
 class APIBlockUsersController extends BaseApiController
 {
@@ -114,6 +115,23 @@ class APIBlockUsersController extends BaseApiController
 
             if($status)
             {
+
+                $connectionModel = new Connections;
+
+                $connection = $connectionModel->where([
+                        'user_id'       => $userInfo->id,
+                        'other_user_id' => $request->get('block_user_id')
+                ])->orWhere([
+                        'user_id'       => $request->get('block_user_id'),
+                        'other_user_id' => $userInfo->id
+                ])
+                ->first();
+
+                if(isset($connection))
+                {
+                    $connection->delete();
+                }
+
                 $responseData = [
                     'message' => 'User blocked successfully'
                 ];

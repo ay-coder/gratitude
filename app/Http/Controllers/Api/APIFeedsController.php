@@ -74,7 +74,6 @@ class APIFeedsController extends BaseApiController
             $friendIds = array_unique(array_merge($friendIds, $followIds));
         }
 
-
         $tagFeedIds = $userInfo->user_tag_feeds()->whereNotIn('user_id', $blockUserIds)->pluck('feed_id')->toArray();
         $txtFeedIds = $this->repository->model->whereIn('id', $tagFeedIds)->where('is_individual', 0)->whereNotIn('user_id', $blockUserIds)->pluck('id')->toArray();
 
@@ -507,7 +506,7 @@ class APIFeedsController extends BaseApiController
                     {
                        continue;
                     }
-                    
+
                     $text       = $userInfo->name . ' tagged your group in a post.';
                     $payload    = [
                         'mtitle'            => '',
