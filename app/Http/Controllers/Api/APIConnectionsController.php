@@ -295,24 +295,65 @@ class APIConnectionsController extends BaseApiController
             ], 'Invalid Input!');
         }
 
-        $inConnection = $this->connectionModel->where([
+        $blockedUserIds = access()->getBlockUserIds($userInfo->id);
+
+        if(in_array($request->get('user_id'), $blockedUserIds))
+        {
+            return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'User Blocked!'
+            ], 'User Blocked!');
+        }
+
+        $isConnected = $this->connectionModel->where([
+                'other_user_id' => $userInfo->id,
+                'user_id'       => $request->get('user_id')
+            ])->orWhere([
+                'other_user_id' => $request->get('user_id'),
+                'user_id'       => $userInfo->id
+            ])->first();
+
+        if(isset($isConnected) && count($isConnected))
+        {
+            if($isConnected->is_accepted == 1)
+            {
+                return $this->setStatusCode(400)->failureResponse([
+                'reason' => 'Already Connected!'    
+                ], 'Already Connected!');
+            }
+
+            if($isConnected->requested_user_id == $userInfo->id && $isConnected->is_accepted == 0)
+            {
+                return $this->setStatusCode(400)->failureResponse([
+                'reason' => 'Request already Sent!'    
+                ], 'Request already Sent!');
+            }
+
+            if($isConnected->requested_user_id == $request->get('user_id') && $isConnected->is_accepted == 0)
+            {
+                return $this->setStatusCode(400)->failureResponse([
+                'reason' => 'Already Requested!'    
+                ], 'Already Requested!');
+            }
+        }
+        
+        /*$inConnection = $this->connectionModel->where([
             'other_user_id' => $userInfo->id,
             'user_id'       => $request->get('user_id')
             ])->first();
 
 
-        if($inConnection)
+        if(isset($inConnection) && count($inConnection))
         {
             if($inConnection->requested_user_id == $userInfo->id && $inConnection->is_accepted == 0)
             {
                 return $this->setStatusCode(400)->failureResponse([
-                'reason' => 'Already Requested!'
+                'reason' => 'Already Requested!'    
                 ], 'Already Requested!');
             }
 
             return $this->setStatusCode(400)->failureResponse([
-            'reason' => 'Already In Connection'
-            ], 'Already In Connection!');
+            'reason' => 'Already In Connection1'
+            ], 'Already In Connection1!');
         }   
 
         $outConnection = $this->connectionModel->where([
@@ -320,7 +361,7 @@ class APIConnectionsController extends BaseApiController
             'user_id'       => $userInfo->id
             ])->first();
 
-        if($outConnection)
+        if(isset($outConnection) && count($outConnection))
         {
             if($outConnection->requested_user_id == $userInfo->id && $inConnection->is_accepted == 0)
             {
@@ -330,18 +371,11 @@ class APIConnectionsController extends BaseApiController
             }
 
             return $this->setStatusCode(400)->failureResponse([
-            'reason' => 'Already In Connection'
-            ], 'Already In Connection !');
-        }
+            'reason' => 'Already In Connection2'
+            ], 'Already In Connection2 !');
+        }*/
 
-        $blockedUserIds = access()->getBlockUserIds($userInfo->id);
-
-        if(in_array($request->get('user_id'), $blockedUserIds))
-        {
-            return $this->setStatusCode(400)->failureResponse([
-            'reason' => 'User Blocked!'
-            ], 'User Blocked!');
-        }
+        
 
         $input      = [
             'user_id'               => $userInfo->id,
