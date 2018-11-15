@@ -72,8 +72,8 @@ class APIBlockUsersController extends BaseApiController
         
 
         return $this->setStatusCode(400)->failureResponse([
-            'message' => 'Unable to find Connections!'
-            ], 'No Connections Found !');       
+            'message' => 'No Blocked Users found!'
+            ], 'No Blocked Users found!');       
     }
 
     /**

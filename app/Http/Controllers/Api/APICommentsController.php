@@ -10,6 +10,7 @@ use App\Models\Feeds\Feeds;
 use App\Library\Push\PushNotification;
 use App\Models\Notifications\Notifications;
 use URL;
+use App\Models\Posts\Posts;
 
 class APICommentsController extends BaseApiController
 {
@@ -340,18 +341,22 @@ class APICommentsController extends BaseApiController
         {
             $userInfo   = $this->getAuthenticatedUser();
             $model      = $this->repository->model->where([
-                'user_id'   => $userInfo->id,
-                'id'        => $request->get('comment_id'),
+                'id' => $request->get('comment_id'),
             ])->first();
 
-            if(isset($model) && isset($model->id))
+            $postInfo = Posts::where('id', $model->post_id)->first();
+            
+            if(isset($postInfo) && isset($model) && isset($model->id))
             {
-                if($model->delete())
+                if($postInfo->user_id == $userInfo->id || $model->user_id == $userInfo->id)
                 {
-                    $message = [
-                        'message' => 'Comment Deleted successfully'
-                    ];
-                    return $this->successResponse($message, 'Comments is Created Successfully');
+                    if($model->delete())
+                    {
+                        $message = [
+                            'message' => 'Comment Deleted successfully'
+                        ];
+                        return $this->successResponse($message, 'Comments is Created Successfully');
+                    }
                 }
             }
         }
