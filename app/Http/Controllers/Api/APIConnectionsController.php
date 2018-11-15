@@ -303,6 +303,13 @@ class APIConnectionsController extends BaseApiController
 
         if($inConnection)
         {
+            if($inConnection->requested_user_id == $userInfo->id && $inConnection->is_accepted == 0)
+            {
+                return $this->setStatusCode(400)->failureResponse([
+                'reason' => 'Already Requested!'
+                ], 'Already Requested!');
+            }
+
             return $this->setStatusCode(400)->failureResponse([
             'reason' => 'Already In Connection'
             ], 'Already In Connection!');
@@ -316,9 +323,25 @@ class APIConnectionsController extends BaseApiController
 
         if($outConnection)
         {
+            if($outConnection->requested_user_id == $userInfo->id && $inConnection->is_accepted == 0)
+            {
+                return $this->setStatusCode(400)->failureResponse([
+                'reason' => 'Already Requested!'
+                ], 'Already Requested!');
+            }
+
             return $this->setStatusCode(400)->failureResponse([
             'reason' => 'Already In Connection'
             ], 'Already In Connection !');
+        }
+
+        $blockedUserIds = access()->getBlockUserIds($userInfo->id);
+
+        if(in_array($request->get('user_id'), $blockedUserIds))
+        {
+            return $this->setStatusCode(400)->failureResponse([
+            'reason' => 'User Blocked!'
+            ], 'User Blocked!');
         }
 
         $input      = [
