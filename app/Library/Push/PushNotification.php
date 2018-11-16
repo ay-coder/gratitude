@@ -8,7 +8,7 @@ class PushNotification
 	private static $API_ACCESS_KEY = 'AIzaSyDG3fYAj1uW7VB-wejaMJyJXiO5JagAsYI';
 
 	// (iOS) Private key's passphrase.
-	private static $passphrase = 'n1234567890';
+	private static $passphrase = '1234567890';
 	
 	// (Windows Phone 8) The name of our push channel.
     private static $channelName = "";
@@ -147,7 +147,7 @@ class PushNotification
 		//Sandbox - gateway.sandbox.push.apple.com
 		// Open a connection to the APNS server
 		$fp = stream_socket_client(
-			'ssl://gateway.sandbox.push.apple.com:2195', $err,
+			'ssl://gateway.push.apple.com:2195', $err,
 			$errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
 
 		if (!$fp)

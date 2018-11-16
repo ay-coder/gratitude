@@ -229,7 +229,7 @@ class FeedsTransformer extends Transformer
                             'comment'    => $comment->comment,
                             'username'   => $comment->user->name,
                             'profile_pic'   =>  URL::to('/').'/uploads/user/' . $comment->user->profile_pic,
-                            'create_at'  => date('m/d/Y h:i:s', strtotime($comment->created_at))
+                            'create_at'  => date('m/d/Y H:i:s', strtotime($comment->created_at))
                         ];
                     }
                 }
@@ -254,7 +254,7 @@ class FeedsTransformer extends Transformer
                     'profile_pic'   => URL::to('/').'/uploads/user/' . $item->user->profile_pic,
                     'description'   => $item->description,
                     'feed_images'   => $feedImages,
-                    'create_at'     => date('m/d/Y h:i:s', strtotime($item->created_at)),
+                    'create_at'     => date('m/d/Y H:i:s', strtotime($item->created_at)),
                     'isLiked'       => (int) $isMyLiked,
                     'isLoved'       => (int) $isMyLoved,
                     'isCommented'   => (int) $isCommented,
@@ -485,7 +485,7 @@ class FeedsTransformer extends Transformer
                             'comment'    => $comment->comment,
                             'username'   => $comment->user->name,
                             'profile_pic'   =>  URL::to('/').'/uploads/user/' . $comment->user->profile_pic,
-                            'create_at'  => date('m/d/Y h:i:s', strtotime($comment->created_at))
+                            'create_at'  => date('m/d/Y H:i:s', strtotime($comment->created_at))
                         ];
                     }
                 }
@@ -510,7 +510,7 @@ class FeedsTransformer extends Transformer
                     'profile_pic'   => URL::to('/').'/uploads/user/' . $item->user->profile_pic,
                     'description'   => $item->description,
                     'feed_images'   => $feedImages,
-                    'create_at'     => date('m/d/Y h:i:s', strtotime($item->created_at)),
+                    'create_at'     => date('m/d/Y H:i:s', strtotime($item->created_at)),
                     'isLiked'       => (int) $isMyLiked,
                     'isLoved'       => (int) $isMyLoved,
                     'isCommented'   => (int) $isCommented,
@@ -741,7 +741,7 @@ class FeedsTransformer extends Transformer
                             'comment'    => $comment->comment,
                             'username'   => $comment->user->name,
                             'profile_pic'   =>  URL::to('/').'/uploads/user/' . $comment->user->profile_pic,
-                            'create_at'  => date('m/d/Y h:i:s', strtotime($comment->created_at))
+                            'create_at'  => date('m/d/Y H:i:s', strtotime($comment->created_at))
                         ];
                     }
                 }
@@ -766,7 +766,7 @@ class FeedsTransformer extends Transformer
                     'profile_pic'   => URL::to('/').'/uploads/user/' . $item->user->profile_pic,
                     'description'   => $item->description,
                     'feed_images'   => $feedImages,
-                    'create_at'     => date('m/d/Y h:i:s', strtotime($item->created_at)),
+                    'create_at'     => date('m/d/Y H:i:s', strtotime($item->created_at)),
                     'isLiked'       => (int) $isMyLiked,
                     'isLoved'       => (int) $isMyLoved,
                     'isCommented'   => (int) $isCommented,
@@ -912,7 +912,7 @@ class FeedsTransformer extends Transformer
                 'username'      => $item->user->name,
                 'profile_pic'   => URL::to('/').'/uploads/user/' . $item->user->profile_pic,
                 'description'   => $item->description,
-                'create_at'     => date('m/d/Y h:i:s', strtotime($item->created_at)),
+                'create_at'     => date('m/d/Y H:i:s', strtotime($item->created_at)),
                 'loveLikeUsers'=> $feedLoveLikeUsers
             ];
         }
@@ -1115,7 +1115,7 @@ class FeedsTransformer extends Transformer
                         'comment'    => $comment->comment,
                         'username'   => $comment->user->name,
                         'profile_pic'   =>  URL::to('/').'/uploads/user/' . $comment->user->profile_pic,
-                        'create_at'  => date('m/d/Y h:i:s', strtotime($comment->created_at))
+                        'create_at'  => date('m/d/Y H:i:s', strtotime($comment->created_at))
                     ];
                 }
             }
@@ -1139,7 +1139,7 @@ class FeedsTransformer extends Transformer
                 'username'      => $item->user->name,
                 'profile_pic'   => URL::to('/').'/uploads/user/' . $item->user->profile_pic,
                 'description'   => $item->description,
-                'create_at'     => date('m/d/Y h:i:s', strtotime($item->created_at)),
+                'create_at'     => date('m/d/Y H:i:s', strtotime($item->created_at)),
                 'isLiked'       => (int) $isMyLiked,
                 'isLoved'       => (int) $isMyLoved,
                 'isCommented'   => (int) $isCommented,
