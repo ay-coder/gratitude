@@ -40,18 +40,10 @@
 
                 @if ($user->id != 1)
                     <div class="form-group">
-                        {{ Form::label('status', trans('validation.attributes.backend.access.users.active'), ['class' => 'col-lg-2 control-label']) }}
+                        {{ Form::label('status', 'Verified User', ['class' => 'col-lg-2 control-label']) }}
 
                         <div class="col-lg-1">
-                            {{ Form::checkbox('status', '1', $user->status == 1) }}
-                        </div><!--col-lg-1-->
-                    </div><!--form control-->
-
-                    <div class="form-group">
-                        {{ Form::label('is_archive', 'Verified', ['class' => 'col-lg-2 control-label']) }}
-
-                        <div class="col-lg-1">
-                            {{ Form::checkbox('is_archive', '1', $user->is_archive == 1) }}
+                            {{ Form::checkbox('status', '1', $user->is_archive == 1) }}
                         </div><!--col-lg-1-->
                     </div><!--form control-->
 

@@ -102,6 +102,19 @@ class UserController extends Controller
      */
     public function update(User $user, UpdateUserRequest $request)
     {
+        if($request->has('status'))
+        {
+            $user->is_archive = $request->get('status');
+            $user->save();
+        }
+        else
+        {
+            $user->is_archive = 0;
+            $user->save();   
+        }
+
+        $request->request->add(['status' => 1]);
+        
         $this->users->update($user, ['data' => $request->except('assignees_roles'), 'roles' => $request->only('assignees_roles')]);
 
         return redirect()->route('admin.access.user.index')->withFlashSuccess(trans('alerts.backend.users.updated'));
