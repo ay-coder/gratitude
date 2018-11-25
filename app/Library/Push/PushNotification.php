@@ -8,7 +8,7 @@ class PushNotification
 	private static $API_ACCESS_KEY = 'AIzaSyDG3fYAj1uW7VB-wejaMJyJXiO5JagAsYI';
 
 	// (iOS) Private key's passphrase.
-	private static $passphrase = '1234567890';
+	private static $passphrase = 'wve@123';
 	
 	// (Windows Phone 8) The name of our push channel.
     private static $channelName = "";
@@ -140,7 +140,7 @@ class PushNotification
 		$ctx = stream_context_create();
 
 		// ck.pem is your certificate file
-		stream_context_set_option($ctx, 'ssl', 'local_cert', public_path().DIRECTORY_SEPARATOR.'gratitude.pem');
+		stream_context_set_option($ctx, 'ssl', 'local_cert', public_path().DIRECTORY_SEPARATOR.'live-grati.pem');
 		stream_context_set_option($ctx, 'ssl', 'passphrase', self::$passphrase);
 
 		//LIVE URL - gateway.push.apple.com
@@ -153,7 +153,6 @@ class PushNotification
 		if (!$fp)
 			exit("Failed to connect: $err $errstr" . PHP_EOL);
 
-		
 		// Create the payload body
 		$body['aps'] = array(
 			'alert' => array(
@@ -181,7 +180,7 @@ class PushNotification
 
 		// Send it to the server
 		$result = @fwrite($fp, $msg, strlen($msg));
-		
+
 		// Close the connection to the server
 		@fclose($fp);
 

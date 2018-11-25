@@ -392,11 +392,6 @@ class UserRepository extends BaseRepository
             {
                 unset($input['email']);
             }
-
-            if(isset($input['email']))
-            {
-                unset($input['email']);
-            }   
             
             return User::where('id', $userId)->update($input);
         }
