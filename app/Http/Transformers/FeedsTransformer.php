@@ -225,18 +225,21 @@ class FeedsTransformer extends Transformer
                 {
                     foreach($item->feed_comments as $comment)
                     {
-                        if($comment->user->id == $currentUserId)
-                            $isCommented = 1;
+                        if($comment->user)
+                        {
+                            if($comment->user->id == $currentUserId)
+                                $isCommented = 1;
 
-                        $feedComments[] = [
-                            'comment_id' => (int) $comment->id,
-                            'feed_id'    => (int) $comment->feed_id,
-                            'user_id'    => (int) $comment->user_id,
-                            'comment'    => $comment->comment,
-                            'username'   => $comment->user->name,
-                            'profile_pic'   =>  URL::to('/').'/uploads/user/' . $comment->user->profile_pic,
-                            'create_at'  => date('m/d/Y H:i:s', strtotime($comment->created_at))
-                        ];
+                            $feedComments[] = [
+                                'comment_id' => (int) $comment->id,
+                                'feed_id'    => (int) $comment->feed_id,
+                                'user_id'    => (int) $comment->user_id,
+                                'comment'    => $comment->comment,
+                                'username'   => $comment->user->name,
+                                'profile_pic'   =>  URL::to('/').'/uploads/user/' . $comment->user->profile_pic,
+                                'create_at'  => date('m/d/Y H:i:s', strtotime($comment->created_at))
+                            ];
+                        }
                     }
                 }
 
