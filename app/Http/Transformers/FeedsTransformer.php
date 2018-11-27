@@ -101,32 +101,33 @@ class FeedsTransformer extends Transformer
                 {
                     foreach($item->feed_loves as $love)
                     {
-                        $isConnected = in_array($love->user->id, $connectionIds) ? 1 : 0;
-                        $isRequested = in_array($love->user->id, $requestIds) ? 1 : 0;
-                        $isMyRequested = in_array($love->user->id, $myReqIds) ? 1 : 0;
-
-                        if($love->user->id == $currentUserId)
+                        if($love->user)
                         {
-                            $isMyLoved      = 1;
-                            $isLoved        = 1;
-                            $isConnected    = 0;
-                            $isRequested    = 0;
-                            $isMyRequested  = 0;
+                            $isConnected = in_array($love->user->id, $connectionIds) ? 1 : 0;
+                            $isRequested = in_array($love->user->id, $requestIds) ? 1 : 0;
+                            $isMyRequested = in_array($love->user->id, $myReqIds) ? 1 : 0;
+
+                            if($love->user->id == $currentUserId)
+                            {
+                                $isMyLoved      = 1;
+                                $isLoved        = 1;
+                                $isConnected    = 0;
+                                $isRequested    = 0;
+                                $isMyRequested  = 0;
+                            }
+
+                            $feedLoveUsers[] = [
+                                'user_id'       => (int)  $love->user->id,
+                                'username'      => $love->user->name,
+                                'is_connected'  => $isConnected,
+                                'is_requested'  => $isRequested,
+                                'is_my_request' => $isMyRequested,
+                                'is_love'       => 1,
+                                'is_like'       => 0,
+                                'profile_pic'   => URL::to('/').'/uploads/user/' . $love->user->profile_pic,
+                                'created_at'    => date('m/d/Y H:i:s', strtotime($love->created_at))
+                            ];
                         }
-
-                        
-
-                        $feedLoveUsers[] = [
-                            'user_id'       => (int)  $love->user->id,
-                            'username'      => $love->user->name,
-                            'is_connected'  => $isConnected,
-                            'is_requested'  => $isRequested,
-                            'is_my_request' => $isMyRequested,
-                            'is_love'       => 1,
-                            'is_like'       => 0,
-                            'profile_pic'   => URL::to('/').'/uploads/user/' . $love->user->profile_pic,
-                            'created_at'    => date('m/d/Y H:i:s', strtotime($love->created_at))
-                        ];
                     }
                 }
 
@@ -136,31 +137,33 @@ class FeedsTransformer extends Transformer
                 {
                     foreach($item->feed_likes as $like)
                     {
-                        $isConnected = in_array($like->user->id, $connectionIds) ? 1 : 0;
-                        $isRequested = in_array($like->user->id, $requestIds) ? 1 : 0;
-                        $isMyRequested = in_array($like->user->id, $myReqIds) ? 1 : 0;
-
-
-                        if($like->user->id == $currentUserId)
+                        if($like->user)
                         {
-                            $isMyLiked      = 1;
-                            $isLiked        = 1;
-                            $isConnected    = 0;
-                            $isRequested    = 0;
-                            $isMyRequested  = 0;
-                        }
+                            $isConnected = in_array($like->user->id, $connectionIds) ? 1 : 0;
+                            $isRequested = in_array($like->user->id, $requestIds) ? 1 : 0;
+                            $isMyRequested = in_array($like->user->id, $myReqIds) ? 1 : 0;
 
-                        $feedLikeUsers[] = [
-                            'user_id'       => (int)  $like->user->id,
-                            'username'      => $like->user->name,
-                            'is_connected'  => $isConnected,
-                            'is_requested'  => $isRequested,
-                            'is_my_request' => $isMyRequested,
-                            'is_like'       => 1,
-                            'is_love'       => 0,
-                            'profile_pic'   => URL::to('/').'/uploads/user/' . $like->user->profile_pic,
-                            'created_at'    => date('m/d/Y H:i:s', strtotime($like->created_at))
-                        ];
+                            if($like->user->id == $currentUserId)
+                            {
+                                $isMyLiked      = 1;
+                                $isLiked        = 1;
+                                $isConnected    = 0;
+                                $isRequested    = 0;
+                                $isMyRequested  = 0;
+                            }
+
+                            $feedLikeUsers[] = [
+                                'user_id'       => (int)  $like->user->id,
+                                'username'      => $like->user->name,
+                                'is_connected'  => $isConnected,
+                                'is_requested'  => $isRequested,
+                                'is_my_request' => $isMyRequested,
+                                'is_like'       => 1,
+                                'is_love'       => 0,
+                                'profile_pic'   => URL::to('/').'/uploads/user/' . $like->user->profile_pic,
+                                'created_at'    => date('m/d/Y H:i:s', strtotime($like->created_at))
+                            ];
+                        }
                     }
                 }
 
