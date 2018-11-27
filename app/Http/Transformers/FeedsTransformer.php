@@ -255,30 +255,33 @@ class FeedsTransformer extends Transformer
                     }
                 }
 
-                $response[] = [
-                    'feed_id'       => (int) $item->id,
-                    'feed_type'     => $item->feed_type,
-                    'user_id'       => (int)  $item->user_id,
-                    'username'      => $item->user->name,
-                    'profile_pic'   => URL::to('/').'/uploads/user/' . $item->user->profile_pic,
-                    'description'   => $item->description,
-                    'feed_images'   => $feedImages,
-                    'create_at'     => date('m/d/Y H:i:s', strtotime($item->created_at)),
-                    'isLiked'       => (int) $isMyLiked,
-                    'isLoved'       => (int) $isMyLoved,
-                    'isCommented'   => (int) $isCommented,
-                    'likeCount'     => (int) count($item->feed_likes),
-                    'loveCount'     => (int) count($item->feed_loves),
-                    'commentCount'  => (int) count($item->feed_comments),
-                    'feedCategory'  => (object) $feedCategory,
-                    'is_group_feed' => $isGroupFeed,
-                    'groupData'     => (object) $feedGroup,
-                    'loveUsers'     => $feedLoveUsers,
-                    'likeUsers'     => $feedLikeUsers,
-                    'allComments'   => $feedComments,
-                    'tagUsers'      => $tagUsers,
-                    'loveLikeUsers' => $feedLoveLikeUsers
-                ];
+                if($item->user)
+                {
+                    $response[] = [
+                        'feed_id'       => (int) $item->id,
+                        'feed_type'     => $item->feed_type,
+                        'user_id'       => (int)  $item->user_id,
+                        'username'      => $item->user->name,
+                        'profile_pic'   => URL::to('/').'/uploads/user/' . $item->user->profile_pic,
+                        'description'   => $item->description,
+                        'feed_images'   => $feedImages,
+                        'create_at'     => date('m/d/Y H:i:s', strtotime($item->created_at)),
+                        'isLiked'       => (int) $isMyLiked,
+                        'isLoved'       => (int) $isMyLoved,
+                        'isCommented'   => (int) $isCommented,
+                        'likeCount'     => (int) count($item->feed_likes),
+                        'loveCount'     => (int) count($item->feed_loves),
+                        'commentCount'  => (int) count($item->feed_comments),
+                        'feedCategory'  => (object) $feedCategory,
+                        'is_group_feed' => $isGroupFeed,
+                        'groupData'     => (object) $feedGroup,
+                        'loveUsers'     => $feedLoveUsers,
+                        'likeUsers'     => $feedLikeUsers,
+                        'allComments'   => $feedComments,
+                        'tagUsers'      => $tagUsers,
+                        'loveLikeUsers' => $feedLoveLikeUsers
+                    ];
+                }
             }
         }
         return $response;
