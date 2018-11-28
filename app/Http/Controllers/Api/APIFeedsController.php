@@ -142,9 +142,121 @@ class APIFeedsController extends BaseApiController
      * @param Request $request
      * @return json
      */
+    public function userfeeds(Request $request)
+    {
+        $userInfo = $this->getAuthenticatedUser();
+
+        if($request->has('user_id'))
+        {
+            $userInfo = User::where('id', $request->get('user_id'))->first();
+        }
+
+        if(!$userInfo)
+        {
+            $userInfo   = $this->getAuthenticatedUser();
+        }       
+
+        $blockUserIds = BlockUsers::where('user_id', $userInfo->id)->pluck('block_user_id')->toArray();
+        $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
+        $offset     = $request->has('offset') ? $request->get('offset') : 0;
+        $perPage    = $request->has('per_page') ? $request->get('per_page') : 100;
+        $orderBy    = $request->get('orderBy') ? $request->get('orderBy') : 'id';
+        $order      = $request->get('order') ? $request->get('order') : 'DESC';
+        $friendIds  = access()->getMyConnectionIds($userInfo->id);
+
+
+        $followIds  = Followers::where('follower_id', $userInfo->id)->whereNotIn('user_id', $blockUserIds)->pluck('user_id')->toArray();
+        //$followIds  = $userInfo->followings->pluck('user_id')->toArray();
+
+        array_push($friendIds, $userInfo->id);
+
+        if(isset($followIds) && count($followIds))
+        {
+            $friendIds = array_unique(array_merge($friendIds, $followIds));
+        }
+
+        $tagFeedIds = $userInfo->user_tag_feeds()->whereNotIn('user_id', $blockUserIds)->pluck('feed_id')->toArray();
+        $txtFeedIds = $this->repository->model->whereIn('id', $tagFeedIds)->where('is_individual', 0)->whereNotIn('user_id', $blockUserIds)->pluck('id')->toArray();
+
+        $newOffset  = $offset * $perPage;
+
+        $items      = $this->repository->model->with([
+            'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
+        ])
+        ->where('is_individual', 0)
+        ->whereNotIn('id', $blockFeeds)
+        ->whereIn('user_id', $friendIds)
+        ->orWhereIn('id', $txtFeedIds)
+        /*->orWhereHas('feed_tag_users', function($q) use($friendIds)
+        {
+            return $q->whereIn('user_id', $friendIds);
+        })*/
+        /*->offset($offset)
+        ->limit($perPage)*/
+        ->skip($newOffset)
+        ->take($perPage)
+        ->orderBy('id', 'DESC')
+        ->get();
+
+        if($offset == 0)
+        {
+            $skipp = $perPage;
+        }
+        else
+        {
+            $skipp = ($offset + 1) * $perPage;
+        }
+        
+        $itemCount      = $this->repository->model->where('is_individual', 0)
+        ->whereNotIn('id', $blockFeeds)
+        ->whereIn('user_id', $friendIds)
+        ->orWhereHas('feed_tag_users', function($q) use($friendIds)
+        {
+            return $q->whereIn('user_id', $friendIds);
+        })
+        ->skip($skipp)
+        ->take(1)
+        ->orderBy('id', 'DESC')
+        ->get();
+
+        if(isset($items) && count($items))
+        {
+            $loadMore    = 0;
+            $itemsOutput = $this->feedsTransformer->showAllFeeds($items);
+
+            if(isset($itemCount) && count($itemCount) > 0)
+            {
+                $loadMore = 1;
+            }
+
+            return $this->successResponseWithPagination($itemsOutput, '', $loadMore);
+        }
+
+        return $this->setStatusCode(400)->failureResponse([
+            'message' => 'Unable to find Feeds!'
+            ], 'No Feeds Found !');
+    }
+
+    /**
+     * List of All Feeds
+     *
+     * @param Request $request
+     * @return json
+     */
     public function refreshFeeds(Request $request)
     {
-        $userInfo   = $this->getAuthenticatedUser();
+        $userInfo = $this->getAuthenticatedUser();
+
+        if($request->has('user_id'))
+        {
+            $userInfo = User::where('id', $request->get('user_id'))->first();
+        }
+
+        if(!$userInfo)
+        {
+            $userInfo   = $this->getAuthenticatedUser();
+        }    
+
         $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $feedId     = $request->has('feed_id') ? $request->get('feed_id') : false;
         $friendIds  = access()->getMyConnectionIds($userInfo->id);

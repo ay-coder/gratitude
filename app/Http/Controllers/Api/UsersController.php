@@ -466,7 +466,7 @@ class UsersController extends BaseApiController
             
             if($user)
             {
-                $responseData = $this->userTransformer->userInfo($user);
+                $responseData = $this->userTransformer->userProfile($user);
                 
                 return $this->successResponse($responseData);
             }

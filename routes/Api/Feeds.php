@@ -2,6 +2,8 @@
 Route::group(['namespace' => 'Api'], function()
 {
     Route::post('feeds', 'APIFeedsController@index')->name('feeds.index');
+    
+    Route::post('user-feeds', 'APIFeedsController@userfeeds')->name('feeds.user-feeds');
 
     Route::post('feeds/update-category', 'APIFeedsController@updateCategory')->name('feeds.update-category');
 

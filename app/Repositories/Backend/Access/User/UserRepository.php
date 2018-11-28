@@ -17,6 +17,18 @@ use App\Events\Backend\Access\User\UserPasswordChanged;
 use App\Repositories\Backend\Access\Role\RoleRepository;
 use App\Events\Backend\Access\User\UserPermanentlyDeleted;
 use App\Notifications\Frontend\Auth\UserNeedsConfirmation;
+use App\Models\Feeds\Feeds;
+use App\Models\Connections\Connections;
+use App\Models\Comments\Comments;
+use App\Models\BlockUsers\BlockUsers;
+use App\Models\FeedLove\FeedLove;
+use App\Models\FeedLike\FeedLike;
+use App\Models\FeedNotifications\FeedNotifications;
+use App\Models\Followers\Followers;
+use App\Models\Notes\Notes;
+use App\Models\Posts\Posts;
+use App\Models\FeedTagUsers\FeedTagUsers;
+use App\Models\UserGroupMembers\UserGroupMembers;
 
 /**
  * Class UserRepository.
@@ -206,11 +218,31 @@ class UserRepository extends BaseRepository
      */
     public function delete(Model $user)
     {
+        $userId = $user->id;
+
         if (access()->id() == $user->id) {
             throw new GeneralException(trans('exceptions.backend.access.users.cant_delete_self'));
         }
 
         if ($user->delete()) {
+
+            Feeds::where('user_id', $userId)->delete();
+            Connections::where('user_id', $userId)->delete();
+            Connections::where('other_user_id', $userId)->delete();
+            Comments::where('user_id', $userId)->delete();
+            BlockUsers::where('user_id', $userId)->delete();
+            BlockUsers::where('block_user_id', $userId)->delete();
+            FeedLike::where('user_id', $userId)->delete();
+            FeedLove::where('user_id', $userId)->delete();
+            FeedNotifications::where('user_id', $userId)->delete();
+            Followers::where('user_id', $userId)->delete();
+            Followers::where('follower_id', $userId)->delete();
+            Notes::where('user_id', $userId)->delete();
+            Posts::where('user_id', $userId)->delete();
+            FeedTagUsers::where('user_id', $userId)->delete();
+            UserGroupMembers::where('user_id', $userId)->delete();
+            UserGroupMembers::where('member_id', $userId)->delete();
+
             event(new UserDeleted($user));
 
             return true;
