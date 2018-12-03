@@ -56,12 +56,18 @@ class UserTransformer extends Transformer
         $userInfo       = access()->user();
         $connectionIds  = access()->getMyConnectionIds($data->id);
         $requestIds     = access()->getMyRequestIds($data->id);
+        $myRequestIds   = access()->getMyRequestIds($userInfo->id);
         $blockedIds     = access()->getBlockUserIds($data->id);
         $isSame         = 0;
+        $isMyRequest    = 0;
         $isBlocked      = 0;
         $isRequested    = 0;
         $isConnected    = 0;
 
+        if(in_array($userInfo->id, $myRequestIds))
+        {
+            $isMyRequest = 1;
+        }
         if($data->id == $userInfo->id)
         {
             $isSame = 1;
@@ -104,6 +110,7 @@ class UserTransformer extends Transformer
             'is_requested'  => $isRequested,
             'is_connected'  => $isConnected,
             'is_blocked'    => $isBlocked,
+            'is_my_request'    => $isMyRequest,
             'current_login_user' => $userInfo->id 
         ];   
     }
