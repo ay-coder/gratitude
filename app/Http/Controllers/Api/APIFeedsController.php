@@ -380,7 +380,18 @@ class APIFeedsController extends BaseApiController
      */
     public function myTextFeeds(Request $request)
     {
-        $userInfo   = $this->getAuthenticatedUser();
+        $userInfo = $this->getAuthenticatedUser();
+
+        if($request->has('user_id'))
+        {
+            $userInfo = User::where('id', $request->get('user_id'))->first();
+        }
+
+        if(!$userInfo)
+        {
+            $userInfo   = $this->getAuthenticatedUser();
+        } 
+
         $tagFeedIds = $userInfo->user_tag_feeds->pluck('feed_id')->toArray();
         $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
@@ -427,7 +438,18 @@ class APIFeedsController extends BaseApiController
      */
     public function myImageFeeds(Request $request)
     {
-        $userInfo   = $this->getAuthenticatedUser();
+        $userInfo = $this->getAuthenticatedUser();
+
+        if($request->has('user_id'))
+        {
+            $userInfo = User::where('id', $request->get('user_id'))->first();
+        }
+
+        if(!$userInfo)
+        {
+            $userInfo   = $this->getAuthenticatedUser();
+        } 
+
         $tagFeedIds = $userInfo->user_tag_feeds->pluck('feed_id')->toArray();
         $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
         $offset     = $request->has('offset') ? $request->get('offset') : 0;
