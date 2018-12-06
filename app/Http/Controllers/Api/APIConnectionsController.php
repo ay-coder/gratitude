@@ -760,12 +760,18 @@ class APIConnectionsController extends BaseApiController
         }
 
         $connectionModel = new Connections;
-        $userInfo   = $this->getAuthenticatedUser();
+        $userInfo        = $this->getAuthenticatedUser();
+        $connectionIds   = access()->getMyConnectionIds($userInfo->id);
+
         $connection = $connectionModel->where([
             'id'                => $request->get('request_id'),
             'requested_user_id' => $userInfo->id
         ])->first();
         
+        if(in_array($connection->other_user_id, $connectionIds))
+        {
+            return $this->successResponse(['message' => 'Already Request Accepted!'], 'Connection Already Request Accepted'); 
+        }
 
         if(isset($connection) && isset($connection->id))
         {
