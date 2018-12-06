@@ -401,6 +401,7 @@ class APIFeedsController extends BaseApiController
 
         $txtFeedIds   = $this->repository->model->whereIn('id', $tagFeedIds)->where('feed_type', 1)->pluck('id')->toArray();
 
+        $newOffset  = $offset * $perPage;
 
         $items      = $this->repository->model->with([
             'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
@@ -414,8 +415,8 @@ class APIFeedsController extends BaseApiController
         })*/
         ->orWhereIn('id', $txtFeedIds)
         ->orderBy('id', 'DESC')
-        ->offset($offset)
-        ->limit($perPage)
+        ->skip($newOffset)
+        ->take($perPage)
         ->get();
 
         if(isset($items) && count($items))
@@ -459,7 +460,7 @@ class APIFeedsController extends BaseApiController
 
         $imageFeedIds   = $this->repository->model->whereIn('id', $tagFeedIds)->where('feed_type', 2)->pluck('id')->toArray();
 
-        
+        $newOffset  = $offset * $perPage;
         $items      = $this->repository->model->with([
             'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
         ])
@@ -468,8 +469,8 @@ class APIFeedsController extends BaseApiController
         ->where('user_id', $userInfo->id)
         ->orWhereIn('id', $imageFeedIds)
         ->orderBy('id', 'DESC')
-        ->offset($offset)
-        ->limit($perPage)
+        ->skip($newOffset)
+        ->take($perPage)
         ->get();
 
         
