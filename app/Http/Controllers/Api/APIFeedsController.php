@@ -404,7 +404,7 @@ class APIFeedsController extends BaseApiController
 
         $newOffset  = $offset * $perPage;
         $conditions = [];
-        
+
         if($loginUser->id != $userInfo->id)
         {
             $conditions = [
@@ -449,7 +449,8 @@ class APIFeedsController extends BaseApiController
      */
     public function myImageFeeds(Request $request)
     {
-        $userInfo = $this->getAuthenticatedUser();
+        $userInfo  = $this->getAuthenticatedUser();
+        $loginUser = $this->getAuthenticatedUser();
 
         if($request->has('user_id'))
         {
@@ -460,6 +461,14 @@ class APIFeedsController extends BaseApiController
         {
             $userInfo   = $this->getAuthenticatedUser();
         } 
+
+        $conditions = [];
+        if($loginUser->id != $userInfo->id)
+        {
+            $conditions = [
+                'is_individual' => 0
+            ];
+        }
 
         $tagFeedIds = $userInfo->user_tag_feeds->pluck('feed_id')->toArray();
         $blockFeeds = $userInfo->feeds_reported()->pluck('feed_id')->toArray();
@@ -476,6 +485,7 @@ class APIFeedsController extends BaseApiController
         ])
         ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 2)
+        ->where($conditions)
         ->where('user_id', $userInfo->id)
         ->orWhereIn('id', $imageFeedIds)
         ->orderBy('id', 'DESC')
