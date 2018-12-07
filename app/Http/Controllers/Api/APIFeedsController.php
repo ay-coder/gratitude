@@ -380,7 +380,8 @@ class APIFeedsController extends BaseApiController
      */
     public function myTextFeeds(Request $request)
     {
-        $userInfo = $this->getAuthenticatedUser();
+        $userInfo   = $this->getAuthenticatedUser();
+        $loginUser  = $this->getAuthenticatedUser();
 
         if($request->has('user_id'))
         {
@@ -402,6 +403,14 @@ class APIFeedsController extends BaseApiController
         $txtFeedIds   = $this->repository->model->whereIn('id', $tagFeedIds)->where('feed_type', 1)->pluck('id')->toArray();
 
         $newOffset  = $offset * $perPage;
+        $conditions = [];
+        
+        if($loginUser->id != $userInfo->id)
+        {
+            $conditions = [
+                'is_individual' => 0
+            ];
+        }
 
         $items      = $this->repository->model->with([
             'user', 'feed_category', 'feed_group', 'feed_images', 'feed_loves', 'feed_loves.user', 'feed_likes', 'feed_likes.user', 'feed_comments', 'feed_comments.user', 'feed_tag_users', 'feed_tag_users.user'
@@ -409,6 +418,7 @@ class APIFeedsController extends BaseApiController
         ->whereNotIn('id', $blockFeeds)
         ->where('feed_type', 1)
         ->where('user_id', $userInfo->id)
+        ->where($conditions)
         /*->orWhereHas('feed_tag_users', function($q) use($userInfo)
         {
             $q->where('user_id', $userInfo->id);
