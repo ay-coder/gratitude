@@ -767,8 +767,13 @@ class APIConnectionsController extends BaseApiController
             'id'                => $request->get('request_id'),
             'requested_user_id' => $userInfo->id
         ])->first();
+
+        $checkConnection = $connectionModel->where([
+            'id' => $request->get('request_id'),
+        ])->first();
+
         
-        if($connection->is_accepted == 1)
+        if($checkConnection->is_accepted == 1)
         {
             return $this->successResponse(['message' => 'Already Request Accepted!'], 'Already Request Accepted !'); 
         }
@@ -780,9 +785,9 @@ class APIConnectionsController extends BaseApiController
             return $this->successResponse(['message' => 'Request Removed Successfully !'], 'Connection Request Removed Successfully');
         }
        
-        return $this->setStatusCode(404)->failureResponse([
+        return $this->setStatusCode(200)->failureResponse([
             'reason' => 'Invalid Inputs'
-        ], 'Something went wrong !');
+        ], 'The Request has been Canceled!');
     }
 
     /**
