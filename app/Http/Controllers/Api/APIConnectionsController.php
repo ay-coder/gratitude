@@ -772,13 +772,14 @@ class APIConnectionsController extends BaseApiController
             'id' => $request->get('request_id'),
         ])->first();
 
-        
         if($checkConnection->is_accepted == 1)
         {
-            return $this->successResponse(['message' => 'Already Request Accepted!'], 'Already Request Accepted !'); 
+            return $this->setStatusCode(200)->failureResponse([
+                'reason' => 'Already Request Accepted!'
+            ], 'Already Request Accepted!');
         }
 
-        if(isset($connection) && isset($connection->id))
+        if(isset($connection) && isset($connection->id) && $checkConnection->is_accepted != 1)
         {
             $connection->delete();   
 
