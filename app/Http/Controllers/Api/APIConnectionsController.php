@@ -768,9 +768,9 @@ class APIConnectionsController extends BaseApiController
             'requested_user_id' => $userInfo->id
         ])->first();
         
-        if(in_array($connection->other_user_id, $connectionIds))
+        if($connection->is_accepted == 1)
         {
-            return $this->successResponse(['message' => 'Already Request Accepted!'], 'Connection Already Request Accepted'); 
+            return $this->successResponse(['message' => 'Already Request Accepted!'], 'Already Request Accepted !'); 
         }
 
         if(isset($connection) && isset($connection->id))
