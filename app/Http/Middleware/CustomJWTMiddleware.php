@@ -26,45 +26,48 @@ class CustomJWTMiddleware extends BaseJWTMiddleware
      */
     public function handle($request, \Closure $next)
     {
+        $invalidTokenCode = 200;
+        $invalidDataCode  = 999;
+
         if (! $token = $this->auth->setRequest($request)->getToken()) {
             return $this->respond('tymon.jwt.absent', 'token_not_provided', 400);
         }
-
-        $invalidTokenCode = 200;
-        $invalidDataCode  = 999;
 
         try 
         {
             $user = $this->auth->authenticate($token);
         } catch (TokenExpiredException $e) 
         {
-            $respond = [
+            $response = [
                 'success'   => false,
                 'status'    => false,
                 'code'      => $invalidDataCode,
-                'message'   => 'Invalid Token - Wrong Token !'
+                'message'   => "Session Expired!"
             ];
-            return $this->respond('tymon.jwt.invalid', $respond, $invalidTokenCode, [$e]);
+            return response()->json(
+                $response, 200
+            );
         } catch (JWTException $e)
         {
-            $respond = [
+            $response = [
                 'success'   => false,
                 'status'    => false,
                 'code'      => $invalidDataCode,
-                'message'   => 'Invalid Token - Wrong Token !'
+                'message'   => "Session Expired!"
             ];
-            return $this->respond('tymon.jwt.invalid', $respond, $invalidTokenCode, [$e]);
+            return response()->json(
+                $response, 200
+            );
         }
 
         if (! $user)
         {
             $respond = [
                 'success'   => false,
-                'status'    => false,
-                'code'      => $invalidDataCode,
                 'message'   => 'Opps, User not Found !'
             ];
-            return $this->respond('tymon.jwt.invalid', $respond, $invalidTokenCode, [$e]);
+
+            return $this->respond('tymon.jwt.user_not_found', 'user_not_found', 404);
         }
 
         $this->events->fire('tymon.jwt.valid', $user);
