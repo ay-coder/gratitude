@@ -234,7 +234,8 @@ class UsersController extends BaseApiController
             'error'     => 'Invalid username or password',
             'message'   => 'Invalid username or password',
             'status'    => false,
-            ], 401);
+            'code'      => 200,
+            ], 200);
     }
 
 
@@ -684,7 +685,7 @@ class UsersController extends BaseApiController
 
             $user = $userObj->find($userInfo['userId']);
 
-            if(isset($input['password']) && strlen($input['password']) > 2)
+            if(isset($input['password']) && strlen($input['password']) > 0)
             {
                 $user->password = bcrypt($input['password']);
                 $user->save();

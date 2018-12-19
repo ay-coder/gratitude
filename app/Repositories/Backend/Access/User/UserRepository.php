@@ -405,10 +405,10 @@ class UserRepository extends BaseRepository
     {
         if($userId && $input)
         {
-            if(isset($input['password']) && strlen($input['password']) > 2)
+            /*if(isset($input['password']) && strlen($input['password']) > 2)
             {
                 $input['password'] = bcrypt($input['password']);
-            }
+            }*/
 
             if(isset($input['id']))
             {
