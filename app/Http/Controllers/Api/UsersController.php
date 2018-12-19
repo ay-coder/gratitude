@@ -54,7 +54,7 @@ class UsersController extends BaseApiController
                     'error'     => 'Invalid username or password',
                     'message'   => 'Invalid username or password',
                     'status'    => false,
-                    ], 401);
+                    ], 200);
             }
         } catch (JWTException $e) {
             // something went wrong
@@ -62,7 +62,7 @@ class UsersController extends BaseApiController
                     'error'     => 'Somethin Went Wrong!',
                     'message'   => 'Unable to Generate Token!',
                     'status'    => false,
-                    ], 500);
+                    ], 200);
         }
         
 
@@ -681,6 +681,12 @@ class UsersController extends BaseApiController
             $userObj = new User;
 
             $user = $userObj->find($userInfo['userId']);
+
+            if(isset($input['password']) && strlen($input['password']) > 2)
+            {
+                $user->password = bcrypt($input['password']);
+                $user->save();
+            }
 
             if($user)
             {
