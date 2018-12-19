@@ -54,6 +54,7 @@ class UsersController extends BaseApiController
                     'error'     => 'Invalid username or password',
                     'message'   => 'Invalid username or password',
                     'status'    => false,
+                    'code'      => 200
                     ], 200);
             }
         } catch (JWTException $e) {
@@ -62,6 +63,7 @@ class UsersController extends BaseApiController
                     'error'     => 'Somethin Went Wrong!',
                     'message'   => 'Unable to Generate Token!',
                     'status'    => false,
+                    'code'      => 200
                     ], 200);
         }
         
