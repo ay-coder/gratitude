@@ -411,7 +411,7 @@ class UsersController extends BaseApiController
                      Please use this password for Login <strong>$password </strong> Let us know if you have any concern.
                     </p>
                     <p>
-                    Spottr
+                    GrateCirlce Team
                     
                     </p>
                     </body>
