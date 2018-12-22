@@ -30,7 +30,9 @@
                         <tr>
                             <th>{{ trans('labels.backend.access.users.table.id') }}</th>
                             <th>{{ trans('labels.backend.access.users.table.name') }}</th>
+                            <th>Username</th>
                             <th>{{ trans('labels.backend.access.users.table.email') }}</th>
+                            <th>Mobile</th>
                             <th>Verified</th>
                             <th>{{ trans('labels.backend.access.users.table.roles') }}</th>
                             <th>{{ trans('labels.backend.access.users.table.created') }}</th>
@@ -73,7 +75,9 @@
                 columns: [
                     {data: 'id', name: '{{config('access.users_table')}}.id'},
                     {data: 'name', name: '{{config('access.users_table')}}.name'},
+                    {data: 'username', name: '{{config('access.users_table')}}.username'},
                     {data: 'email', name: '{{config('access.users_table')}}.email'},
+                    {data: 'phone', name: '{{config('access.users_table')}}.mobile'},
                     {data: 'is_archive', name: '{{config('access.users_table')}}.is_archive'},
                     {data: 'roles', name: '{{config('access.roles_table')}}.name', sortable: false},
                     {data: 'created_at', name: '{{config('access.users_table')}}.created_at'},

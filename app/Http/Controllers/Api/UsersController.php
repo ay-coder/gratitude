@@ -408,7 +408,7 @@ class UsersController extends BaseApiController
                         Hello $user->name,
                     </p>
                     <p>
-                     Please use this password for Login <strong>$password </strong> Let us know if you have any concern.
+                     Please use this password for Username : $user->username and password : <strong>$password </strong><br> Let us know if you have any concern.
                     </p>
                     <p>
                     GrateCirlce Team
