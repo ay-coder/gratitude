@@ -113,7 +113,7 @@ class APICommentsController extends BaseApiController
         if($request->has('feed_id'))
         {
             $userInfo  = $this->getAuthenticatedUser();
-            $feedInfo  = Feeds::with(['feed_tag_users', 'feed_tag_users.user', 'user'])->where('id', $request->get('feed_id'))->first();
+            $feedInfo  = Feeds::with(['feed_comments', 'feed_tag_users', 'feed_tag_users.user', 'user'])->where('id', $request->get('feed_id'))->first();
             $model      = $this->repository->model->create([
                 'user_id'       => (int) $userInfo->id,
                 'feed_id'       => (int) $request->get('feed_id'),
@@ -181,6 +181,41 @@ class APICommentsController extends BaseApiController
                         access()->sentPushNotification($tagUser->user, $payload);
                     }
                 }
+
+                // Feed Comments 
+                if(isset($feedInfo->feed_comments) && count($feedInfo->feed_comments))
+                {
+                    $text = $userInfo->name . ' commented on a post you are tagged in.';
+                    foreach($feedInfo->feed_tag_users as $tagUser)
+                    {
+                        if($userInfo->id == $tagUser->user->id)
+                        {
+                            continue;
+                        }
+
+                        $payload = [
+                            'mtitle'            => '',
+                            'mdesc'             => $text,
+                            'feed_id'           => $request->get('feed_id'),
+                            'to_user_id'        => $tagUser->user->id,
+                            'feed_type'         => $feedInfo->feed_type,
+                            'from_user_id'      => $userInfo->id,
+                            'badgeCount'        => access()->getUnreadNotificationCount($tagUser->user->id),
+                            'mtype'             => 'NEW_COMMENT_TAG_USERS'
+                        ];
+
+                        $storeNotification = [
+                            'user_id'           => $tagUser->user->id,
+                            'from_user_id'      => $userInfo->id,
+                            'description'       => $text,
+                            'feed_id'           => $request->get('feed_id'),
+                            'notification_type' => 'NEW_COMMENT_TAG_USERS'
+                        ];
+
+                        access()->addNotification($storeNotification);
+                        access()->sentPushNotification($tagUser->user, $payload);
+                    }
+                }
                 
                 $response = [
                     'comment_id' => $model->id,
@@ -212,7 +247,8 @@ class APICommentsController extends BaseApiController
         if($request->has('feed_id'))
         {
             $userInfo   = $this->getAuthenticatedUser();
-            $feedInfo   = Feeds::with(['feed_tag_users', 'feed_tag_users.user', 'user'])->where('id', $request->get('feed_id'))->first();
+            $userIds    = [];
+            $feedInfo   = Feeds::with(['feed_comments', 'feed_comments.user' , 'feed_tag_users', 'feed_tag_users.user', 'user'])->where('id', $request->get('feed_id'))->first();
             $model      = $this->repository->model->create([
                 'user_id'       => $userInfo->id,
                 'feed_id'       => $request->get('feed_id'),
@@ -221,6 +257,7 @@ class APICommentsController extends BaseApiController
 
             if($model)
             {
+                
                 if($userInfo->id != $feedInfo->user->id)
                 {
                     $text = $userInfo->name . ' commented on your post.';
@@ -243,6 +280,8 @@ class APICommentsController extends BaseApiController
                         'feed_id'           => $request->get('feed_id'),
                         'notification_type' => 'NEW_COMMENT'
                     ];
+
+                    $userIds[] = $userInfo->id;
 
                     access()->addNotification($storeNotification);
                     access()->sentPushNotification($feedInfo->user, $payload);
@@ -277,6 +316,8 @@ class APICommentsController extends BaseApiController
                             'mtype'             => 'NEW_COMMENT_TAG_USERS'
                         ];
 
+                        $userIds[] = $tagUser->user->id;
+
                         $storeNotification = [
                             'user_id'           => $tagUser->user->id,
                             'from_user_id'      => $userInfo->id,
@@ -289,6 +330,43 @@ class APICommentsController extends BaseApiController
                         access()->addNotification($storeNotification);
                         access()->sentPushNotification($tagUser->user, $payload);
                     }
+                }
+
+                if(isset($feedInfo->feed_comments) && count($feedInfo->feed_comments))
+                {
+
+                    foreach($feedInfo->feed_comments as $comment)
+                    {
+                        if(!in_array($comment->user_id, $userIds))
+                        {
+                            $text = $userInfo->name . ' has commented on the post you had commented on.';
+
+                            $payload = [
+                                'mtitle'            => '',
+                                'mdesc'             => $text,
+                                'feed_id'           => $request->get('feed_id'),
+                                'to_user_id'        => $comment->user_id,
+                                'feed_type'         => $feedInfo->feed_type,
+                                'from_user_id'      => $userInfo->id,
+                                'badgeCount'        => access()->getUnreadNotificationCount($comment->user_id),
+                                'mtype'             => 'NEW_COMMENT_COMMENTED_USERS'
+                            ];
+
+                            $storeNotification = [
+                                'user_id'           => $comment->user->id,
+                                'from_user_id'      => $userInfo->id,
+                                'description'       => $text,
+                                'icon'              => 'NEW_COMMENT.png',
+                                'feed_id'           => $request->get('feed_id'),
+                                'notification_type' => 'NEW_COMMENT_COMMENTED_USERS'
+                            ];
+
+                            access()->addNotification($storeNotification);
+                            access()->sentPushNotification($comment->user, $payload);
+                            $userIds[] = $comment->user_id;
+                        }
+                    }
+
                 }
                 /*$text = $userInfo->name . ' has commented on your Feed.';
                 $payload = [
