@@ -77,7 +77,7 @@
                     {data: 'name', name: '{{config('access.users_table')}}.name'},
                     {data: 'username', name: '{{config('access.users_table')}}.username'},
                     {data: 'email', name: '{{config('access.users_table')}}.email'},
-                    {data: 'phone', name: '{{config('access.users_table')}}.mobile'},
+                    {data: 'phone', name: '{{config('access.users_table')}}.phone'},
                     {data: 'is_archive', name: '{{config('access.users_table')}}.is_archive'},
                     {data: 'roles', name: '{{config('access.roles_table')}}.name', sortable: false},
                     {data: 'created_at', name: '{{config('access.users_table')}}.created_at'},
