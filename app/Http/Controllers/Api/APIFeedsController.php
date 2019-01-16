@@ -786,6 +786,8 @@ class APIFeedsController extends BaseApiController
             if(isset($model->id))
             {
                 $model->update($input);
+                $oldTagUsers = $model->feed_tag_users->pluck('user_id')->toArray();
+                
                 //$model->feed_images()->delete();
                 $model->feed_tag_users()->delete();
 
@@ -822,6 +824,34 @@ class APIFeedsController extends BaseApiController
                             'user_id'   => $tagUser,
                             'feed_id'   => $model->id
                         ];
+                    }
+
+                    if(!in_array($tagUser, $oldTagUsers))
+                    {
+                        $tagMember  = User::where('id', $tagUser)->first();
+
+                        $text       = $userInfo->name . ' tagged you in a post.';
+                        $payload    = [
+                            'mtitle'            => '',
+                            'mdesc'             => $text,
+                            'user_id'           => $tagMember->id,
+                            'feed_id'           => $model->id,
+                            'feed_type'         => $model->feed_type,
+                            'badgeCount'        => access()->getUnreadNotificationCount($tagMember->id),
+                            'mtype'             => 'TAG_USER'
+                        ];
+                        $storeNotification = [
+                            'user_id'           => $tagMember->id,
+                            'from_user_id'      => $userInfo->id,
+                            'feed_id'           => $model->id,
+                            'feed_type'         => $model->feed_type,
+                            'description'       => $text,
+                            'icon'              => 'TAG_USER.png',
+                            'notification_type' => 'TAG_USER'
+                        ];
+
+                        access()->addNotification($storeNotification);
+                        access()->sentPushNotification($tagMember, $payload);
                     }
 
                     if(count($tagUserData))
